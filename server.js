@@ -2,8 +2,14 @@
 
 // Express library
 const express = require('express')
-
-const path = require('path');
+const path = require('path')
+// Environment vars
+const result = require('dotenv').config()
+if (result.error) {
+	throw result.error
+}
+const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
+const PORT = Number.parseInt(PORTSTR, 10)
 
 
 // join path helper
@@ -19,7 +25,10 @@ app.use(express.static(fullPath('client/build')))
 /**
  * TODO api endpoints
  */
-// app.get('/api')
+app.get('/api', (req, res) => {
+	console.log('/api request')
+	res.sendStatus(200)
+})
 
 
 /**
@@ -33,8 +42,8 @@ app.get('/*', (req, res) => {
 
 
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
 	// on successful init
-	console.log(`Collab-playlist server istening on port ${3000}`)
+	console.log(`Collab-playlist server istening on port ${PORT}`)
 })
 
