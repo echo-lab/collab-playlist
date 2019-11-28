@@ -18,8 +18,6 @@ const fullPath = shortPath => path.join(__dirname, shortPath)
 
 // create the server
 const app = express()
-// Serve the static files from the React app
-app.use(express.static(fullPath('client/build')))
 
 
 /**
@@ -32,14 +30,37 @@ app.get('/api', (req, res) => {
 
 
 /**
- * handles any requests that don't match the ones above
- * this single react app handles routing between pages, and the server serves
- * this app for all page urls
+ * the single react app handles routing between pages, and the server serves
+ * this app for all valid page urls
  */
-app.get('/*', (req, res) => {
+
+app.get('/login', (req, res) => {
+	console.log('get /login')
 	res.sendFile(fullPath('/client/build/index.html'))
 })
 
+
+app.get('/', (req, res) => {
+	console.log('get /')
+	// console.log(req.query)
+	const { access_token, refresh_token } = req.query
+	if ( !access_token || !refresh_token ) {
+		res.redirect('/login')
+	} else {
+		res.sendFile(fullPath('/client/build/index.html'))
+	}
+})
+
+
+/**
+ * Serve all remaining routes if they exist in the react app's build
+ * 
+ * This will be triggered by files like *.css abd *.js
+ * 
+ * This goes after all other routes so that it doesn't override the '/' routes
+ * which check for login state
+ */
+app.use(express.static(fullPath('client/build')))
 
 
 app.listen(PORT, () => {
