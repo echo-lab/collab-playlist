@@ -11,9 +11,18 @@ if (result.error) {
 const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
+const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
+// const PRODUCTION_ENV = !DEVELOPMENT_ENV //process.env.NODE_ENV === 'production'
+
+console.log(process.env.NODE_ENV)
+console.log(DEVELOPMENT_ENV)
+const buildPath = DEVELOPMENT_ENV
+	? '/client/dev_build'
+	: '/client/dev_build'
+console.log(buildPath)
 
 // join path helper
-const fullPath = shortPath => path.join(__dirname, shortPath)
+const fullPath = (...paths) => path.join(__dirname, ...paths)
 
 
 // create the server
@@ -36,7 +45,7 @@ app.get('/api', (req, res) => {
 
 app.get('/login', (req, res) => {
 	console.log('get /login')
-	res.sendFile(fullPath('/client/build/index.html'))
+	res.sendFile(fullPath(buildPath, 'index.html'))
 })
 
 
@@ -47,7 +56,7 @@ app.get('/', (req, res) => {
 	if ( !access_token || !refresh_token ) {
 		res.redirect('/login')
 	} else {
-		res.sendFile(fullPath('/client/build/index.html'))
+		res.sendFile(fullPath(buildPath, 'index.html'))
 	}
 })
 
@@ -60,7 +69,7 @@ app.get('/', (req, res) => {
  * This goes after all other routes so that it doesn't override the '/' routes
  * which check for login state
  */
-app.use(express.static(fullPath('client/build')))
+app.use(express.static(fullPath(buildPath)))
 
 
 app.listen(PORT, () => {
