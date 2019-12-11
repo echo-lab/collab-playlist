@@ -11,14 +11,14 @@ if (result.error) {
 const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
-const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
+const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
 // const PRODUCTION_ENV = !DEVELOPMENT_ENV //process.env.NODE_ENV === 'production'
 
 console.log(process.env.NODE_ENV)
 console.log(DEVELOPMENT_ENV)
 const buildPath = DEVELOPMENT_ENV
 	? '/client/dev_build'
-	: '/client/dev_build'
+	: '/client/build'
 console.log(buildPath)
 
 // join path helper

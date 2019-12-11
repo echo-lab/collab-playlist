@@ -126,6 +126,7 @@ checkBrowsers(paths.appPath, isInteractive)
     );
     serverConfig.writeToDisk = true; // *** NOAM
     serverConfig.hot = false; // *** NOAM
+    serverConfig.open = false; // *** NOAM
     const devServer = new WebpackDevServer(compiler, serverConfig);
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {

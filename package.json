@@ -4,20 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "set NODE_ENV=development && cd client && start npm run dev-build-watch && cd .. && nodemon server.js --watch server.js",
-    "prod-start": "set NODE_ENV=production && echo \"make sure to npm run build\" && node server.js",
-    "build": "cd client && npm run build",
-    "dev-build": "echo \"feel free to terminate the watch after build finishes\" && cd client && npm run dev-build-watch",
-    "setup-mods": "cd setup_mods && dev-build-setup.bat",
-    "reset-mods": "cd client && npm i --save react-scripts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "setup-mods": "node scripts/setup-mods.js",
+    "reset-mods": "node scripts/reset-mods.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cross-spawn": "^7.0.1",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "react-scripts": "^3.2.0"
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.0"
   }
 }
