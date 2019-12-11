@@ -1,5 +1,9 @@
 
 
+
+// ! Do not use this script yet
+process.exit(1)
+
 const path = require('path')
 const fs = require('fs')
 

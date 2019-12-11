@@ -11,7 +11,7 @@ if (result.error) {
 const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
-const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
+const DEVELOPMENT_ENV = true// process.env.NODE_ENV === 'DEVELOPMENT' // TODO fix...
 // const PRODUCTION_ENV = !DEVELOPMENT_ENV //process.env.NODE_ENV === 'production'
 
 console.log(process.env.NODE_ENV)
