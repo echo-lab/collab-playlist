@@ -3,6 +3,9 @@
 // Express library
 const express = require('express')
 const path = require('path')
+const fetch = require('fetch')
+
+
 // Environment vars
 const result = require('dotenv').config()
 if (result.error) {
@@ -11,7 +14,7 @@ if (result.error) {
 const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
-const DEVELOPMENT_ENV = true// process.env.NODE_ENV === 'DEVELOPMENT' // TODO fix...
+const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
 // const PRODUCTION_ENV = !DEVELOPMENT_ENV //process.env.NODE_ENV === 'production'
 
 console.log(process.env.NODE_ENV)
