@@ -2,8 +2,11 @@
 
 // Express library
 const express = require('express')
+
 const path = require('path')
 const fetch = require('fetch')
+
+const querystring = require('querystring')
 
 
 // Environment vars
@@ -11,7 +14,7 @@ const result = require('dotenv').config()
 if (result.error) {
 	throw result.error
 }
-const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET } = result.parsed
+const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET, HOST_NAME } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
 const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
@@ -39,6 +42,53 @@ app.get('/api', (req, res) => {
 	console.log('/api request')
 	res.sendStatus(200)
 })
+
+
+
+// *** authorization code
+
+
+/**
+ * Generates a random string containing numbers and letters
+ * @param  {number} length The length of the string
+ * @return {string} The generated string
+ */
+const generateRandomString = (length) => {
+  const text = ''
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+	return new Array(length).fill().map(() =>
+		possible.charAt(Math.floor(Math.random() * possible.length))
+	)
+}
+
+const stateKey = 'spotify_auth_state'
+
+const redirect_uri = `${HOST_NAME}/callback`
+
+/**
+ * authorization endpoint
+ */
+app.get('/auth', (req, res) => {
+	const state = generateRandomString(16)
+	res.cookie(stateKey, state) // store state in client for later
+	
+	const scope = 'user-read-private user-read-email' // like app permissions
+	
+	// the application requests authorization
+  res.redirect(`https://accounts.spotify.com/authorize?${
+    querystring.stringify({
+      response_type: 'code',
+      client_id: CLIENT_ID,
+      scope,
+      redirect_uri,
+      state, // spotify also gets the state, which will be compared to the cookie later
+		})
+	}`)
+})
+
+
+// *** </> auth code
 
 
 /**
