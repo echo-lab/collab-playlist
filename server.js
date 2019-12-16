@@ -4,7 +4,7 @@
 const express = require('express')
 
 const path = require('path')
-const fetch = require('fetch')
+const fetch = require('node-fetch')
 
 const querystring = require('querystring')
 
@@ -67,7 +67,9 @@ const stateKey = 'spotify_auth_state'
 const redirect_uri = `${HOST_NAME}/callback`
 
 /**
- * authorization endpoint
+ * authorization endpoint. The user clicks on a link to get here, then gets
+ * redirected to a spotify login page, which then redirects the user to
+ * redirect_uri (/callback)
  */
 app.get('/auth', (req, res) => {
 	const state = generateRandomString(16)
@@ -75,7 +77,7 @@ app.get('/auth', (req, res) => {
 	
 	const scope = 'user-read-private user-read-email' // like app permissions
 	
-	// the application requests authorization
+	// the server requests authorization
   res.redirect(`https://accounts.spotify.com/authorize?${
     querystring.stringify({
       response_type: 'code',
@@ -85,6 +87,59 @@ app.get('/auth', (req, res) => {
       state, // spotify also gets the state, which will be compared to the cookie later
 		})
 	}`)
+})
+
+
+/**
+ * the spotify authorization page redirects users to /callback with a code for
+ * getting an access token. The server requests refresh and access tokens after
+ * checking the state parameter
+ */
+app.get('/callback', async (req, res) => {
+	// const { query: { code, state }, cookies: { [stateKey]: storedState } } = req
+	const { code, state } = req.query // code and state that spotify gave
+	const storedState = req.cookies[stateKey] // state in client's cookies
+	
+	if (!state || state !== storedState) {
+		// either spotify didn't give a state or it wasn't equal to the client's state
+		res.redirect('/error/state_mismatch')
+		   .status(502)
+		return
+	}
+	res.clearCookie(stateKey)
+	
+	try {
+		// get access_token and refresh_token from spotify
+		const response = await fetch('https://accounts.spotify.com/api/token', {
+			method: 'POST',
+			headers: {
+				'Authorization': `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
+			},
+			body: new URLSearchParams({
+				code,
+				redirect_uri, // is this needed?
+				grant_type: 'authorization_code',
+			}),
+		})
+		if (!response.ok) {
+			throw `token status: ${response.status}`
+		}
+		
+		const body = await response.json()
+		const { access_token, refresh_token } = body
+		console.log({ access_token, refresh_token })
+		
+		res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
+			 .cookie('refresh_token', refresh_token, { maxAge: 24 * 60 * 60 * 1000 })
+		   .redirect('/')
+		
+	} catch (e) {
+		// either there was an error with fetch (status 4xx/5xx?) or the status
+		// was not OK (not 2xx)
+		console.error(e)
+		res.redirect('/error/invalid_token')
+		   .status(502)
+	}
 })
 
 
