@@ -14,13 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cross-spawn": "^7.0.1",
+    "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "rimraf": "^3.0.0"
+    "@types/node-fetch": "^2.5.4"
   },
   "nodemonConfig": {
     "ignore": [
