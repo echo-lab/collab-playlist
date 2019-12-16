@@ -2,6 +2,7 @@
 
 // Express library
 const express = require('express')
+const cookieParser = require('cookie-parser')
 
 const path = require('path')
 const fetch = require('node-fetch')
@@ -34,6 +35,8 @@ const fullPath = (...paths) => path.join(__dirname, ...paths)
 // create the server
 const app = express()
 
+app.use(cookieParser())
+
 
 /**
  * TODO api endpoints
@@ -65,6 +68,8 @@ const generateRandomString = (length) => {
 const stateKey = 'spotify_auth_state'
 
 const redirect_uri = `${HOST_NAME}/callback`
+
+const authHeader = `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
 
 /**
  * authorization endpoint. The user clicks on a link to get here, then gets
@@ -102,8 +107,7 @@ app.get('/callback', async (req, res) => {
 	
 	if (!state || state !== storedState) {
 		// either spotify didn't give a state or it wasn't equal to the client's state
-		res.redirect('/error/state_mismatch')
-		   .status(502)
+		res.redirect(502, '/error/state_mismatch')
 		return
 	}
 	res.clearCookie(stateKey)
@@ -112,9 +116,7 @@ app.get('/callback', async (req, res) => {
 		// get access_token and refresh_token from spotify
 		const response = await fetch('https://accounts.spotify.com/api/token', {
 			method: 'POST',
-			headers: {
-				'Authorization': `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
-			},
+			headers: { 'Authorization': authHeader },
 			body: new URLSearchParams({
 				code,
 				redirect_uri, // is this needed?
@@ -137,8 +139,39 @@ app.get('/callback', async (req, res) => {
 		// either there was an error with fetch (status 4xx/5xx?) or the status
 		// was not OK (not 2xx)
 		console.error(e)
-		res.redirect('/error/invalid_token')
-		   .status(502)
+		res.redirect(502, '/error/invalid_token')
+	}
+})
+
+
+app.get('/refresh_token', async (req, res) => {
+	// client is requesting a new access_token using the refresh_token
+	const { refresh_token } = req.cookies
+	
+	try {
+		const response = await fetch('https://accounts.spotify.com/api/token', {
+			headers: { 'Authorization': authHeader },
+			body: new URLSearchParams({
+				grant_type: 'refresh_token',
+				refresh_token,
+			}),
+		})
+		if (!response.ok) {
+			throw `token status: ${response.status}`
+		}
+		
+		const body = await response.json()
+		const { access_token } = body
+		console.log({ access_token })
+		
+		res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
+		   .sendStatus(200)
+		
+	} catch (e) {
+		// either there was an error with fetch (status 4xx/5xx?) or the status
+		// was not OK (not 2xx)
+		console.error(e)
+		res.sendStatus(502)
 	}
 })
 
