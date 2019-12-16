@@ -62,7 +62,7 @@ const generateRandomString = (length) => {
 
 	return new Array(length).fill().map(() =>
 		possible.charAt(Math.floor(Math.random() * possible.length))
-	)
+	).join('')
 }
 
 const stateKey = 'spotify_auth_state'
@@ -192,8 +192,7 @@ app.get('/login', (req, res) => {
 
 app.get('/', (req, res) => {
 	console.log('get /')
-	// console.log(req.query)
-	const { access_token, refresh_token } = req.query
+	const { access_token, refresh_token } = req.cookies
 	if ( !access_token || !refresh_token ) {
 		res.redirect('/login')
 	} else {
