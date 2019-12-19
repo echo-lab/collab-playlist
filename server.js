@@ -23,14 +23,14 @@ const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
 
 console.log(process.env.NODE_ENV)
 console.log(DEVELOPMENT_ENV)
-const buildPath = DEVELOPMENT_ENV
+const BUILD_PATH = DEVELOPMENT_ENV
 	? '/client/dev_build'
 	: '/client/build'
-console.log(buildPath)
+console.log(BUILD_PATH)
 
 // join path helper
 const fullPath = (...paths) => path.join(__dirname, ...paths)
-
+const buildPath = (...paths) => fullPath(BUILD_PATH, ...paths)
 
 // create the server
 const app = express()
@@ -67,7 +67,7 @@ const generateRandomString = (length) => {
 
 const stateKey = 'spotify_auth_state'
 
-const redirect_uri = `${HOST_NAME}/callback`
+const redirect_uri = `${HOST_NAME}:${PORT}/callback`
 
 const authHeader = `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
 
@@ -84,7 +84,7 @@ app.get('/auth', (req, res) => {
 	
 	// the server requests authorization
   res.redirect(`https://accounts.spotify.com/authorize?${
-    querystring.stringify({
+    new URLSearchParams({
       response_type: 'code',
       client_id: CLIENT_ID,
       scope,
@@ -184,9 +184,17 @@ app.get('/refresh_token', async (req, res) => {
  * this app for all valid page urls
  */
 
+app.get('/error/*', (req, res) => {
+	console.log('get /error')
+	res.sendFile(buildPath('index.html'))
+})
+
 app.get('/login', (req, res) => {
 	console.log('get /login')
-	res.sendFile(fullPath(buildPath, 'index.html'))
+	res.clearCookie(stateKey)
+		 .clearCookie('access_token')
+		 .clearCookie('refresh_token')
+	   .sendFile(buildPath('index.html'))
 })
 
 
@@ -196,7 +204,7 @@ app.get('/', (req, res) => {
 	if ( !access_token || !refresh_token ) {
 		res.redirect('/login')
 	} else {
-		res.sendFile(fullPath(buildPath, 'index.html'))
+		res.sendFile(buildPath('index.html'))
 	}
 })
 
@@ -209,7 +217,7 @@ app.get('/', (req, res) => {
  * This goes after all other routes so that it doesn't override the '/' routes
  * which check for login state
  */
-app.use(express.static(fullPath(buildPath)))
+app.use(express.static(buildPath()))
 
 
 app.listen(PORT, () => {

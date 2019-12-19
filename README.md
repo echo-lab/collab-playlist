@@ -7,7 +7,7 @@
 2. In the client/ directory, run `npm install`.
 3. Copy scripts/setup_files/dev-build-watch.js to client/node_modules/react-scripts/scripts/dev-build-watch.js
 4. Copy and rename scripts/setup_files/react-scripts-edited.js to replace client/node_modules/react-scripts/bin/react-scripts.js
-5. Create a `.env` file in the root directory formatted like `.env.sample` with the values filled in.
+5. Create a `.env` file in the root directory formatted like `.env.example` with the values filled in. `HOST_NAME` should be formatted like `http://localhost` (no port number).
 6. Run `npm i -g nodemon` if not installed already.
 7. NOT all npm scripts work yet.
 
