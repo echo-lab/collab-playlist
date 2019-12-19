@@ -7,8 +7,6 @@ const cookieParser = require('cookie-parser')
 const path = require('path')
 const fetch = require('node-fetch')
 
-const querystring = require('querystring')
-
 
 // Environment vars
 const result = require('dotenv').config()
@@ -18,7 +16,7 @@ if (result.error) {
 const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET, HOST_NAME } = result.parsed
 const PORT = Number.parseInt(PORTSTR, 10)
 
-const DEVELOPMENT_ENV = process.env.NODE_ENV === 'DEVELOPMENT'
+const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
 // const PRODUCTION_ENV = !DEVELOPMENT_ENV //process.env.NODE_ENV === 'production'
 
 console.log(process.env.NODE_ENV)
@@ -36,6 +34,16 @@ const buildPath = (...paths) => fullPath(BUILD_PATH, ...paths)
 const app = express()
 
 app.use(cookieParser())
+
+
+/**
+ * Serve all routes that exist in the react app's build
+ * 
+ * This will be triggered by files like *.json abd *.js
+ * 
+ * index: false makes it so this doesn't match the '/' route, which serves the app
+ */
+app.use(express.static(buildPath(), { index: false }))
 
 
 /**
@@ -57,7 +65,6 @@ app.get('/api', (req, res) => {
  * @return {string} The generated string
  */
 const generateRandomString = (length) => {
-  const text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
 	return new Array(length).fill().map(() =>
@@ -179,45 +186,20 @@ app.get('/refresh_token', async (req, res) => {
 // *** </> auth code
 
 
+app.get(['/sockjs-node', '/manifest.json'], (req, res) => {
+	res.sendStatus(404)
+})
+
+
 /**
  * the single react app handles routing between pages, and the server serves
  * this app for all valid page urls
  */
 
-app.get('/error/*', (req, res) => {
-	console.log('get /error')
+app.get('/*', (req, res) => {
+	console.log(`get ${req.url}`)
 	res.sendFile(buildPath('index.html'))
 })
-
-app.get('/login', (req, res) => {
-	console.log('get /login')
-	res.clearCookie(stateKey)
-		 .clearCookie('access_token')
-		 .clearCookie('refresh_token')
-	   .sendFile(buildPath('index.html'))
-})
-
-
-app.get('/', (req, res) => {
-	console.log('get /')
-	const { access_token, refresh_token } = req.cookies
-	if ( !access_token || !refresh_token ) {
-		res.redirect('/login')
-	} else {
-		res.sendFile(buildPath('index.html'))
-	}
-})
-
-
-/**
- * Serve all remaining routes if they exist in the react app's build
- * 
- * This will be triggered by files like *.css abd *.js
- * 
- * This goes after all other routes so that it doesn't override the '/' routes
- * which check for login state
- */
-app.use(express.static(buildPath()))
 
 
 app.listen(PORT, () => {

@@ -27,7 +27,7 @@
       "client/"
     ],
     "env": {
-      "NODE_ENV": "DEVELOPMENT"
+      "NODE_ENV": "development"
     }
   }
 }
