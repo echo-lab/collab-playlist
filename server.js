@@ -46,14 +46,6 @@ app.use(cookieParser())
 app.use(express.static(buildPath(), { index: false }))
 
 
-/**
- * TODO api endpoints
- */
-app.get('/api', (req, res) => {
-	console.log('/api request')
-	res.sendStatus(200)
-})
-
 
 
 // *** authorization code
@@ -74,7 +66,7 @@ const generateRandomString = (length) => {
 
 const stateKey = 'spotify_auth_state'
 
-const redirect_uri = `${HOST_NAME}:${PORT}/callback`
+const redirect_uri = `${HOST_NAME}:${PORT}/auth/callback`
 
 const authHeader = `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
 
@@ -107,7 +99,7 @@ app.get('/auth', (req, res) => {
  * getting an access token. The server requests refresh and access tokens after
  * checking the state parameter
  */
-app.get('/callback', async (req, res) => {
+app.get('/auth/callback', async (req, res) => {
 	// const { query: { code, state }, cookies: { [stateKey]: storedState } } = req
 	const { code, state } = req.query // code and state that spotify gave
 	const storedState = req.cookies[stateKey] // state in client's cookies
@@ -151,7 +143,7 @@ app.get('/callback', async (req, res) => {
 })
 
 
-app.get('/refresh_token', async (req, res) => {
+app.get('/api/refresh_token', async (req, res) => {
 	// client is requesting a new access_token using the refresh_token
 	const { refresh_token } = req.cookies
 	
@@ -184,6 +176,15 @@ app.get('/refresh_token', async (req, res) => {
 
 
 // *** </> auth code
+
+
+/**
+ * TODO api endpoints
+ */
+app.get('/api', (req, res) => {
+	console.log('/api request')
+	res.sendStatus(200)
+})
 
 
 app.get(['/sockjs-node', '/manifest.json'], (req, res) => {
