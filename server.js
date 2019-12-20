@@ -26,6 +26,8 @@ const BUILD_PATH = DEVELOPMENT_ENV
 	: '/client/build'
 console.log(BUILD_PATH)
 
+const API_TARGET = process.env.API_TARGET || 'https://accounts.spotify.com'
+
 // join path helper
 const fullPath = (...paths) => path.join(__dirname, ...paths)
 const buildPath = (...paths) => fullPath(BUILD_PATH, ...paths)
@@ -82,7 +84,7 @@ app.get('/auth', (req, res) => {
 	const scope = 'user-read-private user-read-email' // like app permissions
 	
 	// the server requests authorization
-  res.redirect(`https://accounts.spotify.com/authorize?${
+  res.redirect(`${API_TARGET}/authorize?${
     new URLSearchParams({
       response_type: 'code',
       client_id: CLIENT_ID,
@@ -113,7 +115,7 @@ app.get('/auth/callback', async (req, res) => {
 	
 	try {
 		// get access_token and refresh_token from spotify
-		const response = await fetch('https://accounts.spotify.com/api/token', {
+		const response = await fetch(`${API_TARGET}/api/token`, {
 			method: 'POST',
 			headers: { 'Authorization': authHeader },
 			body: new URLSearchParams({
@@ -148,7 +150,7 @@ app.get('/api/refresh_token', async (req, res) => {
 	const { refresh_token } = req.cookies
 	
 	try {
-		const response = await fetch('https://accounts.spotify.com/api/token', {
+		const response = await fetch(`${API_TARGET}/api/token`, {
 			headers: { 'Authorization': authHeader },
 			body: new URLSearchParams({
 				grant_type: 'refresh_token',
