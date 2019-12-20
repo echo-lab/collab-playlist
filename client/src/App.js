@@ -1,21 +1,45 @@
-import React from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import React, { useCallback } from 'react'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+import { CookiesProvider, useCookies } from 'react-cookie'
+
+
+const useLoginState = () => {
+  const [cookies, _, __] = useCookies(['access_token', 'refresh_token'])
+  return cookies.access_token && cookies.refresh_token
+}
+
+const useLogout = () => {
+  const [_, __, removeCookie] = useCookies(['access_token', 'refresh_token'])
+  return () => {
+    removeCookie('access_token')
+    removeCookie('refresh_token')
+  }
+}
 
 const App = () => {
+  const isLoggedIn = useLoginState()
+  const logout = useLogout()
+  
   return (
-    <BrowserRouter>
-      <div className="App">
-        Collab-playlist test
-      </div>
-      <Switch>
-        <Route path="/login">
-          <a href="/auth">Login</a>
-        </Route>
-        <Route exact path="/">
-          <p>Logged in!</p>
-        </Route>
-      </Switch>
-    </BrowserRouter>
+    <CookiesProvider>
+      <Router>
+        <div className="App">
+          Collab-playlist test
+          <button onClick={logout}>Logout</button>
+        </div>
+        <Switch>
+          <Route exact path="/">
+            {isLoggedIn ? <p>Logged in!</p> : <Redirect to="/login"/>}
+          </Route>
+          <Route path="/login">
+            <a href="/auth">Login</a>
+          </Route>
+          <Route>
+            <Redirect to="/"/>
+          </Route>
+        </Switch>
+      </Router>
+    </CookiesProvider>
   )
 }
 
