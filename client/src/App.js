@@ -4,22 +4,22 @@ import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 
 
-const useLoginState = () => {
-  const [cookies, _, __] = useCookies(['access_token', 'refresh_token'])
-  return cookies.access_token && cookies.refresh_token
-}
 
-const useLogout = () => {
-  const [_, __, removeCookie] = useCookies(['access_token', 'refresh_token'])
-  return () => {
-    removeCookie('access_token')
-    removeCookie('refresh_token')
-  }
+const useLogin = () => {
+  const [cookies, _, removeCookie] = useCookies(['access_token', 'refresh_token'])
+  return [
+    cookies.access_token && cookies.refresh_token,
+    () => {
+      removeCookie('access_token')
+      removeCookie('refresh_token')
+    }
+  ]
 }
 
 export default () => {
-  const isLoggedIn = useLoginState()
-  const logout = useLogout()
+  // const isLoggedIn = useLoginState()
+  // const logout = useLogout()
+  const [isLoggedIn, logout] = useLogin()
   
   return (
     <CookiesProvider>
