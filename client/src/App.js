@@ -1,24 +1,26 @@
-import React, { useCallback } from 'react'
+import React, {  } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
+import { SearchTab } from './SearchTab'
 
 
-const useLoginState = () => {
-  const [cookies, _, __] = useCookies(['access_token', 'refresh_token'])
-  return cookies.access_token && cookies.refresh_token
+
+const useLogin = () => {
+  // eslint-disable-next-line
+  const [cookies, _, removeCookie] = useCookies(['access_token', 'refresh_token'])
+  return [
+    cookies.access_token && cookies.refresh_token,
+    () => {
+      removeCookie('access_token')
+      removeCookie('refresh_token')
+    }
+  ]
 }
 
-const useLogout = () => {
-  const [_, __, removeCookie] = useCookies(['access_token', 'refresh_token'])
-  return () => {
-    removeCookie('access_token')
-    removeCookie('refresh_token')
-  }
-}
-
-const App = () => {
-  const isLoggedIn = useLoginState()
-  const logout = useLogout()
+export default () => {
+  // const isLoggedIn = useLoginState()
+  // const logout = useLogout()
+  const [isLoggedIn, logout] = useLogin()
   
   return (
     <CookiesProvider>
@@ -29,7 +31,7 @@ const App = () => {
         </div>
         <Switch>
           <Route exact path="/">
-            {isLoggedIn ? <p>Logged in!</p> : <Redirect to="/login"/>}
+            {isLoggedIn ? <SearchTab/> : <Redirect to="/login"/>}
           </Route>
           <Route path="/login">
             <a href="/auth">Login</a>
@@ -43,4 +45,4 @@ const App = () => {
   )
 }
 
-export default App
+// export default App
