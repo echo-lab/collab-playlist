@@ -12,6 +12,16 @@ const setupApi = ({ app }) => {
   })
   
   
+  app.use('/api', (req, res, next) => {
+    const { access_token } = req.cookies
+    res.locals.api = new SpotifyWebApi({
+      accessToken: access_token,
+      // TODO client id and secret for refresh token functionality
+    })
+    next()
+  })
+  
+  
   /**
    * Search for tracks by query
    * /api/search/?q=query
@@ -20,14 +30,14 @@ const setupApi = ({ app }) => {
     // console.log(req.query)
     
     const { q } = req.query
-    const { access_token } = req.cookies
+    // const { access_token } = req.cookies
     
-    const api = new SpotifyWebApi({
-      accessToken: access_token
-    })
-    // console.log({api})
-    const data = await api.searchTracks(q)
-    // console.log({tracks: data.body.tracks})
+    // const api = new SpotifyWebApi({
+    //   accessToken: access_token
+    // })
+    
+    const data = await res.locals.api.searchTracks(q)
+    
     res.json(data)
   })
   
