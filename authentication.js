@@ -100,38 +100,6 @@ const setupAuth = ({app, PORT}) => {
       res.redirect(502, '/error/invalid_token')
     }
   })
-
-
-  app.get('/api/refresh_token', async (req, res) => {
-    // client is requesting a new access_token using the refresh_token
-    const { refresh_token } = req.cookies
-    
-    try {
-      const response = await fetch(`${API_TARGET}/api/token`, {
-        headers: { 'Authorization': authHeader },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token,
-        }),
-      })
-      if (!response.ok) {
-        throw `token status: ${response.status}`
-      }
-      
-      const body = await response.json()
-      const { access_token } = body
-      console.log({ access_token })
-      
-      res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
-        .sendStatus(200)
-      
-    } catch (e) {
-      // either there was an error with fetch (status 4xx/5xx?) or the status
-      // was not OK (not 2xx)
-      console.error(e)
-      res.sendStatus(502)
-    }
-  })
   
   
   
