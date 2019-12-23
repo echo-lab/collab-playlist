@@ -47,19 +47,19 @@ app.use(express.static(buildPath(), { index: false }))
 
 
 const { setupAuth } = require('./authentication')
-
 setupAuth({ app, PORT })
 
 
+const { setupApi } = require('./api')
+setupApi({ app })
+
 /**
- * TODO api endpoints
+ * The react app tries to get these but webpack doesn't create them for some reason
+ * 
+ * sockjs-node is probably related to hot reloading, but I thought I turned that off
+ * 
+ * I think manifest.json is a file that CRA created and that I deleted; I could bring it back
  */
-app.get(['/api', '/api/*'], (req, res) => {
-  console.log('/api request')
-  res.sendStatus(200)
-})
-
-
 app.get(['/sockjs-node', '/manifest.json'], (req, res) => {
   res.sendStatus(404)
 })
