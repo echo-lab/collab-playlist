@@ -26,43 +26,17 @@ const setupApi = ({ app }) => {
   
   app.get('/api/refresh_token', async (req, res) => {
     // client is requesting a new access_token using the refresh_token
-    // const { refresh_token } = req.cookies
     
     try {
-      const access_token = await res.locals.api.refreshAccessToken()
+      const data = await res.locals.api.refreshAccessToken()
       
-      res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
-        .sendStatus(200)
+      res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
+        .json({ expires_in: data.body.expires_in })
+      
     } catch (e) {
       console.error({e})
       res.sendStatus(502)
     }
-    
-  //   try {
-  //     const response = await fetch(`${API_TARGET}/api/token`, {
-  //       headers: { 'Authorization': authHeader },
-  //       body: new URLSearchParams({
-  //         grant_type: 'refresh_token',
-  //         refresh_token,
-  //       }),
-  //     })
-  //     if (!response.ok) {
-  //       throw `token status: ${response.status}`
-  //     }
-      
-  //     const body = await response.json()
-  //     const { access_token } = body
-  //     console.log({ access_token })
-      
-  //     res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
-  //       .sendStatus(200)
-      
-  //   } catch (e) {
-  //     // either there was an error with fetch (status 4xx/5xx?) or the status
-  //     // was not OK (not 2xx)
-  //     console.error(e)
-  //     res.sendStatus(502)
-  //   }
   })
   
   
@@ -71,14 +45,7 @@ const setupApi = ({ app }) => {
    * /api/search/?q=query
    */
   app.get('/api/search/', async (req, res) => {
-    // console.log(req.query)
-    
     const { q } = req.query
-    // const { access_token } = req.cookies
-    
-    // const api = new SpotifyWebApi({
-    //   accessToken: access_token
-    // })
     
     const data = await res.locals.api.searchTracks(q)
     

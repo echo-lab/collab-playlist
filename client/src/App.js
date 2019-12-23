@@ -1,4 +1,4 @@
-import React, {  } from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
@@ -17,10 +17,30 @@ const useLogin = () => {
   ]
 }
 
+
+const useRefreshToken = (isLoggedIn) => {
+  useEffect(() => {
+    if (!isLoggedIn) return
+    
+    const refresh = async () => {
+      try {
+        const response = await fetch('/api/refresh_token')
+        const { expires_in } = await response.json() // number of seconds to expiration
+        console.log({expires_in})
+        setTimeout(refresh, expires_in * 1000 * 0.9) // anticipate expiration by a little
+      } catch (e) {
+        console.error({e})
+        setTimeout(refresh, 1000 * 10)
+      }
+    }
+    setTimeout(refresh, 1000 * 10)
+  }, [isLoggedIn])
+}
+
 export default () => {
-  // const isLoggedIn = useLoginState()
-  // const logout = useLogout()
   const [isLoggedIn, logout] = useLogin()
+  
+  useRefreshToken(isLoggedIn)
   
   return (
     <CookiesProvider>
