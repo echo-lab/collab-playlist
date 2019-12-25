@@ -6,37 +6,68 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const setupApi = ({ app }) => {
   
   
+  /**
+   * logs api requests
+   */
   app.use('/api', (req, res, next) => {
     console.log(`${req.originalUrl} request`)
     next()
   })
   
   
-  app.use('/api', (req, res, next) => {
-    const { access_token, refresh_token } = req.cookies
-    res.locals.api = new SpotifyWebApi({
-      accessToken: access_token,
+  
+  /**
+   * client is requesting a new access_token using the refresh_token
+   * @statusCode 401 not authenticated if no refresh token found, meaning
+   * try authenticating again
+   * @statusCode 502 bad gateway if spotify server error
+   * @responseCookie access_token with new access_token with expiration
+   * @responseBody json with expires_in in seconds for setting timeout
+   */
+  app.get('/api/refresh_token/', async (req, res) => {
+    const { refresh_token } = req.cookies
+    if (!refresh_token) {
+      res.sendStatus(401)
+      return
+    }
+    const spotifyApi = new SpotifyWebApi({
       refreshToken: refresh_token,
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET
     })
-    next()
-  })
-  
-  
-  app.get('/api/refresh_token', async (req, res) => {
-    // client is requesting a new access_token using the refresh_token
     
     try {
-      const data = await res.locals.api.refreshAccessToken()
+      const data = await spotifyApi.refreshAccessToken()
       
       res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
-        .json({ expires_in: data.body.expires_in })
+      res.json({ expires_in: data.body.expires_in })
       
     } catch (e) {
       console.error({e})
       res.sendStatus(502)
     }
+    // no next()
+  })
+  
+  
+  /**
+   * sets up api wrapper for every api endpoint other than refresh_token
+   * @statusCode 401 not authenticated if no access token found, meaning
+   * try refreshing access code through /api/refresh_token/
+   */
+  app.use('/api', (req, res, next) => {
+    const { access_token } = req.cookies
+    
+    if (!access_token) {
+      // no access token, so we can't make a request
+      res.sendStatus(401)
+      return // no next()
+    }
+    
+    res.locals.spotifyApi = new SpotifyWebApi({
+      accessToken: access_token
+    })
+    next()
   })
   
   
@@ -47,7 +78,7 @@ const setupApi = ({ app }) => {
   app.get('/api/search/', async (req, res) => {
     const { q } = req.query
     
-    const data = await res.locals.api.searchTracks(q)
+    const data = await res.locals.spotifyApi.searchTracks(q)
     
     res.json(data)
   })
