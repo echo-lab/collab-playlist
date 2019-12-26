@@ -47,7 +47,7 @@ const useRefreshToken = (isLoggedIn, logout) => {
   }, [isLoggedIn, logout])
 }
 
-export default () => {
+export const App = () => {
   const [isLoggedIn, logout] = useLogin()
   
   useRefreshToken(isLoggedIn, logout)

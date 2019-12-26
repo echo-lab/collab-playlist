@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 import { useSongSearch } from './api-hooks'
+import { SearchResults } from "./SearchResults";
 
 /**
  * Text input field that calls onChange only when user stops typing for {delay} ms
@@ -28,7 +29,7 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
 
 export const SearchTab = () => {
   
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('hello')
   
   const result = useSongSearch(query)
   
@@ -37,9 +38,7 @@ export const SearchTab = () => {
       onChange={setQuery}
     />
     <h1>{query}</h1>
-    {JSON.stringify(result, null, 2).split('\n').map((item, i) =>
-      <pre style={{margin: 0}} key={i}>{item/*.replace(/ /, '\t')*/}</pre>
-    )}
+    <SearchResults data={result} />
     
   </div>
 }
