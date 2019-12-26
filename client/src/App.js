@@ -44,7 +44,7 @@ const useRefreshToken = (isLoggedIn, logout) => {
       }
     }
     setTimeout(refresh, 1000 * 10)
-  }, [isLoggedIn])
+  }, [isLoggedIn, logout])
 }
 
 export default () => {
