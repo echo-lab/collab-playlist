@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
@@ -6,8 +7,7 @@ import { SearchTab } from './SearchTab'
 
 
 const useLogin = () => {
-  // eslint-disable-next-line
-  const [cookies, _, removeCookie] = useCookies(['access_token', 'refresh_token'])
+  const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
   return [
     cookies.access_token && cookies.refresh_token,
     () => {
@@ -47,29 +47,60 @@ const useRefreshToken = (isLoggedIn, logout) => {
   }, [isLoggedIn, logout])
 }
 
+
+const PlaylistTab = () => {
+  return <div></div>
+}
+
+const MainPanel = () => {
+  
+  const mainPanelStyle = {
+    flex: 1,
+    display: 'flex',
+    overflow: 'hidden'
+  }
+  
+  return <div style={mainPanelStyle}>
+    <SearchTab/>
+    <PlaylistTab/>
+  </div>
+}
+
 export const App = () => {
   const [isLoggedIn, logout] = useLogin()
   
   useRefreshToken(isLoggedIn, logout)
   
+  const appStyle = {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
+  }
+  const toolbarStyle = {
+    flexBasis: '60px',
+  }
+  
   return (
     <CookiesProvider>
       <Router>
-        <div className="App">
-          Collab-playlist test
-          <button onClick={logout}>Logout</button>
+        <div style={appStyle}>
+          <div style={toolbarStyle}>
+            Collab-playlist test
+            <button onClick={logout}>Logout</button>
+          </div>
+          <Switch>
+            <Route exact path="/">
+              {isLoggedIn ? <MainPanel/> : <Redirect to="/login"/>}
+            </Route>
+            <Route path="/login">
+              <a href="/auth">Login</a>
+            </Route>
+            <Route>
+              <Redirect to="/"/>
+            </Route>
+          </Switch>
         </div>
-        <Switch>
-          <Route exact path="/">
-            {isLoggedIn ? <SearchTab/> : <Redirect to="/login"/>}
-          </Route>
-          <Route path="/login">
-            <a href="/auth">Login</a>
-          </Route>
-          <Route>
-            <Redirect to="/"/>
-          </Route>
-        </Switch>
       </Router>
     </CookiesProvider>
   )
