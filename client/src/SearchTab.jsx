@@ -50,7 +50,7 @@ export const SearchTab = () => {
     <DebouncedInput
       onChange={setQuery}
     />
-    <h1 style={classes.text}>{query}</h1>
+    
     <SearchResults data={result} />
     
   </div>

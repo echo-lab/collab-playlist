@@ -20,10 +20,19 @@ export const classes = {
     // fontFamily: 'Catamaran',
     fontFamily: 'Overpass, sans-serif',
     fontWeight: '700',
+    fontSize: '1.6rem',
   },
   bold: {
     fontWeight: '900',
   },
+  textOverflow: ({ lines = 1 }) => ({
+    overflow: 'hidden',
+    // whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: lines,
+  }),
   column: {
     display: 'flex',
     flexDirection: 'column',

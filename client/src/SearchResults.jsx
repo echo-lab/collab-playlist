@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { classes } from "./styles"
 
 
@@ -8,8 +8,9 @@ export const SearchResults = ({ data }) => {
   const items = data?.body?.tracks?.items
   
   const searchResultsStyle = {
-    // ...classes.column,
+    ...classes.column,
     overflow: 'auto',
+    // overflowY: 'auto',
   }
   
   return <div style={searchResultsStyle}>
@@ -26,12 +27,32 @@ const SearchItem = ({ item }) => {
   
   const searchItemStyle = {
     ...classes.row,
+    padding: '0.5rem',
+    // overflowY: 'visible',
+    // overflowX: 'hidden',
   }
+  const textDivStyle = {
+    ...classes.column,
+    justifyContent: 'space-evenly',
+    // overflowY: 'visible',
+    // overflowX: 'hidden',
+  }
+  const songNameStyle = useMemo(() => ({
+    ...classes.text,
+    ...classes.textOverflow({ lines: 2 }),
+  }), [])
+  const artistNamesStyle = useMemo(() => ({
+    ...classes.text,
+    ...classes.textOverflow({ lines: 2 }),
+    fontSize: '1.4rem',
+  }), [])
   
   return <div style={searchItemStyle}>
     <img src={imageUrl} width={width} height={height} alt={`Album: ${album.name}`}/>
-    <span style={classes.text}>{name}</span>
-    <span style={classes.text}>{artistNames}</span>
+    <div style={textDivStyle}>
+      <div style={songNameStyle}>{name}</div>
+      <div style={artistNamesStyle}>{artistNames}</div>
+    </div>
   </div>
 }
 

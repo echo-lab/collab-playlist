@@ -77,14 +77,17 @@ export const App = () => {
     width: '100%',
     height: '100%',
     backgroundColor: colors.grayscale.black,
+    boxSizing: 'border-box',
+    padding: '0.5rem',
     // overflow: 'hidden',
   }
   const toolbarStyle = {
-    flexBasis: '60px',
+    flexBasis: '6.0rem',
   }
   const headingStyle = {
     ...classes.text,
     ...classes.bold,
+    fontSize: '2.5rem',
   }
   const buttonStyle = {
     ...classes.text,
