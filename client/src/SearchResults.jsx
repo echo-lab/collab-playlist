@@ -1,6 +1,6 @@
 
 import React from 'react'
-
+import { classes } from "./styles"
 
 
 export const SearchResults = ({ data }) => {
@@ -8,9 +8,8 @@ export const SearchResults = ({ data }) => {
   const items = data?.body?.tracks?.items
   
   const searchResultsStyle = {
+    // ...classes.column,
     overflow: 'auto',
-    display: 'flex',
-    flexDirection: 'column'
   }
   
   return <div style={searchResultsStyle}>
@@ -26,13 +25,13 @@ const SearchItem = ({ item }) => {
   const artistNames = artists.map(artist => artist.name).join(', ')
   
   const searchItemStyle = {
-    display: 'flex',
+    ...classes.row,
   }
   
   return <div style={searchItemStyle}>
     <img src={imageUrl} width={width} height={height} alt={`Album: ${album.name}`}/>
-    <span>{name}</span>
-    {''}<span>{artistNames}</span>
+    <span style={classes.text}>{name}</span>
+    <span style={classes.text}>{artistNames}</span>
   </div>
 }
 

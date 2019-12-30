@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 import { useSongSearch } from './api-hooks'
 import { SearchResults } from "./SearchResults"
-
+import { classes } from "./styles"
 
 
 /**
@@ -18,7 +18,12 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
   // debounced wrapper for onChange
   const debouncedOnChange = useDebounceCallback(onChange, delay)
   
+  const inputStyle = {
+    ...classes.text,
+  }
+  
   return <input
+    style={inputStyle}
     type="text"
     value={value}
     onChange={ ({ target: { value: newVal }}) => {
@@ -36,16 +41,15 @@ export const SearchTab = () => {
   const result = useSongSearch(query)
   
   const searchTabStyle = {
+    ...classes.column,
     flex: '0.25',
-    display: 'flex',
-    flexDirection: 'column'
   }
   
   return <div style={searchTabStyle}>
     <DebouncedInput
       onChange={setQuery}
     />
-    <h1>{query}</h1>
+    <h1 style={classes.text}>{query}</h1>
     <SearchResults data={result} />
     
   </div>

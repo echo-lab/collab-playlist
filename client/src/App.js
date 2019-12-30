@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
+import { colors, classes } from './styles'
 
 
 
@@ -55,9 +56,9 @@ const PlaylistTab = () => {
 const MainPanel = () => {
   
   const mainPanelStyle = {
+    ...classes.row,
+    overflow: 'hidden',
     flex: 1,
-    display: 'flex',
-    overflow: 'hidden'
   }
   
   return <div style={mainPanelStyle}>
@@ -72,10 +73,11 @@ export const App = () => {
   useRefreshToken(isLoggedIn, logout)
   
   const appStyle = {
+    ...classes.column,
     width: '100%',
     height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
+    backgroundColor: colors.grayscale.black,
+    // overflow: 'hidden',
   }
   const toolbarStyle = {
     flexBasis: '60px',
@@ -86,7 +88,7 @@ export const App = () => {
       <Router>
         <div style={appStyle}>
           <div style={toolbarStyle}>
-            Collab-playlist test
+            <h1 style={classes.text}>Collab-playlist test</h1>
             <button onClick={logout}>Logout</button>
           </div>
           <Switch>
@@ -94,7 +96,7 @@ export const App = () => {
               {isLoggedIn ? <MainPanel/> : <Redirect to="/login"/>}
             </Route>
             <Route path="/login">
-              <a href="/auth">Login</a>
+              <a style={classes.text} href="/auth">Login</a>
             </Route>
             <Route>
               <Redirect to="/"/>
@@ -106,4 +108,3 @@ export const App = () => {
   )
 }
 
-// export default App
