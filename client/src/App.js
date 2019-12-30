@@ -82,14 +82,22 @@ export const App = () => {
   const toolbarStyle = {
     flexBasis: '60px',
   }
+  const headingStyle = {
+    ...classes.text,
+    ...classes.bold,
+  }
+  const buttonStyle = {
+    ...classes.text,
+    color: colors.black,
+  }
   
   return (
     <CookiesProvider>
       <Router>
         <div style={appStyle}>
           <div style={toolbarStyle}>
-            <h1 style={classes.text}>Collab-playlist test</h1>
-            <button onClick={logout}>Logout</button>
+            <h1 style={headingStyle}>Collab-playlist test</h1>
+            <button style={buttonStyle} onClick={logout}>Logout</button>
           </div>
           <Switch>
             <Route exact path="/">

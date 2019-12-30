@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 import { useSongSearch } from './api-hooks'
 import { SearchResults } from "./SearchResults"
-import { classes } from "./styles"
+import { classes, colors } from "./styles"
 
 
 /**
@@ -20,6 +20,7 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
   
   const inputStyle = {
     ...classes.text,
+    color: colors.black,
   }
   
   return <input
