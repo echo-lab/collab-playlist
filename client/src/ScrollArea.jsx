@@ -2,7 +2,7 @@
 import React, { useRef, useState, useLayoutEffect } from 'react'
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
-
+import './scrollbar.css'
 
 
 const useDimensions = () => {
