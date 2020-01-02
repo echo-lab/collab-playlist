@@ -1,21 +1,20 @@
 
-import React, { useMemo } from 'react'
-import { classes } from "./styles"
+import React from 'react'
+import { classes } from './styles'
+import { ScrollArea } from './ScrollArea'
 
 
 export const SearchResults = ({ data }) => {
   
   const items = data?.body?.tracks?.items
   
-  const searchResultsStyle = {
-    ...classes.column,
-    overflow: 'auto',
-    // overflowY: 'auto',
+  const scrollAreaStyle = {
+    flex: 1,
   }
   
-  return <div style={searchResultsStyle}>
+  return <ScrollArea style={scrollAreaStyle}>
     {items?.map((item, index) => <SearchItem item={item} key={index} />)}
-  </div>
+  </ScrollArea>
 }
 
 
@@ -28,24 +27,20 @@ const SearchItem = ({ item }) => {
   const searchItemStyle = {
     ...classes.row,
     padding: '0.5rem',
-    // overflowY: 'visible',
-    // overflowX: 'hidden',
   }
   const textDivStyle = {
     ...classes.column,
     justifyContent: 'space-evenly',
-    // overflowY: 'visible',
-    // overflowX: 'hidden',
   }
-  const songNameStyle = useMemo(() => ({
+  const songNameStyle = {
     ...classes.text,
     ...classes.textOverflow({ lines: 2 }),
-  }), [])
-  const artistNamesStyle = useMemo(() => ({
+  }
+  const artistNamesStyle = {
     ...classes.text,
     ...classes.textOverflow({ lines: 2 }),
     fontSize: '1.4rem',
-  }), [])
+  }
   
   return <div style={searchItemStyle}>
     <img src={imageUrl} width={width} height={height} alt={`Album: ${album.name}`}/>

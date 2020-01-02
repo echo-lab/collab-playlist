@@ -3,7 +3,7 @@
 
 export const colors = {
   grayscale: {
-    black: '#191414',
+    black: '#141414',
     darkGray: '#303030',
     white: '#F0F0F0',
   },
