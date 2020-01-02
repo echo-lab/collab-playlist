@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 import { colors, classes } from './styles'
+import { useWarnResize } from './warnResize'
 
 
 
@@ -71,6 +72,8 @@ export const App = () => {
   const [isLoggedIn, logout] = useLogin()
   
   useRefreshToken(isLoggedIn, logout)
+  
+  useWarnResize()
   
   const appStyle = {
     ...classes.column,

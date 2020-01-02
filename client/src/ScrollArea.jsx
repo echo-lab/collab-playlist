@@ -10,7 +10,7 @@ const useDimensions = () => {
   const [dimensions, setDimensions] = useState({})
   // const [rendered, update] = useState({})
   useLayoutEffect(() => {
-    console.log('resize')
+    // console.log('resize')
     setDimensions(ref.current.getBoundingClientRect().toJSON())
   }, [])
 
