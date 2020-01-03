@@ -1,10 +1,11 @@
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
+import { BoxSizingProperty } from 'csstype'
 
 
 
@@ -12,10 +13,10 @@ const useLogin = () => {
   const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
   return [
     cookies.access_token && cookies.refresh_token,
-    () => {
+    useCallback(() => {
       removeCookie('access_token')
       removeCookie('refresh_token')
-    }
+    }, [removeCookie])
   ]
 }
 
@@ -80,7 +81,7 @@ export const App = () => {
     width: '100%',
     height: '100%',
     backgroundColor: colors.grayscale.black,
-    boxSizing: 'border-box',
+    boxSizing: 'border-box' as BoxSizingProperty,
     padding: '0.5rem',
     // overflow: 'hidden',
   }
@@ -94,7 +95,7 @@ export const App = () => {
   }
   const buttonStyle = {
     ...classes.text,
-    color: colors.black,
+    color: colors.grayscale.black,
   }
   
   return (

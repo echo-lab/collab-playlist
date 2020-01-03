@@ -1,4 +1,5 @@
 
+import { FlexDirectionProperty, BoxOrientProperty } from "csstype"
 
 
 export const colors = {
@@ -13,33 +14,34 @@ export const colors = {
     
   },
 }
+
 export const classes = {
   text: {
     margin: '0',
     color: colors.grayscale.white,
     // fontFamily: 'Catamaran',
     fontFamily: 'Overpass, sans-serif',
-    fontWeight: '700',
+    fontWeight: 700,
     fontSize: '1.6rem',
   },
   bold: {
-    fontWeight: '900',
+    fontWeight: 900,
   },
   textOverflow: ({ lines = 1 }) => ({
     overflow: 'hidden',
     // whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
+    WebkitBoxOrient: 'vertical' as BoxOrientProperty,
     WebkitLineClamp: lines,
   }),
   column: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as FlexDirectionProperty,
   },
   row: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'row' as FlexDirectionProperty,
   },
 }
 

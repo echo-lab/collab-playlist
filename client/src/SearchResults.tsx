@@ -8,6 +8,10 @@ export const SearchResults = ({ data }) => {
   
   const items = data?.body?.tracks?.items
   
+  // not using useMemo on this even though it's going to a component (meaning
+  // it will always cause rerender because of different reference identity)
+  // because when this component rerenders it must be because data changed so
+  // we want to rerender ScrollArea anyways
   const scrollAreaStyle = {
     flex: 1,
   }
