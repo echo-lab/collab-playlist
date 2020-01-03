@@ -5,6 +5,7 @@ import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
+import { BoxSizingProperty } from 'csstype'
 
 
 
@@ -80,7 +81,7 @@ export const App = () => {
     width: '100%',
     height: '100%',
     backgroundColor: colors.grayscale.black,
-    boxSizing: 'border-box',
+    boxSizing: 'border-box' as BoxSizingProperty,
     padding: '0.5rem',
     // overflow: 'hidden',
   }
@@ -94,7 +95,7 @@ export const App = () => {
   }
   const buttonStyle = {
     ...classes.text,
-    color: colors.black,
+    color: colors.grayscale.black,
   }
   
   return (
