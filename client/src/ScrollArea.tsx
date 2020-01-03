@@ -55,6 +55,9 @@ export const ScrollArea = ({ style, children }) => {
   // console.log({ height })
   console.log(`for dimensions: render component with height: ${height}`)
 
+  // TODO does giving the SimpleBar comp. a style object cause rerender?
+  // add useMemo to it?
+  // probably not -- see comment in SearchResults
   return <div style={style} ref={ref}>
     <SimpleBar style={{ height: height }}>
       {children}

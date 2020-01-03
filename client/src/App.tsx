@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
@@ -13,10 +13,10 @@ const useLogin = () => {
   const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
   return [
     cookies.access_token && cookies.refresh_token,
-    () => {
+    useCallback(() => {
       removeCookie('access_token')
       removeCookie('refresh_token')
-    }
+    }, [removeCookie])
   ]
 }
 
