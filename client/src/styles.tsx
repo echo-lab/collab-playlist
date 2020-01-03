@@ -1,5 +1,5 @@
 
-import { FlexDirectionProperty } from "csstype"
+import { FlexDirectionProperty, BoxOrientProperty } from "csstype"
 
 
 export const colors = {
@@ -32,7 +32,7 @@ export const classes = {
     // whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
+    WebkitBoxOrient: 'vertical' as BoxOrientProperty,
     WebkitLineClamp: lines,
   }),
   column: {

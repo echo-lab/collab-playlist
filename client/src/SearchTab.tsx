@@ -20,7 +20,7 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
   
   const inputStyle = {
     ...classes.text,
-    color: colors.black,
+    color: colors.grayscale.black,
   }
   
   return <input

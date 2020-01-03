@@ -1,5 +1,5 @@
 
-import { useState, useLayoutEffect, useEffect } from 'react'
+import { useState, useLayoutEffect, useEffect, useCallback } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 
 
@@ -34,15 +34,16 @@ const useUpdateEffect = (func, deps) => {
     } else {
       func()
     }
-  }, deps)
+    // eslint-disable-next-line
+  }, [...deps, func])
 }
 
 export const useWarnResize = () => {
   const size = useWindowSize()
   
-  const warnUser = useDebounceCallback(() => {
+  const warnUser = useDebounceCallback(useCallback(() => {
     alert('Please refresh after resizing window')
-  }, 1000)
+  }, []), 1000)
   
   useUpdateEffect(warnUser, [size])
 }
