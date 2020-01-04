@@ -5,7 +5,6 @@ import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
-import { BoxSizingProperty } from 'csstype'
 
 
 
@@ -81,10 +80,10 @@ export const App = () => {
     width: '100%',
     height: '100%',
     backgroundColor: colors.grayscale.black,
-    boxSizing: 'border-box' as BoxSizingProperty,
+    boxSizing: 'border-box',
     padding: '0.5rem',
     // overflow: 'hidden',
-  }
+  } as const
   const toolbarStyle = {
     flexBasis: '6.0rem',
   }

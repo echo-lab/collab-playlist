@@ -1,6 +1,11 @@
 
-import { FlexDirectionProperty, BoxOrientProperty } from "csstype"
 
+
+/**
+ * use of `as const` means these objects are deeply immutable and allows
+ * typescript to statically check their values to be compliant with some
+ * CSSProperties that accept only certain string literals
+ */
 
 export const colors = {
   grayscale: {
@@ -13,7 +18,7 @@ export const colors = {
   palette1: {
     
   },
-}
+} as const
 
 export const classes = {
   text: {
@@ -32,17 +37,17 @@ export const classes = {
     // whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitBoxOrient: 'vertical' as BoxOrientProperty,
+    WebkitBoxOrient: 'vertical',
     WebkitLineClamp: lines,
-  }),
+  } as const),
   column: {
     display: 'flex',
-    flexDirection: 'column' as FlexDirectionProperty,
+    flexDirection: 'column',
   },
   row: {
     display: 'flex',
-    flexDirection: 'row' as FlexDirectionProperty,
+    flexDirection: 'row',
   },
-}
+} as const
 
 
