@@ -1,5 +1,5 @@
 
-import { useState, useLayoutEffect, useEffect, useCallback } from 'react'
+import { useState, useLayoutEffect, useEffect, useRef } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 
 
@@ -25,25 +25,28 @@ const useWindowSize = () => {
  * like useEffect but doesn't run the first time, i.e. only runs when deps
  * change from their first render value
  */
-const useUpdateEffect = (func, deps) => {
-  const [first, setFirst] = useState(true)
+const useUpdateEffect = (func: () => void, deps: any[]) => {
+  const firstRef = useRef(true)
   
   useEffect(() => {
-    if (first) {
-      setFirst(false)
+    if (firstRef.current) {
+      firstRef.current = false
     } else {
       func()
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, func])
 }
 
 export const useWarnResize = () => {
   const size = useWindowSize()
   
-  const warnUser = useDebounceCallback(useCallback(() => {
+  // TODO does useDebounceCallback work the way I think it does?
+  // dependencies list?
+  // TODO might just watch for resize (throttled) and rerender instead of this in the future
+  const warnUser = useDebounceCallback(() => {
     alert('Please refresh after resizing window')
-  }, []), 1000)
+  }, 1000)
   
   useUpdateEffect(warnUser, [size])
 }
