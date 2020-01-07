@@ -3,7 +3,7 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 
 
-const setupApi = ({ app }) => {
+export const setupApi = ({ app }) => {
   
   
   /**
@@ -93,7 +93,7 @@ const setupApi = ({ app }) => {
 }
 
 
-module.exports = {
-  setupApi,
-}
+// module.exports = {
+//   setupApi,
+// }
 

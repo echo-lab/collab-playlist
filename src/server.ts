@@ -47,11 +47,15 @@ app.use(cookieParser())
 app.use(express.static(buildPath(), { index: false }))
 
 
-const { setupAuth } = require('./authentication')
+// const { setupAuth } = require('./authentication')
+import { setupAuth } from './authentication'
+
 setupAuth({ app, PORT })
 
 
-const { setupApi } = require('./api')
+// const { setupApi } = require('./api')
+import { setupApi } from './api'
+
 setupApi({ app })
 
 /**

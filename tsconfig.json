@@ -16,14 +16,14 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     // "noEmit": true,
     "noEmit": false,
     "strict": false,
     // "noImplicitAny": false,
     "outDir": "build",
     "watch": true,
-    "preserveWatchOutput": true
+    "preserveWatchOutput": false
   },
   "include": [
     "src"
