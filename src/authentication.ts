@@ -3,9 +3,10 @@ import { URLSearchParams } from "url"
 
 
 import fetch from 'node-fetch'
+import { Application } from "express"
 
 
-export const setupAuth = ({app, PORT}) => {
+export const setupAuth = (app: Application, PORT: Number) => {
   
   
   /**
@@ -105,11 +106,6 @@ export const setupAuth = ({app, PORT}) => {
   
   
 }
-
-
-// module.exports = {
-//   setupAuth,
-// }
 
 
 

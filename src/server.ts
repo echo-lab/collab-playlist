@@ -50,10 +50,10 @@ app.use(express.static(buildPath(), { index: false }))
 
 // setup authentication and api endpoints
 import { setupAuth } from './authentication'
-setupAuth({ app, PORT })
+setupAuth(app, PORT)
 
 import { setupApi } from './api'
-setupApi({ app })
+setupApi(app)
 
 /**
  * The react app tries to get these but webpack doesn't create them for some reason

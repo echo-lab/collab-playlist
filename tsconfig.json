@@ -31,5 +31,8 @@
   "exclude": [
     "client",
     "build"
+  ],
+  "types": [
+    "express"
   ]
 }
