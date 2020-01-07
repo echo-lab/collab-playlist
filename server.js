@@ -60,7 +60,7 @@ setupApi({ app })
  * 
  * I think manifest.json is a file that CRA created and that I deleted; I could bring it back
  */
-app.get(['/sockjs-node', '/manifest.json'], (req, res) => {
+app.get('/sockjs-node', (req, res) => {
   res.sendStatus(404)
 })
 
