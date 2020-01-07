@@ -1,10 +1,12 @@
+import { URLSearchParams } from "url"
 
 
 
-const fetch = require('node-fetch')
+import fetch from 'node-fetch'
+import { Application } from "express"
 
 
-const setupAuth = ({app, PORT}) => {
+export const setupAuth = (app: Application, PORT: Number) => {
   
   
   /**
@@ -15,7 +17,7 @@ const setupAuth = ({app, PORT}) => {
   const generateRandomString = (length) => {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-    return new Array(length).fill().map(() =>
+    return new Array(length).fill(null).map(() =>
       possible.charAt(Math.floor(Math.random() * possible.length))
     ).join('')
   }
@@ -106,7 +108,4 @@ const setupAuth = ({app, PORT}) => {
 }
 
 
-module.exports = {
-  setupAuth,
-}
 

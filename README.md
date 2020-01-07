@@ -11,14 +11,16 @@
    - `HOST_NAME` should be formatted like `http://localhost` (no port number or slash).
    - Set `NODE_ENV` to `development` if using `npm run dev-build` or `production` if using `npm run build` in the client directory.
    - `API_TARGET` is optional for using a debugging server like posthere.io instead of sending to the actual Spotify server. Format it like `https://posthere.io/f7d3...` with no slash at the end. To use the spotify server, just don't include this line.
-6. Run `npm i -g nodemon` if not installed already.
+6. Run `npm i -g nodemon` and `npm i -g typescript` if not installed already.
 7. NOT all npm scripts work yet.
 
 ## How to run / create development build
-1. Open two terminals.
-2. In one terminal, in the project root directory, run `npm start`
-3. In the other terminal, in the client/ directory, run `npm run dev-build-watch`. Open a new browser tab and navigate to `localhost:3000` or whatever port you set in `.env`.
-4. `npm run dev-build` creates an unoptimized development build at `/client/dev_build`.
+1. Open three terminals.
+2. In the first terminal, in the project root directory, run `npm start`.
+3. In the second terminal, in the project root directory, run `tsc`.
+4. In the third terminal, in the client/ directory, run `npm run dev-build-watch`. `npm run dev-build-watch` creates an unoptimized development build at `/client/dev_build`.
+5. Open a new browser tab and navigate to `localhost:3000` or whatever port you set in `.env`.
 
 ## How to create production build
-1. In the client directory, run `npm run build`.
+1. In the root directory, run `tsc` and exit when done.
+2. In the client directory, run `npm run build`.

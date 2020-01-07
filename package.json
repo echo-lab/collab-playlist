@@ -2,7 +2,7 @@
   "name": "collab-playlist",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "build/server.js",
   "scripts": {
     "start__": "node scripts/start.js",
     "start": "nodemon",
@@ -22,11 +22,14 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
-    "@types/node-fetch": "^2.5.4"
+    "@types/node": "^13.1.4",
+    "@types/node-fetch": "^2.5.4",
+    "@types/spotify-web-api-node": "^4.0.1"
   },
   "nodemonConfig": {
-    "ignore": [
-      "client/"
-    ]
+    "watch": [
+      "build"
+    ],
+    "delay": "1000"
   }
 }

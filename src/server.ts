@@ -1,15 +1,16 @@
 
 
 // Express library
-const express = require('express')
-const cookieParser = require('cookie-parser')
+import express from 'express'
+import cookieParser from 'cookie-parser'
 
-const path = require('path')
+import path from 'path'
 
 
 
 // Environment vars
-const result = require('dotenv').config()
+import { config } from 'dotenv'
+const result = config()
 if (result.error) {
   throw result.error
 }
@@ -24,11 +25,12 @@ const BUILD_PATH = DEVELOPMENT_ENV
   : '/client/build'
 // console.log(BUILD_PATH)
 
-
+// console.log({__dirname})
+// console.log({port: process.env.PORT})
 
 // join path helper
-const fullPath = (...paths) => path.join(__dirname, ...paths)
-const buildPath = (...paths) => fullPath(BUILD_PATH, ...paths)
+const rootPath = (...paths) => path.join(__dirname, '..', ...paths)
+const buildPath = (...paths) => rootPath(BUILD_PATH, ...paths)
 
 // create the server
 const app = express()
@@ -46,12 +48,12 @@ app.use(cookieParser())
 app.use(express.static(buildPath(), { index: false }))
 
 
-const { setupAuth } = require('./authentication')
-setupAuth({ app, PORT })
+// setup authentication and api endpoints
+import { setupAuth } from './authentication'
+setupAuth(app, PORT)
 
-
-const { setupApi } = require('./api')
-setupApi({ app })
+import { setupApi } from './api'
+setupApi(app)
 
 /**
  * The react app tries to get these but webpack doesn't create them for some reason

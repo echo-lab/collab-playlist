@@ -1,9 +1,10 @@
 
 
-const SpotifyWebApi = require('spotify-web-api-node');
+import SpotifyWebApi from 'spotify-web-api-node'
+import { Application, Response } from 'express'
 
 
-const setupApi = ({ app }) => {
+export const setupApi = (app: Application) => {
   
   
   /**
@@ -50,12 +51,20 @@ const setupApi = ({ app }) => {
   })
   
   
+  interface ApiResponseLocals {
+    spotifyApi: SpotifyWebApi // will this need to be optional?
+  }
+  interface ApiResponse extends Response {
+    locals: ApiResponseLocals
+  }
+  
+  
   /**
    * sets up api wrapper for every api endpoint other than refresh_token
    * @statusCode 401 not authenticated if no access token found, meaning
    * try refreshing access code through /api/refresh_token/
    */
-  app.use('/api', (req, res, next) => {
+  app.use('/api', (req, res: ApiResponse, next) => {
     const { access_token } = req.cookies
     
     if (!access_token) {
@@ -64,6 +73,7 @@ const setupApi = ({ app }) => {
       return // no next()
     }
     
+    // might cause a problem if locals.spotifyApi is not optional
     res.locals.spotifyApi = new SpotifyWebApi({
       accessToken: access_token
     })
@@ -75,7 +85,7 @@ const setupApi = ({ app }) => {
    * Search for tracks by query
    * /api/search/?q=query
    */
-  app.get('/api/search/', async (req, res) => {
+  app.get('/api/search/', async (req, res: ApiResponse) => {
     const { q } = req.query
     
     const data = await res.locals.spotifyApi.searchTracks(q)
@@ -93,7 +103,4 @@ const setupApi = ({ app }) => {
 }
 
 
-module.exports = {
-  setupApi,
-}
 
