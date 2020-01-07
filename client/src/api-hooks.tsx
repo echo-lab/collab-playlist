@@ -1,12 +1,19 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 
 
+interface useApiOptions {
+  active?: boolean,
+}
 
-const useApi = (url, { condition = () => true }) => {
+export const useApi = (
+  url: string, {
+    active = true,
+  }: useApiOptions = {}) => {
+  
   const [result, setResult] = useState(null)
   
   useEffect(() => {
-    if (!condition()) return
+    if (!active) return
     
     (async () => {
       try {
@@ -27,7 +34,7 @@ const useApi = (url, { condition = () => true }) => {
         }
       }
     })()
-  }, [url, condition])
+  }, [url, active])
   
   return result
 }
@@ -38,10 +45,7 @@ const useApi = (url, { condition = () => true }) => {
 export const useSongSearch = (query) => {
   
   return useApi(`/api/search/?q=${query}`, {
-    condition: useCallback(
-      () => query !== '',
-      [query]
-    )
+    active: query !== ''
   })
   
 }
