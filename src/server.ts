@@ -1,15 +1,16 @@
 
 
 // Express library
-const express = require('express')
-const cookieParser = require('cookie-parser')
+import express from 'express'
+import cookieParser from 'cookie-parser'
 
-const path = require('path')
+import path from 'path'
 
 
 
 // Environment vars
-const result = require('dotenv').config()
+import { config } from 'dotenv'
+const result = config()
 if (result.error) {
   throw result.error
 }
@@ -24,8 +25,8 @@ const BUILD_PATH = DEVELOPMENT_ENV
   : '/client/build'
 // console.log(BUILD_PATH)
 
-console.log({__dirname})
-console.log({port: process.env.PORT})
+// console.log({__dirname})
+// console.log({port: process.env.PORT})
 
 // join path helper
 const rootPath = (...paths) => path.join(__dirname, '..', ...paths)
@@ -47,15 +48,11 @@ app.use(cookieParser())
 app.use(express.static(buildPath(), { index: false }))
 
 
-// const { setupAuth } = require('./authentication')
+// setup authentication and api endpoints
 import { setupAuth } from './authentication'
-
 setupAuth({ app, PORT })
 
-
-// const { setupApi } = require('./api')
 import { setupApi } from './api'
-
 setupApi({ app })
 
 /**

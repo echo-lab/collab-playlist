@@ -2,7 +2,7 @@ import { URLSearchParams } from "url"
 
 
 
-const fetch = require('node-fetch')
+import fetch from 'node-fetch'
 
 
 export const setupAuth = ({app, PORT}) => {

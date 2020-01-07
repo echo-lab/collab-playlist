@@ -1,6 +1,6 @@
 
 
-const SpotifyWebApi = require('spotify-web-api-node');
+import SpotifyWebApi from 'spotify-web-api-node'
 
 
 export const setupApi = ({ app }) => {
