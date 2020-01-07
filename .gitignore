@@ -5,5 +5,8 @@ node_modules/
 # environment variables (private key, etc)
 .env
 
+# typescript build output
+build/
+
 # folder for ignored files
 ignore/

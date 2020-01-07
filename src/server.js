@@ -24,11 +24,12 @@ const BUILD_PATH = DEVELOPMENT_ENV
   : '/client/build'
 // console.log(BUILD_PATH)
 
-
+console.log({__dirname})
+console.log({port: process.env.PORT})
 
 // join path helper
-const fullPath = (...paths) => path.join(__dirname, ...paths)
-const buildPath = (...paths) => fullPath(BUILD_PATH, ...paths)
+const rootPath = (...paths) => path.join(__dirname, '..', ...paths)
+const buildPath = (...paths) => rootPath(BUILD_PATH, ...paths)
 
 // create the server
 const app = express()
