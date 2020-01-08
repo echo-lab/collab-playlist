@@ -93,6 +93,20 @@ export const setupApi = (app: Application) => {
     res.json(data)
   })
   
+  
+  /**
+   * Get user's collaborative playlists
+   * /api/playlists/
+   */
+  app.get('/api/playlists/', async (req, res: ApiResponse) => {
+    const data = await res.locals.spotifyApi.getUserPlaylists()
+    console.log({data})
+    
+    const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
+    
+    res.json(collabPlaylists)
+  })
+  
   /**
    * catch all other api endpoints
    */

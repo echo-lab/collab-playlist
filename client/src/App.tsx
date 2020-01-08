@@ -5,7 +5,7 @@ import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchTab } from './SearchTab'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
-
+import { PlaylistTab } from './PlaylistTab'
 
 
 const useLogin = () => {
@@ -50,9 +50,6 @@ const useRefreshToken = (isLoggedIn, logout) => {
 }
 
 
-const PlaylistTab = () => {
-  return <div></div>
-}
 
 const MainPanel = () => {
   
