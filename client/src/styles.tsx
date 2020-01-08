@@ -32,7 +32,7 @@ export const classes = {
   bold: {
     fontWeight: 900,
   },
-  textOverflow: ({ lines = 1 }) => ({
+  textOverflow: ({ lines = 1 } = {}) => ({
     overflow: 'hidden',
     // whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
