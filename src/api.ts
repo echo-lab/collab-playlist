@@ -102,7 +102,7 @@ export const setupApi = (app: Application) => {
     const data = await res.locals.spotifyApi.getUserPlaylists()
     console.log({data})
     
-    const collabPlaylists = data.body.items.filter(playlist => true/*playlist.collaborative*/)
+    const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
     
     res.json(collabPlaylists)
   })

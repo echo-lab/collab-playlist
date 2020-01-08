@@ -29,7 +29,10 @@ export const PlaylistTab = () => {
 
 
 const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
-  const owner = item.owner?.display_name ?? ''
+  const owner = item.owner?.display_name ?? '' // apparently not always present?
+  
+  // if multiple images present, image [1] has the closest resolution; else
+  // use the only image
   const image = item.images[1] ?? item.images[0]
   
   const playlistStyle = {
@@ -53,7 +56,6 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
   }
   
   return <div style={playlistStyle}>
-    {/* <Image src={image.url} width={image.width} height={image.height} style={imageStyle} /> */}
     <Image src={image.url} alt="" style={imageStyle} />
     <div style={textDivStyle}>
       <p style={nameStyle}>{item.name}</p>
@@ -63,56 +65,19 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
 }
 
 
+/**
+ * clips image to given size without changing aspect ratio scaling. Only works
+ * if image size determines container size. (must give width and height,
+ * flexBasis, etc)
+ */
 const Image = ({ src, alt, style }) => {
   const imageStyle: CSSProperties = {
     ...style,
-    // backgroundImage: `url("${src}")`,
-    // backgroundPosition: 'center',
-    // Make the background image cover the area of the <div>, and clip the excess
-    // backgroundSize: 'cover',
     objectPosition: 'center',
+    // Make the image cover the area of the <img>, and clip the excess
     objectFit: 'cover',
   }
   return <img src={src} style={imageStyle} alt={alt} />
 }
 
-// const Image = ({ src, style }) => {
-//   const wrapperStyle = {
-//     ...classes.row,
-//     alignItems: 'center',
-//   }
-//   const beforeStyle = {
-//     display: 'block',
-//     width: '100%',
-//     paddingBottom: '100%',
-//     // height: 0,
-//     boxSizing: 'border-box',
-//   } as const
-//   const imageStyle = {
-//     ...style,
-//     backgroundImage: `url("${src}")`,
-//     width: '100%',
-//     height: '100%',
-//     backgroundPosition: 'center',
-//     // Make the background image cover the area of the <div>, and clip the excess
-//     backgroundSize: 'cover',
-//   }
-//   return <div style={wrapperStyle}>
-//     <div style={beforeStyle} />
-//     <div style={imageStyle} />
-//   </div>
-//   // const containerStyle = {
-//   //   ...style,
-//   //   // backgroundImage: `url("${src}")`,
-//   //   // width,
-//   //   // height,
-//   //   // backgroundPosition: 'center',
-//   //   /* Make the background image cover the area of the <div>, and clip the excess */
-//   //   // backgroundSize: 'cover',
-//   //   display: 'flex',
-//   //   flexFlow: 'row nowrap',
-//   //   alignItems: 'center',
-//   // }
-//   // return <img src={src} style={containerStyle} alt="" />
-// }
 
