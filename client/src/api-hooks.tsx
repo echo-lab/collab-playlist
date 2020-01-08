@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react'
 
 interface useApiOptions {
   active?: boolean,
+  cache?: RequestCache,
 }
 
 export const useApi = (
   url: string, {
     active = true,
-  }: useApiOptions = {}) => {
+    cache = 'default',
+  }: useApiOptions = {}
+) => {
   
   const [result, setResult] = useState(null)
   
@@ -17,7 +20,7 @@ export const useApi = (
     
     (async () => {
       try {
-        const data = await fetch(url)
+        const data = await fetch(url, { cache: cache })
         if (!data.ok) {
           throw data.status
         }
@@ -34,7 +37,7 @@ export const useApi = (
         }
       }
     })()
-  }, [url, active])
+  }, [url, active, cache])
   
   return result
 }

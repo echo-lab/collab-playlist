@@ -41,7 +41,11 @@ export const setupAuth = (app: Application, PORT: Number) => {
     const state = generateRandomString(16)
     res.cookie(stateKey, state) // store state in client for later
     
-    const scope = 'user-read-private user-read-email' // like app permissions
+    const scope = [
+      'user-read-private',
+      'playlist-read-private',
+      'playlist-read-collaborative'
+    ].join(' ') // like app permissions
     
     // the server requests authorization
     res.redirect(`${API_TARGET}/authorize?${
