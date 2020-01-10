@@ -10,10 +10,11 @@
 
 # production
 /build
-/dev_build
+#/dev_build
 
 # misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
