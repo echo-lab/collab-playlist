@@ -2,6 +2,7 @@
 import React, { CSSProperties } from 'react'
 import { classes } from './styles'
 import { useApi } from './api-hooks'
+import { Image } from './Image'
 
 
 const usePlaylists = () => {
@@ -64,20 +65,5 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
   </div>
 }
 
-
-/**
- * clips image to given size without changing aspect ratio scaling. Only works
- * if image size determines container size. (must give width and height,
- * flexBasis, etc)
- */
-const Image = ({ src, alt, style }) => {
-  const imageStyle: CSSProperties = {
-    ...style,
-    objectPosition: 'center',
-    // Make the image cover the area of the <img>, and clip the excess
-    objectFit: 'cover',
-  }
-  return <img src={src} style={imageStyle} alt={alt} />
-}
 
 
