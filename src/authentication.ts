@@ -6,7 +6,7 @@ import fetch from 'node-fetch'
 import { Application } from "express"
 
 
-export const setupAuth = (app: Application, PORT: Number) => {
+export const setupAuth = (app: Application) => {
   
   
   /**
@@ -22,7 +22,8 @@ export const setupAuth = (app: Application, PORT: Number) => {
     ).join('')
   }
   
-  const { HOST_NAME, CLIENT_ID, CLIENT_SECRET } = process.env
+  const { HOST_NAME, PORT, FRONTEND_PORT, CLIENT_ID, CLIENT_SECRET } = process.env
+  const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
 
   const stateKey = 'spotify_auth_state'
 
@@ -35,7 +36,7 @@ export const setupAuth = (app: Application, PORT: Number) => {
   /**
    * authorization endpoint. The user clicks on a link to get here, then gets
    * redirected to a spotify login page, which then redirects the user to
-   * redirect_uri (/callback)
+   * redirect_uri (/auth/callback)
    */
   app.get('/auth', (req, res) => {
     const state = generateRandomString(16)
@@ -97,7 +98,14 @@ export const setupAuth = (app: Application, PORT: Number) => {
       
       res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
         .cookie('refresh_token', refresh_token, { maxAge: 24 * 60 * 60 * 1000 })
-        .redirect('/')
+        // .redirect('/')
+      
+      if (DEVELOPMENT_ENV) {
+        // back to CRA's npm start server
+        res.redirect(`${HOST_NAME}:${FRONTEND_PORT}/`)
+      } else {
+        res.redirect('/')
+      }
       
     } catch (e) {
       // either there was an error with fetch (status 4xx/5xx?) or the status

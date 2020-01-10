@@ -39,6 +39,7 @@
     ]
   },
   "devDependencies": {
-    "@types/spotify-api": "0.0.2"
+    "@types/spotify-api": "0.0.2",
+    "http-proxy-middleware": "^0.20.0"
   }
 }

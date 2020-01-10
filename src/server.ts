@@ -29,6 +29,7 @@ const BUILD_PATH = DEVELOPMENT_ENV
 // console.log({port: process.env.PORT})
 
 // join path helper
+// __dirname is in the build/ folder
 const rootPath = (...paths) => path.join(__dirname, '..', ...paths)
 const buildPath = (...paths) => rootPath(BUILD_PATH, ...paths)
 
@@ -50,7 +51,7 @@ app.use(express.static(buildPath(), { index: false }))
 
 // setup authentication and api endpoints
 import { setupAuth } from './authentication'
-setupAuth(app, PORT)
+setupAuth(app)
 
 import { setupApi } from './api'
 setupApi(app)
@@ -80,6 +81,6 @@ app.get('/*', (req, res) => {
 
 app.listen(PORT, () => {
   // on successful init
-  console.log(`Collab-playlist server istening on port ${PORT}`)
+  console.log(`Collab-playlist server listening on port ${PORT}`)
 })
 
