@@ -2,7 +2,7 @@
 
 _A full stack app developed for research on Collaborative Playlists._
 
-> Tip: pay careful attention to which directory to perform each of these tasks in. __ONLY use the npm scripts indicated by this README.__
+> Tip: pay careful attention to which directory to perform each of these tasks in.
 
 ## How to set up for development
 1. In project root directory (`collab-playlist/`), run `npm ci`.
@@ -13,8 +13,8 @@ _A full stack app developed for research on Collaborative Playlists._
 
 ## How to run / create development build
 1. Open three terminals. In the following order:
-3. In the first terminal, in the project root directory, run `tsc -w`.
-2. In the second terminal, in the project root directory, run `npm start`.
+3. In the first terminal, in the project root directory, run `npm run build-watch`.
+2. In the second terminal, in the project root directory, run `npm run watch`.
 4. In the third terminal, in the `client/` directory, run `npm start`. A browser will open with the app.
 
 ## How to set up for production
@@ -24,5 +24,5 @@ _A full stack app developed for research on Collaborative Playlists._
 4. Run `npm i -g typescript` if not installed already. (Use sudo if necessary).
 
 ## How to create production build
-1. In the root directory, run `tsc`. The output will be in `build/`.
+1. In the root directory, run `npm run build`. The output will be in `build/`.
 2. In the `client/` directory, run `npm run build`. The output will be in `client/build/`.
