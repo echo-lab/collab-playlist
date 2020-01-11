@@ -1,13 +1,9 @@
 
 import React, { CSSProperties } from 'react'
 import { classes } from './styles'
-import { useApi } from './api-hooks'
+import { usePlaylists } from './api-hooks'
 import { Image } from './Image'
 
-
-const usePlaylists = () => {
-  return useApi('/api/playlists/') as SpotifyApi.PlaylistObjectSimplified[]
-}
 
 
 

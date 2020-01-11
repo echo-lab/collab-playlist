@@ -3,11 +3,12 @@ import React from 'react'
 import { classes } from './styles'
 import { ScrollArea } from './ScrollArea'
 import { Image } from './Image'
+// import { SongsResponse, SongsResponseItem } from './api-hooks'
 
 
-export const SearchResults = ({ data }) => {
+export const SearchResults = ({ data }: { data: SpotifyApi.TrackSearchResponse }) => {
   
-  const items = data?.body?.tracks?.items
+  const items = data?.tracks?.items
   
   // not using useMemo on this even though it's going to a component (meaning
   // it will always cause rerender because of different reference identity)
@@ -23,7 +24,7 @@ export const SearchResults = ({ data }) => {
 }
 
 
-const SearchItem = ({ item }) => {
+const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
   const { name, artists, album } = item
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
