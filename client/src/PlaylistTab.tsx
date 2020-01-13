@@ -1,8 +1,9 @@
 
 import React, { CSSProperties } from 'react'
-import { classes } from './styles'
+import { classes, colors } from './styles'
 import { usePlaylists } from './api-hooks'
 import { Image } from './Image'
+import { useHover } from './useHover'
 
 
 
@@ -32,8 +33,11 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
   // use the only image
   const image = item.images[1] ?? item.images[0]
   
+  const [isHovered, hoverContainerProps] = useHover()
+  
   const playlistStyle = {
     ...classes.row,
+    ...(isHovered && { backgroundColor: colors.grayscale.darkGray })
   }
   const imageStyle = {
     height: '18.0rem',
@@ -52,7 +56,7 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
     ...classes.textOverflow(),
   }
   
-  return <div style={playlistStyle}>
+  return <div style={playlistStyle} {...hoverContainerProps}>
     <Image src={image.url} alt="" style={imageStyle} />
     <div style={textDivStyle}>
       <p style={nameStyle}>{item.name}</p>
