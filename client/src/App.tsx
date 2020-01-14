@@ -9,7 +9,7 @@ import { PlaylistTab } from './PlaylistTab'
 import { useRefreshToken } from './api-hooks'
 
 
-const useLogin = () => {
+const useLogin = (): [boolean, () => void] => {
   const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
   return [
     cookies.access_token && cookies.refresh_token,
@@ -22,16 +22,52 @@ const useLogin = () => {
 
 
 
-
-const MainPanel = () => {
-  
-  const mainPanelStyle = {
-    ...classes.row,
-    overflow: 'hidden',
-    flex: 1,
+const Header = ({ logout }: { logout: () => void }) => {
+  const headerStyle = {
+    flexBasis: '6.0rem',
+  }
+  const headingStyle = {
+    ...classes.text,
+    ...classes.bold,
+    fontSize: '2.5rem',
+  }
+  const buttonStyle = {
+    ...classes.text,
+    color: colors.grayscale.black,
   }
   
-  return <div style={mainPanelStyle}>
+  return <div style={headerStyle}>
+    <h1 style={headingStyle}>Collab-playlist test</h1>
+    <button style={buttonStyle} onClick={logout}>Logout</button>
+  </div>
+}
+
+
+const LoginPage = ({}) => {
+  return <a style={classes.text} href="/auth">Login</a>
+}
+
+
+const ErrorPage = ({}) => {
+  return <div style={classes.text}>
+    There has been an error. Please{' '}
+    <a target="_blank" href="https://www.google.com/search?q=how+to+clear+cookies">
+      clear your cookies
+    </a>{' '}
+    and try again.
+  </div>
+}
+
+
+const LoggedInPage = () => {
+  
+  const panelStyle = {
+    ...classes.row,
+    // overflow: 'hidden',
+    height: '100%',
+  }
+  
+  return <div style={panelStyle}>
     <SearchTab/>
     <PlaylistTab/>
   </div>
@@ -53,38 +89,32 @@ export const App = () => {
     padding: '0.5rem',
     // overflow: 'hidden',
   } as const
-  const toolbarStyle = {
-    flexBasis: '6.0rem',
-  }
-  const headingStyle = {
-    ...classes.text,
-    ...classes.bold,
-    fontSize: '2.5rem',
-  }
-  const buttonStyle = {
-    ...classes.text,
-    color: colors.grayscale.black,
+  const mainPanelStyle = {
+    overflow: 'hidden',
+    flex: 1,
   }
   
   return (
     <CookiesProvider>
       <Router>
         <div style={appStyle}>
-          <div style={toolbarStyle}>
-            <h1 style={headingStyle}>Collab-playlist test</h1>
-            <button style={buttonStyle} onClick={logout}>Logout</button>
+          <Header logout={logout} />
+          <div style={mainPanelStyle}>
+            <Switch>
+              <Route path="/login">
+                <LoginPage />
+              </Route>
+              <Route path="/error">
+                <ErrorPage />
+              </Route>
+              <Route path="/">
+                { isLoggedIn
+                ? <LoggedInPage/>
+                : <Redirect to="/login"/>
+                }
+              </Route>
+            </Switch>
           </div>
-          <Switch>
-            <Route exact path="/">
-              {isLoggedIn ? <MainPanel/> : <Redirect to="/login"/>}
-            </Route>
-            <Route path="/login">
-              <a style={classes.text} href="/auth">Login</a>
-            </Route>
-            <Route>
-              <Redirect to="/"/>
-            </Route>
-          </Switch>
         </div>
       </Router>
     </CookiesProvider>
