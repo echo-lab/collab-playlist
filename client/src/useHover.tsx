@@ -3,7 +3,7 @@ import { useState, DOMAttributes } from 'react'
 
 
 
-export const useHover = () => {
+export const useHover = (): [boolean, DOMAttributes<HTMLElement>] => {
   
   const [isHovered, setIsHovered] = useState(false)
   
