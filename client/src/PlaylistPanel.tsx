@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 
 
 
-export const PlaylistTab = () => {
+export const PlaylistPanel = () => {
   const result = usePlaylists()
   
   const playlistTabStyle: CSSProperties = {
@@ -22,12 +22,12 @@ export const PlaylistTab = () => {
   }
   
   return <div style={playlistTabStyle}>
-    {result && result.map((playlist, index) => <Playlist key={index} item={playlist} />)}
+    {result && result.map((playlist, index) => <PlaylistCard key={index} item={playlist} />)}
   </div>
 }
 
 
-const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
+const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
   const owner = item.owner?.display_name ?? '' // apparently not always present?
   
   // if multiple images present, image [1] has the closest resolution; else

@@ -2,10 +2,10 @@
 import React, { useCallback } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
-import { SearchTab } from './SearchTab'
+import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
-import { PlaylistTab } from './PlaylistTab'
+import { PlaylistPanel } from './PlaylistPanel'
 import { useRefreshToken } from './api-hooks'
 
 
@@ -68,8 +68,8 @@ const LoggedInPage = () => {
   }
   
   return <div style={panelStyle}>
-    <SearchTab/>
-    <PlaylistTab/>
+    <SearchPanel/>
+    <PlaylistPanel/>
   </div>
 }
 

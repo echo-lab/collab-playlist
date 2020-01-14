@@ -35,7 +35,7 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
 }
 
 
-export const SearchTab = () => {
+export const SearchPanel = () => {
   
   const [query, setQuery] = useState('hello')
   
