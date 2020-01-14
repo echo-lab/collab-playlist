@@ -2,6 +2,7 @@
 import React, { CSSProperties } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { PlaylistGrid } from './PlaylistGrid'
+import { PlaylistEditor } from './PlaylistEditor'
 
 
 
@@ -18,7 +19,7 @@ export const PlaylistPanel = () => {
         <PlaylistGrid />
       </Route>
       <Route path="/playlist/:id">
-        
+        <PlaylistEditor />
       </Route>
     </Switch>
   </div>
