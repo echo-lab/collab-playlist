@@ -4,6 +4,7 @@ import { classes, colors } from './styles'
 import { usePlaylists } from './api-hooks'
 import { Image } from './Image'
 import { useHover } from './useHover'
+import { Link } from 'react-router-dom'
 
 
 
@@ -56,13 +57,20 @@ const Playlist = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
     ...classes.textOverflow(),
   }
   
-  return <div style={playlistStyle} {...hoverContainerProps}>
+  // TODO The Link causes the search tab to be rerendered and thus lose its
+  // state (query); add state to Link? will changing structure of
+  // Routers/Switches make that not happen?
+  return <Link
+    to={`/playlist/${item.id}`}
+    style={playlistStyle}
+    {...hoverContainerProps}
+  >
     <Image src={image.url} alt="" style={imageStyle} />
     <div style={textDivStyle}>
       <p style={nameStyle}>{item.name}</p>
       <p style={ownerStyle}>{owner}</p>
     </div>
-  </div>
+  </Link>
 }
 
 
