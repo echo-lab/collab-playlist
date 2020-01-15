@@ -10,7 +10,7 @@ export const setupApi = (app: Application) => {
   /**
    * logs api requests
    */
-  app.use('/api', (req, res, next) => {
+  app.use('/api/', (req, res, next) => {
     console.log(`${req.originalUrl} request`)
     next()
   })
@@ -25,7 +25,7 @@ export const setupApi = (app: Application) => {
    * @responseCookie access_token with new access_token with expiration
    * @responseBody json with expires_in in seconds for setting timeout
    */
-  app.get('/api/refresh_token/', async (req, res) => {
+  app.get('/api/refresh_token', async (req, res) => {
     const { refresh_token } = req.cookies
     if (!refresh_token) {
       res.sendStatus(401)
@@ -62,9 +62,9 @@ export const setupApi = (app: Application) => {
   /**
    * sets up api wrapper for every api endpoint other than refresh_token
    * @statusCode 401 not authenticated if no access token found, meaning
-   * try refreshing access code through /api/refresh_token/
+   * try refreshing access code through /api/refresh_token
    */
-  app.use('/api', (req, res: ApiResponse, next) => {
+  app.use('/api/', (req, res: ApiResponse, next) => {
     const { access_token } = req.cookies
     
     if (!access_token) {
@@ -83,9 +83,9 @@ export const setupApi = (app: Application) => {
   
   /**
    * Search for tracks by query
-   * /api/search/?q=query
+   * /api/search?q=query
    */
-  app.get('/api/search/', async (req, res: ApiResponse) => {
+  app.get('/api/search', async (req, res: ApiResponse) => {
     const { q } = req.query
     
     const data = await res.locals.spotifyApi.searchTracks(q)

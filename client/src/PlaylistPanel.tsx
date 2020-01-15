@@ -18,7 +18,7 @@ export const PlaylistPanel = () => {
       <Route exact path="/">
         <PlaylistGrid />
       </Route>
-      <Route path="/playlist/:id">
+      <Route path="/playlists/:id/">
         <PlaylistEditor />
       </Route>
     </Switch>

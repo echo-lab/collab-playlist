@@ -7,7 +7,7 @@ import { classes } from './styles'
 
 
 const usePlaylistData = (id) => {
-  return useApi(`/api/playlists/${id}`) as SpotifyApi.PlaylistObjectFull
+  return useApi(`/api/playlists/${id}/`) as SpotifyApi.PlaylistObjectFull
 }
 
 

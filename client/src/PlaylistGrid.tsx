@@ -60,7 +60,7 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
   // state (query); add state to Link? will changing structure of
   // Routers/Switches make that not happen?
   return <Link
-    to={`/playlist/${item.id}`}
+    to={`/playlists/${item.id}/`}
     style={playlistCardStyle}
     {...hoverContainerProps}
   >

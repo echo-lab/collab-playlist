@@ -104,7 +104,7 @@ export const App = () => {
               <Route path="/login">
                 <LoginPage />
               </Route>
-              <Route path="/error">
+              <Route path="/error/">
                 <ErrorPage />
               </Route>
               <Route path="/">

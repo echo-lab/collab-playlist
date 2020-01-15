@@ -47,7 +47,7 @@ export const useApi = (
 
 export const useSongSearch = (query) => {
   
-  return useApi(`/api/search/?q=${query}`, {
+  return useApi(`/api/search?q=${query}`, {
     active: query !== ''
   })?.body as SpotifyApi.TrackSearchResponse || null // TODO change api then...
   
