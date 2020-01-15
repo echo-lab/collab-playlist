@@ -107,6 +107,19 @@ export const setupApi = (app: Application) => {
     res.json(collabPlaylists)
   })
   
+  
+  /**
+   * Get songs in this playlist
+   */
+  app.get('/api/playlists/:id/', async (req, res: ApiResponse) => {
+    const { id } = req.params
+    
+    const data = await res.locals.spotifyApi.getPlaylist(id)
+    
+    res.json(data.body)
+  })
+  
+  
   /**
    * catch all other api endpoints
    */
