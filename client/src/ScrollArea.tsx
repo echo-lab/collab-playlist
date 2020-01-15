@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useLayoutEffect, MutableRefObject } from 'react'
+import React, { useRef, useState, useLayoutEffect, MutableRefObject, CSSProperties, ReactNode } from 'react'
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 import './scrollbar.css'
@@ -48,7 +48,12 @@ const useDimensions = (): [MutableRefObject<HTMLDivElement>, Rect] => {
   return [ref, dimensions]
 }
 
-export const ScrollArea = ({ style, children }) => {
+export const ScrollArea = ({
+  style, children
+}: {
+  style?: CSSProperties,
+  children?: ReactNode,
+}) => {
   
   const [ref, { height }] = useDimensions()
   

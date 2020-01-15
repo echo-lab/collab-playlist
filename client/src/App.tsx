@@ -1,14 +1,15 @@
 
-import React, { useEffect, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
-import { SearchTab } from './SearchTab'
+import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
-import { PlaylistTab } from './PlaylistTab'
+import { PlaylistPanel } from './PlaylistPanel'
+import { useRefreshToken } from './api-hooks'
 
 
-const useLogin = () => {
+const useLogin = (): [boolean, () => void] => {
   const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
   return [
     cookies.access_token && cookies.refresh_token,
@@ -20,48 +21,55 @@ const useLogin = () => {
 }
 
 
-const useRefreshToken = (isLoggedIn, logout) => {
-  useEffect(() => {
-    if (!isLoggedIn) return
-    
-    const refresh = async () => {
-      try {
-        const response = await fetch('/api/refresh_token')
-        if (!response.ok) {
-          throw response.status
-        }
-        const { expires_in } = await response.json() // number of seconds to expiration
-        console.log({expires_in})
-        setTimeout(refresh, expires_in * 1000 * 0.9) // anticipate expiration by a little
-      } catch (e) {
-        console.error({e})
-        if (400 <= e && e < 500) {
-          // client error, tell user to re-authenticate
-          // alert('please login again')
-          logout()
-        } else if (500 <= e && e < 600) {
-          // server error, retry
-          setTimeout(refresh, 1000 * 10)
-        }
-      }
-    }
-    setTimeout(refresh, 1000 * 10)
-  }, [isLoggedIn, logout])
+
+const Header = ({ logout }: { logout: () => void }) => {
+  const headerStyle = {
+    flexBasis: '6.0rem',
+  }
+  const headingStyle = {
+    ...classes.text,
+    ...classes.bold,
+    fontSize: '2.5rem',
+  }
+  const buttonStyle = {
+    ...classes.text,
+    color: colors.grayscale.black,
+  }
+  
+  return <div style={headerStyle}>
+    <h1 style={headingStyle}>Collab-playlist test</h1>
+    <button style={buttonStyle} onClick={logout}>Logout</button>
+  </div>
 }
 
 
+const LoginPage = ({}) => {
+  return <a style={classes.text} href="/auth">Login</a>
+}
 
-const MainPanel = () => {
+
+const ErrorPage = ({}) => {
+  return <div style={classes.text}>
+    There has been an error. Please{' '}
+    <a target="_blank" href="https://www.google.com/search?q=how+to+clear+cookies">
+      clear your cookies
+    </a>{' '}
+    and try again.
+  </div>
+}
+
+
+const LoggedInPage = () => {
   
-  const mainPanelStyle = {
+  const panelStyle = {
     ...classes.row,
-    overflow: 'hidden',
-    flex: 1,
+    // overflow: 'hidden',
+    height: '100%',
   }
   
-  return <div style={mainPanelStyle}>
-    <SearchTab/>
-    <PlaylistTab/>
+  return <div style={panelStyle}>
+    <SearchPanel/>
+    <PlaylistPanel/>
   </div>
 }
 
@@ -81,38 +89,32 @@ export const App = () => {
     padding: '0.5rem',
     // overflow: 'hidden',
   } as const
-  const toolbarStyle = {
-    flexBasis: '6.0rem',
-  }
-  const headingStyle = {
-    ...classes.text,
-    ...classes.bold,
-    fontSize: '2.5rem',
-  }
-  const buttonStyle = {
-    ...classes.text,
-    color: colors.grayscale.black,
+  const mainPanelStyle = {
+    overflow: 'hidden',
+    flex: 1,
   }
   
   return (
     <CookiesProvider>
       <Router>
         <div style={appStyle}>
-          <div style={toolbarStyle}>
-            <h1 style={headingStyle}>Collab-playlist test</h1>
-            <button style={buttonStyle} onClick={logout}>Logout</button>
+          <Header logout={logout} />
+          <div style={mainPanelStyle}>
+            <Switch>
+              <Route path="/login">
+                <LoginPage />
+              </Route>
+              <Route path="/error/">
+                <ErrorPage />
+              </Route>
+              <Route path="/">
+                { isLoggedIn
+                ? <LoggedInPage/>
+                : <Redirect to="/login"/>
+                }
+              </Route>
+            </Switch>
           </div>
-          <Switch>
-            <Route exact path="/">
-              {isLoggedIn ? <MainPanel/> : <Redirect to="/login"/>}
-            </Route>
-            <Route path="/login">
-              <a style={classes.text} href="/auth">Login</a>
-            </Route>
-            <Route>
-              <Redirect to="/"/>
-            </Route>
-          </Switch>
         </div>
       </Router>
     </CookiesProvider>
