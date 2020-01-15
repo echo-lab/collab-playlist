@@ -4,11 +4,10 @@
   "description": "",
   "main": "build/server.js",
   "scripts": {
-    "start__": "node scripts/start.js",
-    "start": "nodemon",
-    "build": "node scripts/build.js",
-    "setup-mods": "node scripts/setup-mods.js",
-    "reset-mods": "node scripts/reset-mods.js"
+    "start": "node .",
+    "watch": "nodemon",
+    "build-watch": "tsc -w",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
