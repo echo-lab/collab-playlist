@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { ScrollArea } from './ScrollArea'
+// import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
 import { useApi } from './api-hooks'
 import { classes } from './styles'
@@ -11,7 +11,7 @@ const usePlaylistData = (id) => {
 }
 
 
-export const PlaylistEditor = ({}) => {
+export const PlaylistEditor = () => {
   const { id } = useParams()
   
   const data = usePlaylistData(id)
