@@ -39,7 +39,7 @@ export const SearchPanel = () => {
   
   const [query, setQuery] = useState('hello')
   
-  const result = useSongSearch(query)
+  const [result, loading, error] = useSongSearch(query)
   
   const searchTabStyle = {
     ...classes.column,

@@ -1,4 +1,9 @@
-import { useState, useEffect } from 'react'
+
+import { useState, useEffect, useRef } from 'react'
+
+const useConst = (val: any) => {
+  return useRef(val).current
+}
 
 
 interface useApiOptions {
@@ -6,6 +11,7 @@ interface useApiOptions {
   cache?: RequestCache,
 }
 
+// TODO migrate to apiWrapper and deprecate
 export const useApi = (
   url: string, {
     active = true,
@@ -42,14 +48,84 @@ export const useApi = (
   return result
 }
 
+type setter = React.Dispatch<any>
+type resourceSetters = [setter, setter, setter]
 
-
-
-export const useSongSearch = (query) => {
+export const useResource = (initialVal: any = null): [any, any, any, resourceSetters] => {
+  const [data, setData] = useState(initialVal)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   
-  return useApi(`/api/search?q=${query}`, {
-    active: query !== ''
-  })?.body as SpotifyApi.TrackSearchResponse || null // TODO change api then...
+  return [
+    data,
+    loading,
+    error,
+    useConst([ setData, setLoading, setError ])
+  ]
+}
+
+class FetchError extends Error {
+  public payload: any
+  constructor(payload: any, message?: string) {
+    super(message)
+    this.payload = payload
+  }
+}
+
+export const apiWrapper = async (
+  url: string,
+  [ setData, setLoading, setError ]: resourceSetters,
+  fetchOptions: RequestInit = {},
+) => {
+  try {
+    setLoading(true)
+    const data = await fetch(url, fetchOptions)
+    if (!data.ok) {
+      throw new FetchError({ status: data.status })
+    }
+    const json = await data.json()
+    setData(json)
+    setLoading(false)
+    setError(null)
+    console.log({ url, json })
+  } catch (e) {
+    console.error({ url, e })
+    const { status } = e.payload
+    setData(null)
+    setLoading(false)
+    setError(e)
+    if (400 <= status && status < 500) {
+      // client error, request new access_token
+      // TODO
+    } else if (500 <= status && status < 600) {
+      // server error
+    }
+  }
+}
+
+
+
+
+export const useSongSearch = (query: string): [SpotifyApi.TrackSearchResponse | null, boolean, any] => {
+  const [result, loading, error, setters] = useResource()
+  
+  useEffect(() => {
+    if (query !== '') {
+      apiWrapper(`/api/search?q=${query}`, setters)
+      console.log('fetching')
+    }
+  }, [query, setters])
+  
+  // TODO return result either way and just show loading state/nothing if loading
+  if (query === '') {
+    return [null, false, null]
+  } else {
+    return [
+      result?.body as SpotifyApi.TrackSearchResponse | null,
+      loading,
+      error
+    ]
+  }
   
 }
 
