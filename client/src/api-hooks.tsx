@@ -88,7 +88,8 @@ export const apiWrapper = async (
     setLoading(false)
     setError(null)
     console.log({ url, json })
-  } catch (e) {
+  } catch (e_) {
+    const e = e_ as FetchError
     console.error({ url, e })
     const { status } = e.payload
     setData(null)
@@ -103,31 +104,6 @@ export const apiWrapper = async (
   }
 }
 
-
-
-
-export const useSongSearch = (query: string): [SpotifyApi.TrackSearchResponse | null, boolean, any] => {
-  const [result, loading, error, setters] = useResource()
-  
-  useEffect(() => {
-    if (query !== '') {
-      apiWrapper(`/api/search?q=${query}`, setters)
-      console.log('fetching')
-    }
-  }, [query, setters])
-  
-  // TODO return result either way and just show loading state/nothing if loading
-  if (query === '') {
-    return [null, false, null]
-  } else {
-    return [
-      result?.body as SpotifyApi.TrackSearchResponse | null,
-      loading,
-      error
-    ]
-  }
-  
-}
 
 
 export const usePlaylists = () => {

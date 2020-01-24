@@ -1,9 +1,33 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useSongSearch } from './api-hooks'
+import { useResource, apiWrapper } from './api-hooks'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "./styles"
+
+
+
+export const useSongSearch = (query: string): [SpotifyApi.TrackSearchResponse | null, boolean, any] => {
+  const [result, loading, error, setters] = useResource()
+  
+  useEffect(() => {
+    if (query !== '') {
+      apiWrapper(`/api/search?q=${query}`, setters)
+    }
+  }, [query, setters])
+  
+  // TODO return result either way and just show loading state/nothing if loading
+  if (query === '') {
+    return [null, false, null]
+  } else {
+    return [
+      result?.body as SpotifyApi.TrackSearchResponse | null,
+      loading,
+      error
+    ]
+  }
+  
+}
 
 
 /**
