@@ -48,23 +48,31 @@ export const useApi = (
   return result
 }
 
-type Setter<T> = React.Dispatch<T>
-type ResourceSetters<T> = [Setter<T>, Setter<boolean>, Setter<any>]
+type Setter<T> = React.Dispatch<React.SetStateAction<T>>
+type Updater<T> = Setter<Partial<T>>
 
-export type Resource<T> = [T, boolean, any]
+export interface Resource<T> {
+  data: T,
+  loading: boolean,
+  error: any
+}
 
-export const useResource = <T extends any>(initialVal: T = null): [Resource<T>, ResourceSetters<T>] => {
-  const [data, setData] = useState(initialVal)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+
+export const useResource = <T extends any>(initialVal: T = null): [Resource<T>, Updater<Resource<T>>] => {
+  const [resource, setResource] = useState<Resource<T>>({
+    data: initialVal,
+    loading: false,
+    error: null
+  })
   
-  return [ [
-      data,
-      loading,
-      error
-    ],
-    useConst([ setData, setLoading, setError ])
-  ]
+  const updateResource = useConst((updates: Partial<Resource<T>>) => {
+    setResource(resource => ({
+      ...resource,
+      ...updates,
+    }))
+  })
+  
+  return [resource, updateResource]
 }
 
 class FetchError extends Error {
@@ -77,27 +85,31 @@ class FetchError extends Error {
 
 export const apiWrapper = async <T extends any> (
   url: string,
-  [ setData, setLoading, setError ]: ResourceSetters<T>,
+  updateResource: Updater<Resource<T>>,
   fetchOptions: RequestInit = {},
 ) => {
   try {
-    setLoading(true)
+    updateResource({ loading: true })
     const data = await fetch(url, fetchOptions)
     if (!data.ok) {
       throw new FetchError({ status: data.status })
     }
     const json = await data.json()
-    setData(json)
-    setLoading(false)
-    setError(null)
+    updateResource({
+      data: json,
+      loading: false,
+      error: null,
+    })
     console.log({ url, json })
   } catch (e_) {
     const e = e_ as FetchError
     console.error({ url, e })
     const { status } = e.payload
-    setData(null)
-    setLoading(false)
-    setError(e)
+    updateResource({
+      data: null,
+      loading: false,
+      error: e,
+    })
     if (400 <= status && status < 500) {
       // client error, request new access_token
       // TODO

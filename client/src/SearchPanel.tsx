@@ -9,25 +9,29 @@ import { classes, colors } from "./styles"
 type SongResults = SpotifyApi.TrackSearchResponse | null
 
 export const useSongSearch = (query: string): Resource<SongResults> => {
-  const [[result, loading, error], setters] = useResource<{body: SongResults}>(null) // TODO change API
+  const [{data: result, loading, error}, setter] = useResource<{body: SongResults}>(null) // TODO change API
   // eventually:
-  // const [resource, setters] = useResource<SongResults>(null)
+  // const [resource, setter] = useResource<SongResults>(null)
   
   useEffect(() => {
     if (query !== '') {
-      apiWrapper(`/api/search?q=${query}`, setters)
+      apiWrapper(`/api/search?q=${query}`, setter)
     }
-  }, [query, setters])
+  }, [query, setter])
   
   // TODO return result either way and just show loading state/nothing if loading
   if (query === '') {
-    return [null, false, null]
+    return {
+      data: null,
+      loading: false,
+      error: null,
+    }
   } else {
-    return [
-      result?.body,
+    return {
+      data: result?.body,
       loading,
       error
-    ]
+    }
   }
   
 }
@@ -66,7 +70,7 @@ export const SearchPanel = () => {
   
   const [query, setQuery] = useState('hello')
   
-  const [result, loading, error] = useSongSearch(query)
+  const { data: result } = useSongSearch(query)
   
   const searchTabStyle = {
     ...classes.column,

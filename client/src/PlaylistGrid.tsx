@@ -11,11 +11,11 @@ import { useResource, apiWrapper, Resource } from './api-hooks'
 type Playlists = SpotifyApi.PlaylistObjectSimplified[]
 
 export const usePlaylists = (): Resource<Playlists> => {
-  const [resource, setters] = useResource<Playlists>(null)
+  const [resource, setter] = useResource<Playlists>(null)
   
   useEffect(() => {
-    apiWrapper('/api/playlists/', setters)
-  }, [setters])
+    apiWrapper('/api/playlists/', setter)
+  }, [setter])
   
   return resource
 }
@@ -23,7 +23,7 @@ export const usePlaylists = (): Resource<Playlists> => {
 
 
 export const PlaylistGrid = () => {
-  const [result, , ] = usePlaylists()
+  const { data: result } = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
     padding: '2.0rem',

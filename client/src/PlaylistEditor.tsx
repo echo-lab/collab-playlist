@@ -8,12 +8,12 @@ import { classes } from './styles'
 
 const usePlaylistData = (id: string) => {
   // return useApi(`/api/playlists/${id}/`) as SpotifyApi.PlaylistObjectFull
-  const [resource, setters] = useResource<SpotifyApi.PlaylistObjectFull>(null)
+  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null)
   
   useEffect(() => {
-    apiWrapper(`/api/playlists/${id}/`, setters)
-    console.log('TEST', id, setters)
-  }, [id, setters])
+    apiWrapper(`/api/playlists/${id}/`, setter)
+    console.log('TEST', id, setter)
+  }, [id, setter])
   
   return resource
 }
@@ -22,9 +22,9 @@ const usePlaylistData = (id: string) => {
 export const PlaylistEditor = () => {
   const { id } = useParams()
   
-  const [data, , ] = usePlaylistData(id)
+  const { data, loading } = usePlaylistData(id)
   
-  console.log({data})
+  console.log({data, loading})
   
   return <div>
     {data && 
