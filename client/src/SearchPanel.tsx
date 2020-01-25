@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useResource, apiWrapper } from './api-hooks'
+import { useResource, apiWrapper, Resource } from './api-hooks'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "./styles"
 
 
+type SongResults = SpotifyApi.TrackSearchResponse | null
 
-export const useSongSearch = (query: string): [SpotifyApi.TrackSearchResponse | null, boolean, any] => {
-  const [result, loading, error, setters] = useResource()
+export const useSongSearch = (query: string): Resource<SongResults> => {
+  const [[result, loading, error], setters] = useResource<{body: SongResults}>(null) // TODO change API
+  // eventually:
+  // const [resource, setters] = useResource<SongResults>(null)
   
   useEffect(() => {
     if (query !== '') {
@@ -21,7 +24,7 @@ export const useSongSearch = (query: string): [SpotifyApi.TrackSearchResponse | 
     return [null, false, null]
   } else {
     return [
-      result?.body as SpotifyApi.TrackSearchResponse | null,
+      result?.body,
       loading,
       error
     ]

@@ -1,16 +1,29 @@
 
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useEffect } from 'react'
 import { classes, colors } from './styles'
-import { usePlaylists } from './api-hooks'
 import { Image } from './Image'
 import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
+import { useResource, apiWrapper, Resource } from './api-hooks'
 
+
+
+type Playlists = SpotifyApi.PlaylistObjectSimplified[]
+
+export const usePlaylists = (): Resource<Playlists> => {
+  const [resource, setters] = useResource<Playlists>(null)
+  
+  useEffect(() => {
+    apiWrapper('/api/playlists/', setters)
+  }, [setters])
+  
+  return resource
+}
 
 
 
 export const PlaylistGrid = () => {
-  const result = usePlaylists()
+  const [result, , ] = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
     padding: '2.0rem',

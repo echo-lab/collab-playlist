@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-const useConst = (val: any) => {
+const useConst = <T extends any> (val: T) => {
   return useRef(val).current
 }
 
@@ -48,18 +48,21 @@ export const useApi = (
   return result
 }
 
-type setter = React.Dispatch<any>
-type resourceSetters = [setter, setter, setter]
+type Setter<T> = React.Dispatch<T>
+type ResourceSetters<T> = [Setter<T>, Setter<boolean>, Setter<any>]
 
-export const useResource = (initialVal: any = null): [any, any, any, resourceSetters] => {
+export type Resource<T> = [T, boolean, any]
+
+export const useResource = <T extends any>(initialVal: T = null): [Resource<T>, ResourceSetters<T>] => {
   const [data, setData] = useState(initialVal)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   
-  return [
-    data,
-    loading,
-    error,
+  return [ [
+      data,
+      loading,
+      error
+    ],
     useConst([ setData, setLoading, setError ])
   ]
 }
@@ -72,9 +75,9 @@ class FetchError extends Error {
   }
 }
 
-export const apiWrapper = async (
+export const apiWrapper = async <T extends any> (
   url: string,
-  [ setData, setLoading, setError ]: resourceSetters,
+  [ setData, setLoading, setError ]: ResourceSetters<T>,
   fetchOptions: RequestInit = {},
 ) => {
   try {
@@ -106,9 +109,9 @@ export const apiWrapper = async (
 
 
 
-export const usePlaylists = () => {
-  return useApi('/api/playlists/') as SpotifyApi.PlaylistObjectSimplified[]
-}
+// export const usePlaylists = () => {
+//   return useApi('/api/playlists/') as SpotifyApi.PlaylistObjectSimplified[]
+// }
 
 
 
