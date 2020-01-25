@@ -6,7 +6,7 @@ import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
 import { PlaylistPanel } from './PlaylistPanel'
-import { useRefreshToken } from './api-hooks'
+import { useRefreshToken } from './apiWrapper'
 
 
 const useLogin = (): [boolean, () => void] => {
@@ -43,15 +43,15 @@ const Header = ({ logout }: { logout: () => void }) => {
 }
 
 
-const LoginPage = ({}) => {
+const LoginPage = () => {
   return <a style={classes.text} href="/auth">Login</a>
 }
 
 
-const ErrorPage = ({}) => {
+const ErrorPage = () => {
   return <div style={classes.text}>
     There has been an error. Please{' '}
-    <a target="_blank" href="https://www.google.com/search?q=how+to+clear+cookies">
+    <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q=how+to+clear+cookies">
       clear your cookies
     </a>{' '}
     and try again.

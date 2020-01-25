@@ -1,9 +1,40 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useSongSearch } from './api-hooks'
+import { useResource, apiWrapper, Resource } from './apiWrapper'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "./styles"
+
+
+type SongResults = SpotifyApi.TrackSearchResponse | null
+
+export const useSongSearch = (query: string): Resource<SongResults> => {
+  const [{data: result, loading, error}, setter] = useResource<{body: SongResults}>(null) // TODO change API
+  // eventually:
+  // const [resource, setter] = useResource<SongResults>(null)
+  
+  useEffect(() => {
+    if (query !== '') {
+      apiWrapper(`/api/search?q=${query}`, setter)
+    }
+  }, [query, setter])
+  
+  // TODO return result either way and just show loading state/nothing if loading
+  if (query === '') {
+    return {
+      data: null,
+      loading: false,
+      error: null,
+    }
+  } else {
+    return {
+      data: result?.body,
+      loading,
+      error
+    }
+  }
+  
+}
 
 
 /**
@@ -37,9 +68,9 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
 
 export const SearchPanel = () => {
   
-  const [query, setQuery] = useState('hello')
+  const [query, setQuery] = useState('')
   
-  const result = useSongSearch(query)
+  const { data: result } = useSongSearch(query)
   
   const searchTabStyle = {
     ...classes.column,

@@ -1,22 +1,28 @@
 
-import React from 'react'
-import { ScrollArea } from './ScrollArea'
+import React, { useEffect } from 'react'
+// import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
-import { useApi } from './api-hooks'
+import { useResource, apiWrapper } from './apiWrapper'
 import { classes } from './styles'
 
 
-const usePlaylistData = (id) => {
-  return useApi(`/api/playlists/${id}/`) as SpotifyApi.PlaylistObjectFull
+const usePlaylistData = (id: string) => {
+  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null)
+  
+  useEffect(() => {
+    apiWrapper(`/api/playlists/${id}/`, setter)
+  }, [id, setter])
+  
+  return resource
 }
 
 
-export const PlaylistEditor = ({}) => {
+export const PlaylistEditor = () => {
   const { id } = useParams()
   
-  const data = usePlaylistData(id)
+  const { data, loading } = usePlaylistData(id)
   
-  console.log({data})
+  console.log({data, loading})
   
   return <div>
     {data && 
