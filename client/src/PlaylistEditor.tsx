@@ -7,12 +7,10 @@ import { classes } from './styles'
 
 
 const usePlaylistData = (id: string) => {
-  // return useApi(`/api/playlists/${id}/`) as SpotifyApi.PlaylistObjectFull
   const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null)
   
   useEffect(() => {
     apiWrapper(`/api/playlists/${id}/`, setter)
-    console.log('TEST', id, setter)
   }, [id, setter])
   
   return resource
