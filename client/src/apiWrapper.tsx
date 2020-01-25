@@ -91,7 +91,7 @@ export const useRefreshToken = (isLoggedIn, logout) => {
     
     const refresh = async () => {
       try {
-        const response = await fetch('/api/refresh_token')
+        const response = await fetch('/api/refresh_token', { cache: 'no-store' })
         if (!response.ok) {
           throw response.status
         }
