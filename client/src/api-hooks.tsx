@@ -78,7 +78,7 @@ export const apiWrapper = async <T extends any> (
 }
 
 
-
+// TODO refactor in useRefreshToken.tsx
 export const useRefreshToken = (isLoggedIn, logout) => {
   useEffect(() => {
     if (!isLoggedIn) return
