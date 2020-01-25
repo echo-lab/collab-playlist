@@ -7,7 +7,7 @@ import { classes } from './styles'
 
 
 const usePlaylistData = (id: string) => {
-  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null)
+  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
   
   useEffect(() => {
     apiWrapper(`/api/playlists/${id}/`, setter)
@@ -25,13 +25,20 @@ export const PlaylistEditor = () => {
   console.log({data, loading})
   
   return <div>
-    {data && 
-      data.tracks.items.map((item) => 
-        <p style={classes.text}>{item.track.name}</p>
+    { loading
+    ? null
+    : data.tracks.items.map((item, index) => 
+        <SongRow item={item} key={index}/>
       )
     }
   </div>
 }
 
+
+const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
+  return <div>
+    {item.added_by.id}
+  </div>
+}
 
 

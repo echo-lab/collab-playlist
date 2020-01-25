@@ -16,10 +16,16 @@ export interface Resource<T> {
 }
 
 
-export const useResource = <T extends any>(initialVal: T = null): [Resource<T>, Updater<Resource<T>>] => {
+export const useResource = <T extends any>(
+  initialVal: T,
+  loading: boolean = false
+): [
+  Resource<T>,
+  Updater<Resource<T>>
+] => {
   const [resource, setResource] = useState<Resource<T>>({
     data: initialVal,
-    loading: false,
+    loading,
     error: null
   })
   

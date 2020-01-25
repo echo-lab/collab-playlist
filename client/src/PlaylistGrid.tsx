@@ -11,7 +11,7 @@ import { useResource, apiWrapper, Resource } from './apiWrapper'
 type Playlists = SpotifyApi.PlaylistObjectSimplified[]
 
 export const usePlaylists = (): Resource<Playlists> => {
-  const [resource, setter] = useResource<Playlists>(null)
+  const [resource, setter] = useResource<Playlists>(null, true)
   
   useEffect(() => {
     apiWrapper('/api/playlists/', setter)
