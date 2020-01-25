@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
-import { useResource, apiWrapper } from './api-hooks'
+import { useResource, apiWrapper } from './apiWrapper'
 import { classes } from './styles'
 
 

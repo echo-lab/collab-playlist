@@ -6,7 +6,7 @@ import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
 import { useWarnResize } from './warnResize'
 import { PlaylistPanel } from './PlaylistPanel'
-import { useRefreshToken } from './api-hooks'
+import { useRefreshToken } from './apiWrapper'
 
 
 const useLogin = (): [boolean, () => void] => {

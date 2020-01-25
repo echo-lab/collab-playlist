@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useResource, apiWrapper, Resource } from './api-hooks'
+import { useResource, apiWrapper, Resource } from './apiWrapper'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "./styles"
 

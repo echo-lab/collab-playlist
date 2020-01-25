@@ -1,5 +1,5 @@
 
-import { useResource, apiWrapper } from './api-hooks'
+import { useResource, apiWrapper } from './apiWrapper'
 
 
 // TODO refactor

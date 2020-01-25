@@ -4,7 +4,7 @@ import { classes, colors } from './styles'
 import { Image } from './Image'
 import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
-import { useResource, apiWrapper, Resource } from './api-hooks'
+import { useResource, apiWrapper, Resource } from './apiWrapper'
 
 
 
