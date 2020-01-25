@@ -68,7 +68,7 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
 
 export const SearchPanel = () => {
   
-  const [query, setQuery] = useState('hello')
+  const [query, setQuery] = useState('')
   
   const { data: result } = useSongSearch(query)
   
