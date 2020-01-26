@@ -5,6 +5,8 @@ import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
 import { classes, colors } from './styles'
 import { useHover } from './useHover'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 
 
 const usePlaylistData = (id: string) => {
@@ -43,7 +45,7 @@ export const PlaylistEditor = () => {
 
 const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   const { track } = item
-  // track.name
+  
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   const [isHovered, hoverContainerProps] = useHover()
@@ -54,38 +56,73 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     // display: 'contents',
     ...classes.row,
     // justifyContent: 'spaceEvenly',
-    padding: '0.4rem 1.4rem',
+    padding: '0.6rem 1.4rem',
     ...(isHovered && { background: colors.grayscale.darkGray}),
   }
-  const childStyle: CSSProperties = {
+  const childMargin = {
+    margin: 'auto 1.4rem',
+  }
+  const childText: CSSProperties = {
     ...classes.text,
     ...classes.textOverflow(),
     fontSize,
-    margin: '0 1.4rem',
+  }
+  const removeButtonStyle: CSSProperties = {
+    ...childMargin,
+    width: '3.0rem',
+    height: '3.0rem',
   }
   const titleStyle: CSSProperties = {
-    ...childStyle,
+    ...childText,
+    ...childMargin,
     flex: 2,
   }
   const artistStyle: CSSProperties = {
-    ...childStyle,
+    ...childText,
+    ...childMargin,
     flex: 1,
   }
   const albumStyle: CSSProperties = {
-    ...childStyle,
+    ...childText,
+    ...childMargin,
     flex: 1,
   }
   const addedByStyle: CSSProperties = {
-    ...childStyle,
+    ...childText,
+    ...childMargin,
     flex: 1,
   }
   
   return <div style={rowStyle} {...hoverContainerProps}>
+    { isHovered
+    ? <RemoveButton style={removeButtonStyle}/>
+    : <div style={removeButtonStyle} />
+    }
     <div style={titleStyle}>{track.name}</div>
     <div style={artistStyle}>{artistNames}</div>
     <div style={albumStyle}>{track.album.name}</div>
     <div style={addedByStyle}>{item.added_by.id}</div>
   </div>
+}
+
+
+
+const RemoveButton = ({ onClick, style }: { onClick?: () => void, style?: CSSProperties }) => {
+  const buttonStyle = {
+    // these styles only neutralize browser styles:
+    background: 'transparent',
+    border: 'none',
+    padding: 0,
+    // you specify the rest of the styles
+    ...style,
+  }
+  const iconStyle = {
+    width: '100%',
+    height: '100%',
+  }
+  return <button style={buttonStyle} onClick={onClick}>
+    <FontAwesomeIcon icon={faMinusCircle} style={iconStyle} />
+  </button>
 }
 
 
