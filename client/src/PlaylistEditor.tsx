@@ -56,7 +56,8 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     // display: 'contents',
     ...classes.row,
     // justifyContent: 'spaceEvenly',
-    padding: '0.6rem 1.4rem',
+    padding: '0 1.4rem',
+    height: '4.6rem',
     ...(isHovered && { background: colors.grayscale.darkGray}),
   }
   const childMargin = {
@@ -69,8 +70,10 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   }
   const removeButtonStyle: CSSProperties = {
     ...childMargin,
-    width: '3.0rem',
-    height: '3.0rem',
+    width: '2.4rem',
+    height: '2.4rem',
+    color: colors.grayscale.white,
+    // ...classes.text
   }
   const titleStyle: CSSProperties = {
     ...childText,
