@@ -48,7 +48,8 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
-  const [isHovered, hoverContainerProps] = useHover()
+  const [songIsHovered, songHoverProps] = useHover()
+  const [removeButtonIsHovered, removeButtonHoverProps] = useHover()
   
   const fontSize = '1.8rem'
   
@@ -57,8 +58,8 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     ...classes.row,
     // justifyContent: 'spaceEvenly',
     padding: '0 1.4rem',
-    height: '4.6rem',
-    ...(isHovered && { background: colors.grayscale.darkGray}),
+    height: '5.0rem',
+    ...(songIsHovered && { background: colors.grayscale.darkGray}),
   }
   const childMargin = {
     margin: 'auto 1.4rem',
@@ -72,8 +73,11 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     ...childMargin,
     width: '2.4rem',
     height: '2.4rem',
+    padding: '0.7rem',
+    boxSizing: 'content-box',
+    ...(removeButtonIsHovered && { background: colors.grayscale.gray }),
+    borderRadius: '0.3rem',
     color: colors.grayscale.white,
-    // ...classes.text
   }
   const titleStyle: CSSProperties = {
     ...childText,
@@ -96,9 +100,13 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     flex: 1,
   }
   
-  return <div style={rowStyle} {...hoverContainerProps}>
-    { isHovered
-    ? <IconButton icon={faMinusCircle} style={removeButtonStyle}/>
+  return <div style={rowStyle} {...songHoverProps}>
+    { songIsHovered
+    ? <IconButton
+        icon={faMinusCircle}
+        style={removeButtonStyle}
+        {...removeButtonHoverProps}
+      />
     : <div style={removeButtonStyle} />
     }
     <div style={titleStyle}>{track.name}</div>

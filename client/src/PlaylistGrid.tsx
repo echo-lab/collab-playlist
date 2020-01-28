@@ -45,7 +45,7 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
   // use the only image
   const image = item.images[1] ?? item.images[0]
   
-  const [isHovered, hoverContainerProps] = useHover()
+  const [isHovered, hoverProps] = useHover()
   
   const playlistCardStyle = {
     ...classes.row,
@@ -75,7 +75,7 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
   return <Link
     to={`/playlists/${item.id}/`}
     style={playlistCardStyle}
-    {...hoverContainerProps}
+    {...hoverProps}
   >
     <Image src={image.url} alt="" style={imageStyle} />
     <div style={textDivStyle}>

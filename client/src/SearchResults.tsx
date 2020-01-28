@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import { classes, colors } from './styles'
 import { ScrollArea } from './ScrollArea'
 import { Image } from './Image'
@@ -31,12 +31,13 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
   
-  const [isHovered, hoverContainerProps] = useHover()
+  const [songIsHovered, songHoverProps] = useHover()
+  const [addButtonIsHovered, addButtonHoverProps] = useHover()
   
   const searchItemStyle = {
     ...classes.row,
     padding: '0.5rem',
-    ...(isHovered && { background: colors.grayscale.darkGray }),
+    ...(songIsHovered && { background: colors.grayscale.darkGray }),
   }
   const imageStyle = {
     height: '6.0rem',
@@ -58,21 +59,29 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
     ...classes.textOverflow({ lines: 2 }),
     fontSize: '1.4rem',
   }
-  const addButtonStyle = {
+  const addButtonStyle: CSSProperties = {
     width: '2.4rem',
     height: '2.4rem',
+    padding: '0.7rem',
+    boxSizing: 'content-box',
     margin: 'auto 1.4rem',
+    ...(addButtonIsHovered && { background: colors.grayscale.gray }),
+    borderRadius: '0.3rem',
     color: colors.grayscale.white,
   }
   
-  return <div style={searchItemStyle} {...hoverContainerProps}>
+  return <div style={searchItemStyle} {...songHoverProps}>
     <Image src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>
     </div>
-    { isHovered
-    ? <IconButton icon={faPlusCircle} style={addButtonStyle}/>
+    { songIsHovered
+    ? <IconButton
+        icon={faPlusCircle}
+        style={addButtonStyle}
+        {...addButtonHoverProps}
+      />
     : <div style={addButtonStyle} />
     }
   </div>
