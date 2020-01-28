@@ -1,9 +1,11 @@
 
 import React from 'react'
-import { classes } from './styles'
+import { classes, colors } from './styles'
 import { ScrollArea } from './ScrollArea'
 import { Image } from './Image'
-// import { SongsResponse, SongsResponseItem } from './api-hooks'
+import { IconButton } from './IconButton'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { useHover } from './useHover'
 
 
 export const SearchResults = ({ data }: { data: SpotifyApi.TrackSearchResponse }) => {
@@ -29,9 +31,12 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
   
+  const [isHovered, hoverContainerProps] = useHover()
+  
   const searchItemStyle = {
     ...classes.row,
     padding: '0.5rem',
+    ...(isHovered && { background: colors.grayscale.darkGray }),
   }
   const imageStyle = {
     height: '6.0rem',
@@ -41,6 +46,8 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
     ...classes.column,
     flex: 1,
     justifyContent: 'space-evenly',
+    paddingRight: '0.4rem',
+    paddingLeft: '0.4rem',
   }
   const songNameStyle = {
     ...classes.text,
@@ -51,13 +58,23 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
     ...classes.textOverflow({ lines: 2 }),
     fontSize: '1.4rem',
   }
+  const addButtonStyle = {
+    width: '2.4rem',
+    height: '2.4rem',
+    margin: 'auto 1.4rem',
+    color: colors.grayscale.white,
+  }
   
-  return <div style={searchItemStyle}>
+  return <div style={searchItemStyle} {...hoverContainerProps}>
     <Image src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>
     </div>
+    { isHovered
+    ? <IconButton icon={faPlusCircle} style={addButtonStyle}/>
+    : <div style={addButtonStyle} />
+    }
   </div>
 }
 

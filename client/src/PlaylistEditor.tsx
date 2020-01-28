@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
 import { classes, colors } from './styles'
 import { useHover } from './useHover'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconButton } from './IconButton'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -98,7 +98,7 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   
   return <div style={rowStyle} {...hoverContainerProps}>
     { isHovered
-    ? <RemoveButton style={removeButtonStyle}/>
+    ? <IconButton icon={faMinusCircle} style={removeButtonStyle}/>
     : <div style={removeButtonStyle} />
     }
     <div style={titleStyle}>{track.name}</div>
@@ -110,22 +110,5 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
 
 
 
-const RemoveButton = ({ onClick, style }: { onClick?: () => void, style?: CSSProperties }) => {
-  const buttonStyle = {
-    // these styles only neutralize browser styles:
-    background: 'transparent',
-    border: 'none',
-    padding: 0,
-    // you specify the rest of the styles
-    ...style,
-  }
-  const iconStyle = {
-    width: '100%',
-    height: '100%',
-  }
-  return <button style={buttonStyle} onClick={onClick}>
-    <FontAwesomeIcon icon={faMinusCircle} style={iconStyle} />
-  </button>
-}
 
 
