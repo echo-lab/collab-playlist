@@ -101,18 +101,15 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   }
   
   return <div style={rowStyle} {...songHoverProps}>
-    { songIsHovered
-    ? <IconButton
-        icon={faMinusCircle}
-        style={removeButtonStyle}
-        {...removeButtonHoverProps}
-      />
-    : <div style={removeButtonStyle} />
-    }
     <div style={titleStyle}>{track.name}</div>
     <div style={artistStyle}>{artistNames}</div>
     <div style={albumStyle}>{track.album.name}</div>
     <div style={addedByStyle}>{item.added_by.id}</div>
+    <IconButton
+      icon={faMinusCircle}
+      style={removeButtonStyle}
+      {...removeButtonHoverProps}
+    />
   </div>
 }
 

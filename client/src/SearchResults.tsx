@@ -76,14 +76,11 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>
     </div>
-    { songIsHovered
-    ? <IconButton
-        icon={faPlusCircle}
-        style={addButtonStyle}
-        {...addButtonHoverProps}
-      />
-    : <div style={addButtonStyle} />
-    }
+    <IconButton
+      icon={faPlusCircle}
+      style={addButtonStyle}
+      {...addButtonHoverProps}
+    />
   </div>
 }
 
