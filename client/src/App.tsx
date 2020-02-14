@@ -4,9 +4,10 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
-import { useWarnResize } from './warnResize'
-import { PlaylistPanel } from './PlaylistPanel'
+// import { useWarnResize } from './warnResize'
 import { useRefreshToken } from './apiWrapper'
+import { PlaylistGrid } from './PlaylistGrid'
+import { PlaylistEditor } from './PlaylistEditor'
 
 
 const useLogin = (): [boolean, () => void] => {
@@ -66,10 +67,27 @@ const LoggedInPage = () => {
     // overflow: 'hidden',
     height: '100%',
   }
+  const playlistGridStyle = {
+    flex: '1',
+  }
+  const playlistPanelStyle = {
+    flex: '0.75',
+  }
   
   return <div style={panelStyle}>
-    <SearchPanel/>
-    <PlaylistPanel/>
+    <Switch>
+      <Route exact path="/">
+        <div style={playlistGridStyle}>
+          <PlaylistGrid />
+        </div>
+      </Route>
+      <Route path="/playlists/:id/">
+        <SearchPanel/>
+        <div style={playlistPanelStyle}>
+          <PlaylistEditor />
+        </div>
+      </Route>
+    </Switch>
   </div>
 }
 
@@ -78,7 +96,7 @@ export const App = () => {
   
   useRefreshToken(isLoggedIn, logout)
   
-  useWarnResize()
+  // useWarnResize()
   
   const appStyle = {
     ...classes.column,

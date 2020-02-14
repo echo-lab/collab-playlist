@@ -16,10 +16,16 @@ export interface Resource<T> {
 }
 
 
-export const useResource = <T extends any>(initialVal: T = null): [Resource<T>, Updater<Resource<T>>] => {
+export const useResource = <T extends any>(
+  initialVal: T,
+  loading: boolean = false
+): [
+  Resource<T>,
+  Updater<Resource<T>>
+] => {
   const [resource, setResource] = useState<Resource<T>>({
     data: initialVal,
-    loading: false,
+    loading,
     error: null
   })
   
@@ -85,7 +91,7 @@ export const useRefreshToken = (isLoggedIn, logout) => {
     
     const refresh = async () => {
       try {
-        const response = await fetch('/api/refresh_token')
+        const response = await fetch('/api/refresh_token', { cache: 'no-store' })
         if (!response.ok) {
           throw response.status
         }

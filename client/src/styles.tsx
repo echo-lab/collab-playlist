@@ -11,6 +11,7 @@ export const colors = {
   grayscale: {
     black: '#141414',
     darkGray: '#303030',
+    gray: '#606060',
     white: '#F0F0F0',
   },
   green1: '#1DB954', // 'spotify green'
