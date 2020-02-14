@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
-import { useWarnResize } from './warnResize'
+// import { useWarnResize } from './warnResize'
 import { useRefreshToken } from './apiWrapper'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './PlaylistEditor'
@@ -96,7 +96,7 @@ export const App = () => {
   
   useRefreshToken(isLoggedIn, logout)
   
-  useWarnResize()
+  // useWarnResize()
   
   const appStyle = {
     ...classes.column,
