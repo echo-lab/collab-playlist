@@ -104,7 +104,7 @@ export const App = () => {
     height: '100%',
     backgroundColor: colors.grayscale.black,
     boxSizing: 'border-box',
-    padding: '0.5rem',
+    // padding: '0.5rem',
     // overflow: 'hidden',
   } as const
   const mainPanelStyle = {

@@ -75,6 +75,8 @@ export const SearchPanel = () => {
   const searchTabStyle = {
     ...classes.column,
     flex: '0.25',
+    padding: '2rem',
+    backgroundColor: colors.grayscale.darkerGray,
   }
   
   return <div style={searchTabStyle}>

@@ -37,7 +37,7 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
   const searchItemStyle = {
     ...classes.row,
     padding: '0.5rem',
-    ...(songIsHovered && { background: colors.grayscale.darkGray }),
+    ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
   }
   const imageStyle = {
     height: '6.0rem',
@@ -65,7 +65,7 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
     padding: '0.7rem',
     boxSizing: 'content-box',
     margin: 'auto 1.4rem',
-    ...(addButtonIsHovered && { background: colors.grayscale.gray }),
+    ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
     borderRadius: '0.3rem',
     color: colors.grayscale.white,
   }

@@ -30,6 +30,7 @@ export const PlaylistEditor = () => {
   const playlistEditorStyle: CSSProperties = {
     ...classes.column,
     padding: '2.0rem',
+    backgroundColor: colors.grayscale.darkGray,
   }
   
   return <div style={playlistEditorStyle}>
@@ -59,7 +60,7 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     // justifyContent: 'spaceEvenly',
     padding: '0 1.4rem',
     height: '5.0rem',
-    ...(songIsHovered && { background: colors.grayscale.darkGray}),
+    ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
   }
   const childMargin = {
     margin: 'auto 1.4rem',
@@ -75,7 +76,7 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     height: '2.4rem',
     padding: '0.7rem',
     boxSizing: 'content-box',
-    ...(removeButtonIsHovered && { background: colors.grayscale.gray }),
+    ...(removeButtonIsHovered && { background: colors.translucentWhite(0.2) }),
     borderRadius: '0.3rem',
     color: colors.grayscale.white,
   }

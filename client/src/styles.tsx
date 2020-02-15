@@ -9,11 +9,14 @@
 
 export const colors = {
   grayscale: {
-    black: '#141414',
-    darkGray: '#303030',
-    gray: '#606060',
+    black: '#101010',
+    darkerGray: '#202020',
+    darkGray: '#2A2A2A',
+    gray: '#3A3A3A',
+    lightGray: '#606060',
     white: '#F0F0F0',
   },
+  translucentWhite: opacity => `rgba(255,255,255,${opacity})`,
   green1: '#1DB954', // 'spotify green'
   green2: '#1ED760',
   palette1: {
