@@ -43,19 +43,22 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
  * @prop {onChange} should be a callback with the same object reference between
  * re-renders (i.e. from useState, useCallback)
  */
-const DebouncedInput = ({ onChange, delay = 500 }) => {
+const DebouncedInput = ({
+  onChange,
+  delay = 500,
+  style,
+}: {
+  onChange: (arg: string) => void,
+  delay?: number,
+  style?: CSSProperties,
+}) => {
   // the controlled input state, gets updated immediately on change:
   const [value, setValue] = useState('')
   // debounced wrapper for onChange
   const debouncedOnChange = useDebounceCallback(onChange, delay)
   
-  const inputStyle = {
-    ...classes.text,
-    color: colors.grayscale.black,
-  }
-  
   return <input
-    style={inputStyle}
+    style={style}
     type="text"
     value={value}
     onChange={ ({ target: { value: newVal }}) => {
@@ -79,13 +82,25 @@ export const SearchPanel = ({
   const searchTabStyle = {
     ...style,
     ...classes.column,
-    padding: '2rem',
+    padding: '2.0rem',
     backgroundColor: colors.grayscale.darkerGray,
   }
+  const inputStyle = {
+    ...classes.text,
+    color: colors.grayscale.black,
+    height: '3.0rem',
+    borderRadius: '1.5rem',
+    border: 'none',
+    padding: '0 1.5rem',
+    boxSizing: 'border-box',
+    marginBottom: '2.0rem',
+    verticalAlign: 'middle',
+  } as const
   
   return <div style={searchTabStyle}>
     <DebouncedInput
       onChange={setQuery}
+      style={inputStyle}
     />
     
     <SearchResults data={result} />
