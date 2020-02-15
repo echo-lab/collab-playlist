@@ -63,12 +63,12 @@ const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
     // display: 'contents',
     ...classes.row,
     // justifyContent: 'spaceEvenly',
-    padding: '0 1.4rem',
+    // padding: '0 1.4rem',
     height: '5.0rem',
     ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
   }
   const childMargin = {
-    margin: 'auto 1.4rem',
+    margin: 'auto 2.0rem',
   }
   const childText: CSSProperties = {
     ...classes.text,
