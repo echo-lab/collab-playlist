@@ -20,7 +20,11 @@ const usePlaylistData = (id: string) => {
 }
 
 
-export const PlaylistEditor = () => {
+export const PlaylistEditor = ({
+  style,
+}: {
+  style?: CSSProperties,
+}) => {
   const { id } = useParams()
   
   const { data, loading } = usePlaylistData(id)
@@ -28,6 +32,7 @@ export const PlaylistEditor = () => {
   console.log({data, loading})
   
   const playlistEditorStyle: CSSProperties = {
+    ...style,
     ...classes.column,
     padding: '2.0rem',
     backgroundColor: colors.grayscale.darkGray,

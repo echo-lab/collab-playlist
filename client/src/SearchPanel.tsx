@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, CSSProperties } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
 import { useResource, apiWrapper, Resource } from './apiWrapper'
 import { SearchResults } from "./SearchResults"
@@ -66,15 +66,19 @@ const DebouncedInput = ({ onChange, delay = 500 }) => {
 }
 
 
-export const SearchPanel = () => {
+export const SearchPanel = ({
+  style,
+}: {
+  style?: CSSProperties,
+}) => {
   
   const [query, setQuery] = useState('')
   
   const { data: result } = useSongSearch(query)
   
   const searchTabStyle = {
+    ...style,
     ...classes.column,
-    flex: '0.25',
     padding: '2rem',
     backgroundColor: colors.grayscale.darkerGray,
   }
