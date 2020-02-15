@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react'
+import React, { useCallback, CSSProperties } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchPanel } from './SearchPanel'
@@ -24,13 +24,17 @@ const useLogin = (): [boolean, () => void] => {
 
 
 const Header = ({ logout }: { logout: () => void }) => {
-  const headerStyle = {
-    flexBasis: '6.0rem',
+  const headerStyle: CSSProperties = {
+    ...classes.row,
+    // flexBasis: '6.0rem',
+    padding: '2.0rem',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   }
   const headingStyle = {
     ...classes.text,
     ...classes.bold,
-    fontSize: '2.5rem',
+    fontSize: '3.5rem',
   }
   const buttonStyle = {
     ...classes.text,
@@ -38,7 +42,7 @@ const Header = ({ logout }: { logout: () => void }) => {
   }
   
   return <div style={headerStyle}>
-    <h1 style={headingStyle}>Collab-playlist test</h1>
+    <h1 style={headingStyle}>Collaborative Playlist Editor</h1>
     <button style={buttonStyle} onClick={logout}>Logout</button>
   </div>
 }
