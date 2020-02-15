@@ -96,6 +96,9 @@ export const SearchPanel = ({
     marginBottom: '2.0rem',
     verticalAlign: 'middle',
   } as const
+  const resultsStyle = {
+    flex: 1,
+  }
   
   return <div style={searchTabStyle}>
     <DebouncedInput
@@ -103,7 +106,10 @@ export const SearchPanel = ({
       style={inputStyle}
     />
     
-    <SearchResults data={result} />
+    <SearchResults
+      style={resultsStyle}
+      data={result}
+    />
     
   </div>
 }

@@ -8,19 +8,17 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from './useHover'
 
 
-export const SearchResults = ({ data }: { data: SpotifyApi.TrackSearchResponse }) => {
+export const SearchResults = ({
+  data,
+  style,
+}: {
+  data: SpotifyApi.TrackSearchResponse,
+  style?: CSSProperties,
+}) => {
   
   const items = data?.tracks?.items
   
-  // not using useMemo on this even though it's going to a component (meaning
-  // it will always cause rerender because of different reference identity)
-  // because when this component rerenders it must be because data changed so
-  // we want to rerender ScrollArea anyways
-  const scrollAreaStyle = {
-    flex: 1,
-  }
-  
-  return <ScrollArea style={scrollAreaStyle}>
+  return <ScrollArea style={style}>
     {items?.map((item, index) => <SearchItem item={item} key={index} />)}
   </ScrollArea>
 }
