@@ -10,10 +10,26 @@ export const Header = ({ logout }: { logout: () => void }) => {
     alignItems: 'center',
     justifyContent: 'space-between',
   }
+  const leftBoxStyle = {
+    ...classes.row,
+    alignItems: 'baseline',
+    verticalAlign: 'middle',
+  }
   const headingStyle = {
     ...classes.text,
     ...classes.bold,
     fontSize: '3.5rem',
+  }
+  const withTextStyle = {
+    ...classes.text,
+    paddingLeft: '6.0rem',
+    paddingRight: '2.0rem',
+    fontSize: '1.6rem',
+    fontStyle: 'italic',
+  }
+  const imageStyle = {
+    height: '4.5rem',
+    alignSelf: 'center',
   }
   const buttonStyle = {
     ...classes.text,
@@ -21,7 +37,15 @@ export const Header = ({ logout }: { logout: () => void }) => {
   }
   
   return <div style={headerStyle}>
-    <h1 style={headingStyle}>Collaborative Playlist Editor</h1>
+    <div style={leftBoxStyle}>
+      <h1 style={headingStyle}>Collaborative Playlist Editor</h1>
+      <span style={withTextStyle}>with</span>
+      <img
+        src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png"
+        alt="Spotify"
+        style={imageStyle}
+      />
+    </div>
     <button style={buttonStyle} onClick={logout}>Logout</button>
   </div>
 }
