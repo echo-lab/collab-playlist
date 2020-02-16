@@ -20,10 +20,10 @@ export const Header = ({ logout }: { logout: () => void }) => {
     ...classes.bold,
     fontSize: '3.5rem',
   }
-  const withTextStyle = {
+  const forTextStyle = {
     ...classes.text,
-    paddingLeft: '6.0rem',
-    paddingRight: '2.0rem',
+    paddingLeft: '2.5rem',
+    paddingRight: '2.5rem',
     fontSize: '1.6rem',
     fontStyle: 'italic',
   }
@@ -39,7 +39,7 @@ export const Header = ({ logout }: { logout: () => void }) => {
   return <div style={headerStyle}>
     <div style={leftBoxStyle}>
       <h1 style={headingStyle}>Collaborative Playlist Editor</h1>
-      <span style={withTextStyle}>with</span>
+      <span style={forTextStyle}>for</span>
       <img
         src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png"
         alt="Spotify"
