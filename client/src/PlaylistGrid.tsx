@@ -22,10 +22,15 @@ export const usePlaylists = (): Resource<Playlists> => {
 
 
 
-export const PlaylistGrid = () => {
+export const PlaylistGrid = ({
+  style,
+}: {
+  style?: CSSProperties,
+}) => {
   const { data: result } = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
+    ...style,
     padding: '2.0rem',
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(50.0rem, 1fr))',

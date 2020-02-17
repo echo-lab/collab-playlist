@@ -8,25 +8,39 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from './useHover'
 
 
-export const SearchResults = ({ data }: { data: SpotifyApi.TrackSearchResponse }) => {
+export const SearchResults = ({
+  data,
+  style,
+}: {
+  data: SpotifyApi.TrackSearchResponse,
+  style?: CSSProperties,
+}) => {
   
   const items = data?.tracks?.items
   
-  // not using useMemo on this even though it's going to a component (meaning
-  // it will always cause rerender because of different reference identity)
-  // because when this component rerenders it must be because data changed so
-  // we want to rerender ScrollArea anyways
-  const scrollAreaStyle = {
-    flex: 1,
+  const itemNotFirstStyle = {
+    marginTop: '1.0rem',
   }
   
-  return <ScrollArea style={scrollAreaStyle}>
-    {items?.map((item, index) => <SearchItem item={item} key={index} />)}
+  return <ScrollArea style={style}>
+    {items?.map((item, index) => 
+      <SearchItem
+        item={item}
+        key={index}
+        style={index !== 0 && itemNotFirstStyle}
+      />
+    )}
   </ScrollArea>
 }
 
 
-const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
+const SearchItem = ({
+  item,
+  style,
+}: {
+  item: SpotifyApi.TrackObjectFull,
+  style: CSSProperties,
+}) => {
   const { name, artists, album } = item
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
@@ -35,9 +49,9 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
   const [addButtonIsHovered, addButtonHoverProps] = useHover()
   
   const searchItemStyle = {
+    ...style,
     ...classes.row,
-    padding: '0.5rem',
-    ...(songIsHovered && { background: colors.grayscale.darkGray }),
+    ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
   }
   const imageStyle = {
     height: '6.0rem',
@@ -64,8 +78,8 @@ const SearchItem = ({ item }: { item: SpotifyApi.TrackObjectFull }) => {
     height: '2.4rem',
     padding: '0.7rem',
     boxSizing: 'content-box',
-    margin: 'auto 1.4rem',
-    ...(addButtonIsHovered && { background: colors.grayscale.gray }),
+    margin: 'auto 2.0rem',
+    ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
     borderRadius: '0.3rem',
     color: colors.grayscale.white,
   }

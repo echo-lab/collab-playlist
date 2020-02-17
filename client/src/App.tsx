@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react'
+import React, { useCallback, CSSProperties } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { SearchPanel } from './SearchPanel'
@@ -8,6 +8,7 @@ import { colors, classes } from './styles'
 import { useRefreshToken } from './apiWrapper'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './PlaylistEditor'
+import { Header } from './Header'
 
 
 const useLogin = (): [boolean, () => void] => {
@@ -22,26 +23,6 @@ const useLogin = (): [boolean, () => void] => {
 }
 
 
-
-const Header = ({ logout }: { logout: () => void }) => {
-  const headerStyle = {
-    flexBasis: '6.0rem',
-  }
-  const headingStyle = {
-    ...classes.text,
-    ...classes.bold,
-    fontSize: '2.5rem',
-  }
-  const buttonStyle = {
-    ...classes.text,
-    color: colors.grayscale.black,
-  }
-  
-  return <div style={headerStyle}>
-    <h1 style={headingStyle}>Collab-playlist test</h1>
-    <button style={buttonStyle} onClick={logout}>Logout</button>
-  </div>
-}
 
 
 const LoginPage = () => {
@@ -60,15 +41,21 @@ const ErrorPage = () => {
 }
 
 
-const LoggedInPage = () => {
+const LoggedInPage = ({
+  style,
+}: {
+  style?: CSSProperties,
+}) => {
   
   const panelStyle = {
+    ...style,
     ...classes.row,
-    // overflow: 'hidden',
-    height: '100%',
   }
   const playlistGridStyle = {
     flex: '1',
+  }
+  const searchTabStyle = {
+    flex: '0.25',
   }
   const playlistPanelStyle = {
     flex: '0.75',
@@ -77,15 +64,11 @@ const LoggedInPage = () => {
   return <div style={panelStyle}>
     <Switch>
       <Route exact path="/">
-        <div style={playlistGridStyle}>
-          <PlaylistGrid />
-        </div>
+        <PlaylistGrid style={playlistGridStyle} />
       </Route>
       <Route path="/playlists/:id/">
-        <SearchPanel/>
-        <div style={playlistPanelStyle}>
-          <PlaylistEditor />
-        </div>
+        <SearchPanel style={searchTabStyle}/>
+        <PlaylistEditor style={playlistPanelStyle} />
       </Route>
     </Switch>
   </div>
@@ -103,13 +86,13 @@ export const App = () => {
     width: '100%',
     height: '100%',
     backgroundColor: colors.grayscale.black,
-    boxSizing: 'border-box',
-    padding: '0.5rem',
-    // overflow: 'hidden',
   } as const
   const mainPanelStyle = {
     overflow: 'hidden',
     flex: 1,
+  }
+  const loggedInPageStyle = {
+    height: '100%',
   }
   
   return (
@@ -127,7 +110,7 @@ export const App = () => {
               </Route>
               <Route path="/">
                 { isLoggedIn
-                ? <LoggedInPage/>
+                ? <LoggedInPage style={loggedInPageStyle} />
                 : <Redirect to="/login"/>
                 }
               </Route>
