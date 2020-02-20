@@ -5,6 +5,7 @@ import { classes, colors } from './styles'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import { IconButton } from './IconButton'
 
+// TODO import { tableFlexValues } from './TableHeader'
 
 const fontSize = '1.8rem'
 const rowStyle = ({ songIsHovered }): CSSProperties => ({
