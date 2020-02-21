@@ -121,6 +121,18 @@ export const setupApi = (app: Application) => {
   
   
   /**
+   * Get user information from id
+   */
+  app.get('/api/users/:id', async (req, res: ApiResponse) => {
+    const { id } = req.params
+    
+    const data = await res.locals.spotifyApi.getUser(id)
+    
+    res.json(data.body)
+  })
+  
+  
+  /**
    * catch all other api endpoints
    */
   app.get(['/api', '/api/*'], (req, res) => {

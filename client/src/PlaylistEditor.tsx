@@ -7,6 +7,7 @@ import { classes, colors } from './styles'
 import { SongRow } from './SongRow'
 import { TableHeader } from './TableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
+// import { userCacheContext, UserCache } from './userCache'
 
 
 const usePlaylistData = (id: string) => {
@@ -31,6 +32,10 @@ export const PlaylistEditor = ({
   
   console.log({data, loading})
   
+  
+  
+  // const [userCache, setUserCache] = useState<UserCache>({})
+  
   const playlistEditorStyle: CSSProperties = {
     ...style,
     ...classes.column,
@@ -48,9 +53,11 @@ export const PlaylistEditor = ({
         <PlaylistInfo playlist={data} />
         <TableHeader />
         <div style={songsStyle}>
-          {data.tracks.items.map((item, index) => 
-            <SongRow item={item} key={index}/>
-          )}
+          {/* <userCacheContext.Provider value={{ userCache, setUserCache }}> */}
+            {data.tracks.items.map((item, index) => 
+              <SongRow item={item} key={index}/>
+            )}
+          {/* </userCacheContext.Provider> */}
         </div>
       </>
     }
