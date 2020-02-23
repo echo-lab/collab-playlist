@@ -7,6 +7,7 @@ import { classes, colors } from './styles'
 import { SongRow } from './SongRow'
 import { TableHeader } from './TableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
+import { SearchPanel } from './SearchPanel'
 
 
 const usePlaylistData = (id: string) => {
@@ -43,6 +44,26 @@ const usePlaylistData = (id: string) => {
 }
 
 
+
+
+const panelStyle = (style): CSSProperties => ({
+  ...classes.row,
+  ...style,
+})
+const searchTabStyle = {
+  flex: 0.2,
+}
+const playlistEditorStyle = {
+  ...classes.column,
+  flex: 0.8,
+  // padding: '2.0rem',
+  backgroundColor: colors.grayscale.darkGray,
+}
+const songsStyle = {
+  padding: '0 2.0rem 2.0rem',
+  overflow: 'auto',
+}
+
 export const PlaylistEditor = ({
   style,
 }: {
@@ -57,34 +78,25 @@ export const PlaylistEditor = ({
   
   // console.log({data, loading})
   
-  
-  const playlistEditorStyle: CSSProperties = {
-    ...style,
-    ...classes.column,
-    // padding: '2.0rem',
-    backgroundColor: colors.grayscale.darkGray,
-  }
-  const songsStyle = {
-    padding: '0 2.0rem 2.0rem',
-    overflow: 'auto',
-  }
-  
-  return <div style={playlistEditorStyle}>
-    { playlistLoading
-    ? null
-    : <>
-        <PlaylistInfo playlist={playlist} />
-        <TableHeader />
-        <div style={songsStyle}>
-          { addedByUsersLoading
-          ? null
-          : playlist.tracks.items.map((item, index) => 
-              <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
-            )
-          }
-        </div>
-      </>
-    }
+  return <div style={panelStyle(style)}>
+    <SearchPanel style={searchTabStyle}/>
+    <div style={playlistEditorStyle}>
+      { playlistLoading
+      ? null
+      : <>
+          <PlaylistInfo playlist={playlist} />
+          <TableHeader />
+          <div style={songsStyle}>
+            { addedByUsersLoading
+            ? null
+            : playlist.tracks.items.map((item, index) => 
+                <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
+              )
+            }
+          </div>
+        </>
+      }
+    </div>
   </div>
 }
 
