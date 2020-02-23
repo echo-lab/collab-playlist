@@ -4,8 +4,7 @@ import { useHover } from './useHover'
 import { classes, colors } from './styles'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import { IconButton } from './IconButton'
-
-// TODO import { tableFlexValues } from './TableHeader'
+import { tableFlexValues } from './TableHeader'
 
 
 const fontSize = '1.8rem'
@@ -27,9 +26,9 @@ const childText: CSSProperties = {
 }
 const removeButtonStyle = ({ removeButtonIsHovered }): CSSProperties => ({
   ...childMargin,
-  width: '2.4rem',
-  height: '2.4rem',
-  padding: '0.7rem',
+  width: tableFlexValues.removeButtonWidth,
+  height: tableFlexValues.removeButtonWidth,
+  padding: tableFlexValues.removeButtonPadding,
   boxSizing: 'content-box',
   ...(removeButtonIsHovered && { background: colors.translucentWhite(0.2) }),
   borderRadius: '0.3rem',
@@ -38,22 +37,22 @@ const removeButtonStyle = ({ removeButtonIsHovered }): CSSProperties => ({
 const titleStyle: CSSProperties = {
   ...childText,
   ...childMargin,
-  flex: 2,
+  flex: tableFlexValues.title,
 }
 const artistStyle: CSSProperties = {
   ...childText,
   ...childMargin,
-  flex: 1,
+  flex: tableFlexValues.artist,
 }
 const albumStyle: CSSProperties = {
   ...childText,
   ...childMargin,
-  flex: 1,
+  flex: tableFlexValues.album,
 }
 const addedByStyle: CSSProperties = {
   ...childText,
   ...childMargin,
-  flex: 1,
+  flex: tableFlexValues.addedBy,
 }
 
 export const SongRow = ({
