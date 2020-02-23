@@ -2,6 +2,7 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import { Application, Response } from 'express'
+// import zip from 'array-zip'
 
 
 export const setupApi = (app: Application) => {
@@ -119,6 +120,28 @@ export const setupApi = (app: Application) => {
     res.json(data.body)
   })
   
+  
+  /**
+   * Get user information from multiple ids
+   * query param ids should be a comma separated list of ids
+   * returns an object where the keys are the ids and the values are the user objects
+   */
+  app.get('/api/users/', async (req, res: ApiResponse) => {
+    const ids = (req.query.ids as string).split(',')
+    
+    // make all the requests:
+    const requests = ids.map(id => res.locals.spotifyApi.getUser(id))
+    const responses = await Promise.all(requests)
+    const bodies = responses.map(response => response.body)
+    
+    // since ids and bodies still have the same order, we can zip them together into an object
+    const usersObj = Object.assign(
+      { },
+      ...ids.map((id, index) => ({ [id]: bodies[index] }))
+    )
+    
+    res.json(usersObj)
+  })
   
   /**
    * Get user information from id

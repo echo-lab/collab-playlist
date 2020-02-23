@@ -7,17 +7,39 @@ import { classes, colors } from './styles'
 import { SongRow } from './SongRow'
 import { TableHeader } from './TableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
-// import { userCacheContext, UserCache } from './userCache'
 
 
 const usePlaylistData = (id: string) => {
-  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
+  const [
+    playlistResource, playlistSetter
+  ] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
+  const [
+    addedByUsersResource, addedByUsersSetter
+  ] = useResource<Record<string, SpotifyApi.UserObjectPublic>>(null, true)
   
   useEffect(() => {
-    apiWrapper(`/api/playlists/${id}/`, setter)
-  }, [id, setter])
+    apiWrapper(`/api/playlists/${id}/`, playlistSetter)
+  }, [id, playlistSetter])
   
-  return resource
+  
+  useEffect(() => {
+    // once playlistResource has loaded:
+    if (!playlistResource.loading && !playlistResource.error) {
+      // get the list of addedBy user ids
+      const ids = playlistResource.data.tracks.items.map(item => item.added_by.id)
+      // filter out duplicates:
+      const uniqueIds = ids.reduce(
+        (aggregate: string[], id) =>
+          aggregate.includes(id)
+          ? aggregate
+          : [...aggregate, id]
+        , []
+      )
+      apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`, addedByUsersSetter)
+    }
+  }, [playlistResource, addedByUsersSetter])
+  
+  return [playlistResource, addedByUsersResource] as const
 }
 
 
@@ -28,13 +50,13 @@ export const PlaylistEditor = ({
 }) => {
   const { id } = useParams()
   
-  const { data, loading } = usePlaylistData(id)
+  const [
+    { data: playlist, loading: playlistLoading },
+    { data: addedByUsers, loading: addedByUsersLoading }
+  ] = usePlaylistData(id)
   
-  console.log({data, loading})
+  // console.log({data, loading})
   
-  
-  
-  // const [userCache, setUserCache] = useState<UserCache>({})
   
   const playlistEditorStyle: CSSProperties = {
     ...style,
@@ -47,17 +69,18 @@ export const PlaylistEditor = ({
   }
   
   return <div style={playlistEditorStyle}>
-    { loading
+    { playlistLoading
     ? null
     : <>
-        <PlaylistInfo playlist={data} />
+        <PlaylistInfo playlist={playlist} />
         <TableHeader />
         <div style={songsStyle}>
-          {/* <userCacheContext.Provider value={{ userCache, setUserCache }}> */}
-            {data.tracks.items.map((item, index) => 
-              <SongRow item={item} key={index}/>
-            )}
-          {/* </userCacheContext.Provider> */}
+          { addedByUsersLoading
+          ? null
+          : playlist.tracks.items.map((item, index) => 
+              <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
+            )
+          }
         </div>
       </>
     }

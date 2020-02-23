@@ -1,54 +1,11 @@
 
-import React, { CSSProperties, useEffect } from 'react'
+import React, { CSSProperties } from 'react'
 import { useHover } from './useHover'
 import { classes, colors } from './styles'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import { IconButton } from './IconButton'
-import { apiWrapper, useResource } from './apiWrapper'
-// import { userCacheContext } from './userCache'
 
 // TODO import { tableFlexValues } from './TableHeader'
-
-
-// const userCache: Record<string, Resource<SpotifyApi.UserObjectPublic>> = { }
-
-// const useUserData = (id: string) => {
-//   const [resource, setter] = useResource<SpotifyApi.UserObjectPublic>(null, true)
-  
-//   const { userCache, setUserCache } = useContext(userCacheContext)
-  
-//   if (!(id in userCache)) {
-//     console.log(`fetching user ${id}!`)
-//     apiWrapper(`/api/users/${id}`, setter)
-//     setUserCache(userCache => ({ ...userCache, [id]: resource }))
-//     userCache[id] = resource
-//   }
-  
-//   useEffect(() => {
-//     // if (id in userCache) {
-//       // setter(userCache[id])
-//     // } else {
-    
-      
-      
-//       // userCache[id] = resource
-      
-//     // }
-//   }, [id, setter, resource, userCache, setUserCache])
-  
-//   return id in userCache ? userCache[id] : resource
-// }
-
-const useUserData = (id: string) => {
-  const [resource, setter] = useResource<SpotifyApi.UserObjectPublic>(null, true)
-  
-  useEffect(() => {
-    apiWrapper(`/api/users/${id}`, setter)
-  }, [id, setter])
-  
-  return resource
-}
-
 
 
 const fontSize = '1.8rem'
@@ -99,7 +56,13 @@ const addedByStyle: CSSProperties = {
   flex: 1,
 }
 
-export const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
+export const SongRow = ({
+  item,
+  addedByUsers,
+}: {
+  item: SpotifyApi.PlaylistTrackObject,
+  addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
+}) => {
   const { track } = item
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
@@ -107,19 +70,15 @@ export const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
   const [songIsHovered, songHoverProps] = useHover()
   const [removeButtonIsHovered, removeButtonHoverProps] = useHover()
   
-  const { data: addedByUser, loading: userLoading } = useUserData(item.added_by.id)
+  // const { data: addedByUser, loading: userLoading } = useUserData(item.added_by.id)
+  const addedByUser = addedByUsers[item.added_by.id]
   
   
   return <div style={rowStyle({ songIsHovered })} {...songHoverProps}>
     <div style={titleStyle}>{track.name}</div>
     <div style={artistStyle}>{artistNames}</div>
     <div style={albumStyle}>{track.album.name}</div>
-    <div style={addedByStyle}>
-      { userLoading
-      ? null
-      : addedByUser.display_name
-      }
-    </div>
+    <div style={addedByStyle}>{addedByUser.display_name}</div>
     <IconButton
       icon={faMinusCircle}
       style={removeButtonStyle({ removeButtonIsHovered })}
