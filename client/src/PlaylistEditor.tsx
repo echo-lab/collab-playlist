@@ -66,6 +66,7 @@ export const PlaylistEditor = ({
   }
   const songsStyle = {
     padding: '0 2.0rem 2.0rem',
+    overflow: 'auto',
   }
   
   return <div style={playlistEditorStyle}>
