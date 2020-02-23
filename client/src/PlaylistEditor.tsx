@@ -4,19 +4,42 @@ import React, { useEffect, CSSProperties } from 'react'
 import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
 import { classes, colors } from './styles'
-import { useHover } from './useHover'
-import { IconButton } from './IconButton'
-import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
+import { SongRow } from './SongRow'
+import { TableHeader } from './TableHeader'
+import { PlaylistInfo } from './PlaylistInfo'
 
 
 const usePlaylistData = (id: string) => {
-  const [resource, setter] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
+  const [
+    playlistResource, playlistSetter
+  ] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
+  const [
+    addedByUsersResource, addedByUsersSetter
+  ] = useResource<Record<string, SpotifyApi.UserObjectPublic>>(null, true)
   
   useEffect(() => {
-    apiWrapper(`/api/playlists/${id}/`, setter)
-  }, [id, setter])
+    apiWrapper(`/api/playlists/${id}/`, playlistSetter)
+  }, [id, playlistSetter])
   
-  return resource
+  
+  useEffect(() => {
+    // once playlistResource has loaded:
+    if (!playlistResource.loading && !playlistResource.error) {
+      // get the list of addedBy user ids
+      const ids = playlistResource.data.tracks.items.map(item => item.added_by.id)
+      // filter out duplicates:
+      const uniqueIds = ids.reduce(
+        (aggregate: string[], id) =>
+          aggregate.includes(id)
+          ? aggregate
+          : [...aggregate, id]
+        , []
+      )
+      apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`, addedByUsersSetter)
+    }
+  }, [playlistResource, addedByUsersSetter])
+  
+  return [playlistResource, addedByUsersResource] as const
 }
 
 
@@ -27,97 +50,46 @@ export const PlaylistEditor = ({
 }) => {
   const { id } = useParams()
   
-  const { data, loading } = usePlaylistData(id)
+  const [
+    { data: playlist, loading: playlistLoading },
+    { data: addedByUsers, loading: addedByUsersLoading }
+  ] = usePlaylistData(id)
   
-  console.log({data, loading})
+  // console.log({data, loading})
+  
   
   const playlistEditorStyle: CSSProperties = {
     ...style,
     ...classes.column,
-    padding: '2.0rem',
+    // padding: '2.0rem',
     backgroundColor: colors.grayscale.darkGray,
+  }
+  const songsStyle = {
+    padding: '0 2.0rem 2.0rem',
+    overflow: 'auto',
   }
   
   return <div style={playlistEditorStyle}>
-    { loading
+    { playlistLoading
     ? null
-    : data.tracks.items.map((item, index) => 
-        <SongRow item={item} key={index}/>
-      )
+    : <>
+        <PlaylistInfo playlist={playlist} />
+        <TableHeader />
+        <div style={songsStyle}>
+          { addedByUsersLoading
+          ? null
+          : playlist.tracks.items.map((item, index) => 
+              <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
+            )
+          }
+        </div>
+      </>
     }
   </div>
 }
 
 
-const SongRow = ({ item }: { item: SpotifyApi.PlaylistTrackObject }) => {
-  const { track } = item
-  
-  const artistNames = track.artists.map(artist => artist.name).join(', ')
-  
-  const [songIsHovered, songHoverProps] = useHover()
-  const [removeButtonIsHovered, removeButtonHoverProps] = useHover()
-  
-  const fontSize = '1.8rem'
-  
-  const rowStyle: CSSProperties = {
-    // display: 'contents',
-    ...classes.row,
-    // justifyContent: 'spaceEvenly',
-    // padding: '0 1.4rem',
-    height: '5.0rem',
-    ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
-  }
-  const childMargin = {
-    margin: 'auto 2.0rem',
-  }
-  const childText: CSSProperties = {
-    ...classes.text,
-    ...classes.textOverflow(),
-    fontSize,
-  }
-  const removeButtonStyle: CSSProperties = {
-    ...childMargin,
-    width: '2.4rem',
-    height: '2.4rem',
-    padding: '0.7rem',
-    boxSizing: 'content-box',
-    ...(removeButtonIsHovered && { background: colors.translucentWhite(0.2) }),
-    borderRadius: '0.3rem',
-    color: colors.grayscale.white,
-  }
-  const titleStyle: CSSProperties = {
-    ...childText,
-    ...childMargin,
-    flex: 2,
-  }
-  const artistStyle: CSSProperties = {
-    ...childText,
-    ...childMargin,
-    flex: 1,
-  }
-  const albumStyle: CSSProperties = {
-    ...childText,
-    ...childMargin,
-    flex: 1,
-  }
-  const addedByStyle: CSSProperties = {
-    ...childText,
-    ...childMargin,
-    flex: 1,
-  }
-  
-  return <div style={rowStyle} {...songHoverProps}>
-    <div style={titleStyle}>{track.name}</div>
-    <div style={artistStyle}>{artistNames}</div>
-    <div style={albumStyle}>{track.album.name}</div>
-    <div style={addedByStyle}>{item.added_by.id}</div>
-    <IconButton
-      icon={faMinusCircle}
-      style={removeButtonStyle}
-      {...removeButtonHoverProps}
-    />
-  </div>
-}
+
 
 
 

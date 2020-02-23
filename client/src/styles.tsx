@@ -14,6 +14,7 @@ export const colors = {
     darkGray: '#2A2A2A',
     gray: '#3A3A3A',
     lightGray: '#606060',
+    lightText: '#B0B0B0',
     white: '#F0F0F0',
   },
   translucentWhite: opacity => `rgba(255,255,255,${opacity})`,

@@ -16,6 +16,9 @@ export interface Resource<T> {
 }
 
 
+/**
+ * updateResource (setter) has a stable reference identity
+ */
 export const useResource = <T extends any>(
   initialVal: T,
   loading: boolean = false
