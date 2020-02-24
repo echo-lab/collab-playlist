@@ -35,6 +35,43 @@ export const SearchResults = ({
 }
 
 
+
+const searchItemStyle = (style, songIsHovered) => ({
+  ...style,
+  ...classes.row,
+  ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
+})
+const imageStyle = {
+  height: '6.0rem',
+  width: '6.0rem',
+}
+const textDivStyle = {
+  ...classes.column,
+  flex: 1,
+  justifyContent: 'space-evenly',
+  paddingRight: '0.4rem',
+  paddingLeft: '0.4rem',
+}
+const songNameStyle = {
+  ...classes.text,
+  ...classes.textOverflow({ lines: 2 }),
+}
+const artistNamesStyle = {
+  ...classes.text,
+  ...classes.textOverflow({ lines: 2 }),
+  fontSize: '1.4rem',
+}
+const addButtonStyle = (addButtonIsHovered): CSSProperties => ({
+  width: '2.4rem',
+  height: '2.4rem',
+  padding: '0.7rem',
+  boxSizing: 'content-box',
+  margin: 'auto 2.0rem',
+  ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
+  borderRadius: '0.3rem',
+  color: colors.grayscale.white,
+})
+
 const SearchItem = ({
   item,
   style,
@@ -51,43 +88,14 @@ const SearchItem = ({
   const [songIsHovered, songHoverProps] = useHover()
   const [addButtonIsHovered, addButtonHoverProps] = useHover()
   
-  const searchItemStyle = {
-    ...style,
-    ...classes.row,
-    ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
-  }
-  const imageStyle = {
-    height: '6.0rem',
-    width: '6.0rem',
-  }
-  const textDivStyle = {
-    ...classes.column,
-    flex: 1,
-    justifyContent: 'space-evenly',
-    paddingRight: '0.4rem',
-    paddingLeft: '0.4rem',
-  }
-  const songNameStyle = {
-    ...classes.text,
-    ...classes.textOverflow({ lines: 2 }),
-  }
-  const artistNamesStyle = {
-    ...classes.text,
-    ...classes.textOverflow({ lines: 2 }),
-    fontSize: '1.4rem',
-  }
-  const addButtonStyle: CSSProperties = {
-    width: '2.4rem',
-    height: '2.4rem',
-    padding: '0.7rem',
-    boxSizing: 'content-box',
-    margin: 'auto 2.0rem',
-    ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
-    borderRadius: '0.3rem',
-    color: colors.grayscale.white,
+  const addButtonOnClick = () => {
+    dispatch({
+      type: 'select-add',
+      payload: { id: item.id },
+    })
   }
   
-  return <div style={searchItemStyle} {...songHoverProps}>
+  return <div style={searchItemStyle(style, songIsHovered)} {...songHoverProps}>
     <Image src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
@@ -96,7 +104,8 @@ const SearchItem = ({
     { modificationState.userAction === 'view' &&
       <IconButton
         icon={faPlusCircle}
-        style={addButtonStyle}
+        style={addButtonStyle(addButtonIsHovered)}
+        onClick={addButtonOnClick}
         {...addButtonHoverProps}
       />
     }
