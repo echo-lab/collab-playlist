@@ -1,11 +1,12 @@
 
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useContext } from 'react'
 import { classes, colors } from './styles'
 import { ScrollArea } from './ScrollArea'
 import { Image } from './Image'
 import { IconButton } from './IconButton'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from './useHover'
+import { modificationReducerContext } from './modificationReducer'
 
 
 export const SearchResults = ({
@@ -44,6 +45,8 @@ const SearchItem = ({
   const { name, artists, album } = item
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
+  
+  const { modificationState, dispatch } = useContext(modificationReducerContext)
   
   const [songIsHovered, songHoverProps] = useHover()
   const [addButtonIsHovered, addButtonHoverProps] = useHover()
@@ -90,11 +93,13 @@ const SearchItem = ({
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>
     </div>
-    <IconButton
-      icon={faPlusCircle}
-      style={addButtonStyle}
-      {...addButtonHoverProps}
-    />
+    { modificationState.userAction === 'view' &&
+      <IconButton
+        icon={faPlusCircle}
+        style={addButtonStyle}
+        {...addButtonHoverProps}
+      />
+    }
   </div>
 }
 

@@ -1,5 +1,5 @@
 
-import React, { useEffect, CSSProperties } from 'react'
+import React, { useEffect, CSSProperties, useReducer } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
@@ -8,6 +8,7 @@ import { SongRow } from './SongRow'
 import { TableHeader } from './TableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
+import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
 
 
 const usePlaylistData = (id: string) => {
@@ -78,26 +79,30 @@ export const PlaylistEditor = ({
   
   // console.log({data, loading})
   
-  return <div style={panelStyle(style)}>
-    <SearchPanel style={searchTabStyle}/>
-    <div style={playlistEditorStyle}>
-      { playlistLoading
-      ? null
-      : <>
-          <PlaylistInfo playlist={playlist} />
-          <TableHeader />
-          <div style={songsStyle}>
-            { addedByUsersLoading
-            ? null
-            : playlist.tracks.items.map((item, index) => 
-                <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
-              )
-            }
-          </div>
-        </>
-      }
+  const [modificationState, dispatch] = useReducer(modificationReducer, initialState)
+  
+  return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
+    <div style={panelStyle(style)}>
+      <SearchPanel style={searchTabStyle}/>
+      <div style={playlistEditorStyle}>
+        { playlistLoading
+        ? null
+        : <>
+            <PlaylistInfo playlist={playlist} />
+            <TableHeader />
+            <div style={songsStyle}>
+              { addedByUsersLoading
+              ? null
+              : playlist.tracks.items.map((item, index) => 
+                  <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
+                )
+              }
+            </div>
+          </>
+        }
+      </div>
     </div>
-  </div>
+  </modificationReducerContext.Provider>
 }
 
 
