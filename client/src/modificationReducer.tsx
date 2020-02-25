@@ -4,14 +4,21 @@ import { createContext, Dispatch } from 'react'
 
 
 
-interface AddOrRemoveState {
-  userAction: 'add' | 'remove',
-  id: string,
+interface AddState {
+  userAction: 'add',
+  songObject: SpotifyApi.TrackObjectFull,
+}
+interface RemoveState {
+  userAction: 'remove',
+  songId: string,
 }
 interface ViewState {
   userAction: 'view'
 }
-type State = AddOrRemoveState | ViewState
+type State =
+  | AddState
+  | RemoveState
+  | ViewState
 
 export const initialState: State = {
   userAction: 'view',
@@ -22,14 +29,14 @@ export const initialState: State = {
 interface SelectAddAction {
   type: 'select-add',
   payload: {
-    id: string,
-    // song: SpotifyApi.TrackObjectFull,
+    // id: string,
+    songObject: SpotifyApi.TrackObjectFull,
   }
 }
 interface SelectRemoveAction {
   type: 'select-remove',
   payload: {
-    id: string,
+    songId: string,
   }
 }
 interface CancelAction {
@@ -69,13 +76,13 @@ export const modificationReducer = (state: State, action: Action): State => {
       // assume state.userAction === 'view'?
       return {
         userAction: 'add',
-        id: action.payload.id,
+        songObject: action.payload.songObject,
       }
     case 'select-remove':
       // assume state.userAction === 'view'?
       return {
         userAction: 'remove',
-        id: action.payload.id,
+        songId: action.payload.songId,
       }
     case 'cancel':
       // assume state.userAction === 'add' | 'remove'?

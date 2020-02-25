@@ -4,7 +4,7 @@ import React, { useEffect, CSSProperties, useReducer } from 'react'
 import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
 import { classes, colors } from './styles'
-import { SongRow } from './SongRow'
+import { SongRow, DraftAdditionSongRow } from './SongRow'
 import { TableHeader } from './TableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
@@ -96,6 +96,9 @@ export const PlaylistEditor = ({
               : playlist.tracks.items.map((item, index) => 
                   <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
                 )
+              }
+              { modificationState.userAction === 'add' &&
+                <DraftAdditionSongRow item={modificationState.songObject} />
               }
             </div>
           </>

@@ -91,7 +91,7 @@ const SearchItem = ({
   const addButtonOnClick = () => {
     dispatch({
       type: 'select-add',
-      payload: { id: item.id },
+      payload: { songObject: item },
     })
   }
   
