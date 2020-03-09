@@ -10,3 +10,6 @@ build/
 
 # folder for ignored files
 ignore/
+
+# vscode settings
+.vscode/
