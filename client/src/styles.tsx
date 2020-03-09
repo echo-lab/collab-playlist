@@ -26,6 +26,7 @@ export const colors = {
 } as const
 
 export const classes = {
+  // relatively reusable/generic styles:
   text: {
     margin: '0',
     color: colors.grayscale.white,
@@ -52,6 +53,12 @@ export const classes = {
   row: {
     display: 'flex',
     flexDirection: 'row',
+  },
+  visible: {
+    visibility: 'visible',
+  },
+  hidden: {
+    visibility: 'hidden',
   },
 } as const
 
