@@ -62,14 +62,16 @@ const playlistEditorStyle = {
   flex: 0.8,
   // padding: '2.0rem',
   backgroundColor: colors.grayscale.darkGray,
+  overflow: 'auto',
 }
 const tHeadStyle = {
   background: colors.grayscale.gray,
   padding: '2.0rem 2.0rem 0',
-}
+  position: 'sticky',
+  top: 0,
+} as const
 const songsStyle = {
   padding: '0 2.0rem 2.0rem',
-  overflow: 'auto',
 }
 
 export const PlaylistEditor = ({
