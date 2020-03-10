@@ -48,14 +48,18 @@ export const addedByStyle: CSSProperties = {
   margin: childMargin,
   flex: 1, //tableFlexValues.addedBy,
 }
+export const removeButtonWrapperStyle = {
+  ...classes.row, // needed to center the button vertically because of the additional td wrapper
+}
 export const removeButtonStyle = {
   margin: childMargin,
-  width: '2.4rem',
-  height: '2.4rem',
+  boxSizing: 'border-box',
+  width: '3.8rem',
+  height: '3.8rem',
   padding: '0.7rem',
   borderRadius: '0.3rem',
   color: colors.grayscale.white,
-}
+} as const
 
 
 

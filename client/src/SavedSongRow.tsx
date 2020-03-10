@@ -46,9 +46,10 @@ export const SavedSongRow = ({
     <td style={styles.artistStyle}>{artistNames}</td>
     <td style={styles.albumStyle}>{track.album.name}</td>
     <td style={styles.addedByStyle}>{addedByUser.display_name}</td>
-    <td style={styles.removeButtonStyle}>
+    <td style={styles.removeButtonWrapperStyle}>
       <IconButton
         icon={faMinusCircle}
+        style={styles.removeButtonStyle}
         // style={removeButtonStyle({
         //   hovered: removeButtonIsHovered,
         // })}

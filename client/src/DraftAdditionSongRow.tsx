@@ -39,6 +39,7 @@ export const DraftAdditionSongRow = ({
     <td style={styles.removeButtonStyle}>
       <IconButton
         icon={faTimesCircle}
+        style={styles.removeButtonStyle}
         // style={removeButtonStyle({
         //   hovered: buttonIsHovered,
         //   visible,
