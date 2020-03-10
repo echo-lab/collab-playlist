@@ -2,7 +2,6 @@
 import React, { CSSProperties, useContext } from 'react'
 import { classes, colors } from './styles'
 import { ScrollArea } from './ScrollArea'
-import { Image } from './Image'
 import { IconButton } from './IconButton'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from './useHover'
@@ -42,6 +41,7 @@ const searchItemStyle = (style, songIsHovered) => ({
   ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
 })
 const imageStyle = {
+  ...classes.centeredClippedImage,
   height: '6.0rem',
   width: '6.0rem',
 }
@@ -96,7 +96,7 @@ const SearchItem = ({
   }
   
   return <div style={searchItemStyle(style, songIsHovered)} {...songHoverProps}>
-    <Image src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
+    <img src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>

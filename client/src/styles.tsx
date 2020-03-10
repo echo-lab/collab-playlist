@@ -60,6 +60,11 @@ export const classes = {
   hidden: {
     visibility: 'hidden',
   },
+  centeredClippedImage: {
+    objectPosition: 'center',
+    // Make the image cover the area of the <img>, and clip the excess
+    objectFit: 'cover',
+  }
 } as const
 
 
