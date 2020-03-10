@@ -1,12 +1,17 @@
 
-import React, { useEffect, CSSProperties } from 'react'
+import React, { useEffect, CSSProperties, useReducer } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
 import { useResource, apiWrapper } from './apiWrapper'
 import { classes, colors } from './styles'
-import { SongRow } from './SongRow'
-import { TableHeader } from './TableHeader'
+// import { SavedSongRow, DraftAdditionSongRow } from './SongRow'
+import { SavedSongRow } from './SavedSongRow'
+import { DraftAdditionSongRow } from './DraftAdditionSongRow'
+// import { TableHeader } from './TableHeader'
+import { PlaylistTableHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
+import { SearchPanel } from './SearchPanel'
+import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
 
 
 const usePlaylistData = (id: string) => {
@@ -43,6 +48,32 @@ const usePlaylistData = (id: string) => {
 }
 
 
+
+
+const panelStyle = (style): CSSProperties => ({
+  ...classes.row,
+  ...style,
+})
+const searchTabStyle = {
+  flex: 0.2,
+}
+const playlistEditorStyle = {
+  ...classes.column,
+  flex: 0.8,
+  // padding: '2.0rem',
+  backgroundColor: colors.grayscale.darkGray,
+  overflow: 'auto',
+}
+const tHeadStyle = {
+  background: colors.grayscale.gray,
+  padding: '2.0rem 2.0rem 0',
+  position: 'sticky',
+  top: 0,
+} as const
+const songsStyle = {
+  padding: '0 2.0rem 2.0rem',
+}
+
 export const PlaylistEditor = ({
   style,
 }: {
@@ -57,35 +88,35 @@ export const PlaylistEditor = ({
   
   // console.log({data, loading})
   
+  const [modificationState, dispatch] = useReducer(modificationReducer, initialState)
   
-  const playlistEditorStyle: CSSProperties = {
-    ...style,
-    ...classes.column,
-    // padding: '2.0rem',
-    backgroundColor: colors.grayscale.darkGray,
-  }
-  const songsStyle = {
-    padding: '0 2.0rem 2.0rem',
-    overflow: 'auto',
-  }
-  
-  return <div style={playlistEditorStyle}>
-    { playlistLoading
-    ? null
-    : <>
-        <PlaylistInfo playlist={playlist} />
-        <TableHeader />
-        <div style={songsStyle}>
-          { addedByUsersLoading
-          ? null
-          : playlist.tracks.items.map((item, index) => 
-              <SongRow item={item} addedByUsers={addedByUsers} key={index}/>
-            )
-          }
-        </div>
-      </>
-    }
-  </div>
+  return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
+    <div style={panelStyle(style)}>
+      <SearchPanel style={searchTabStyle}/>
+      <table style={playlistEditorStyle}>
+        { playlistLoading
+        ? null
+        : <>
+            <thead style={tHeadStyle}>
+              <PlaylistInfo playlist={playlist} />
+              <PlaylistTableHeader />
+            </thead>
+            <tbody style={songsStyle}>
+              { addedByUsersLoading
+              ? null
+              : playlist.tracks.items.map((item, index) => 
+                  <SavedSongRow item={item} addedByUsers={addedByUsers} key={index}/>
+                )
+              }
+              { modificationState.userAction === 'add' &&
+                <DraftAdditionSongRow item={modificationState.songObject} />
+              }
+            </tbody>
+          </>
+        }
+      </table>
+    </div>
+  </modificationReducerContext.Provider>
 }
 
 

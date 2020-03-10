@@ -2,7 +2,6 @@
 import React, { useCallback, CSSProperties } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { CookiesProvider, useCookies } from 'react-cookie'
-import { SearchPanel } from './SearchPanel'
 import { colors, classes } from './styles'
 // import { useWarnResize } from './warnResize'
 import { useRefreshToken } from './apiWrapper'
@@ -46,32 +45,14 @@ const LoggedInPage = ({
 }: {
   style?: CSSProperties,
 }) => {
-  
-  const panelStyle = {
-    ...style,
-    ...classes.row,
-  }
-  const playlistGridStyle = {
-    flex: '1',
-  }
-  const searchTabStyle = {
-    flex: '0.25',
-  }
-  const playlistPanelStyle = {
-    flex: '0.75',
-  }
-  
-  return <div style={panelStyle}>
-    <Switch>
-      <Route exact path="/">
-        <PlaylistGrid style={playlistGridStyle} />
-      </Route>
-      <Route path="/playlists/:id/">
-        <SearchPanel style={searchTabStyle}/>
-        <PlaylistEditor style={playlistPanelStyle} />
-      </Route>
-    </Switch>
-  </div>
+  return <Switch>
+    <Route exact path="/">
+      <PlaylistGrid style={style} />
+    </Route>
+    <Route path="/playlists/:id/">
+      <PlaylistEditor style={style} />
+    </Route>
+  </Switch>
 }
 
 export const App = () => {

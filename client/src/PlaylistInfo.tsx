@@ -10,8 +10,8 @@ import { Image } from './Image'
 const containerStyle = {
   ...classes.row,
   justifyContent: 'space-between',
-  background: colors.grayscale.gray,
-  padding: '2.0rem 2.0rem 0',
+  // background: colors.grayscale.gray,
+  // padding: '2.0rem 2.0rem 0',
 }
 const imageStyle = {
   width: '16.0rem',
