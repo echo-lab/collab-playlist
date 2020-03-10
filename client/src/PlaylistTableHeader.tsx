@@ -1,16 +1,16 @@
 
 import React from 'react'
 import * as styles from './playlistTableRowStyles'
-import { colors } from './styles'
+// import { colors } from './styles'
 
 
-const rowStyle = {
-  ...styles.rowStyle,
-  background: colors.grayscale.gray,
-}
+// const rowStyle = {
+//   ...styles.rowStyle,
+//   background: colors.grayscale.gray,
+// }
 
 export const PlaylistTableHeader = () => {
-  return <tr style={rowStyle}>
+  return <tr style={styles.rowStyle}>
     <th style={styles.expandCollapseButtonStyle}></th>
     <th style={styles.titleStyle}>
       Title

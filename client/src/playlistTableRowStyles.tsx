@@ -12,7 +12,7 @@ export const rowStyle = {
   height: '5.0rem',
   // ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
 }
-const childMargin = 'auto 2.0rem'
+const childMargin = 'auto 1.0rem'
 
 const childText: CSSProperties = {
   ...classes.text,
@@ -20,12 +20,13 @@ const childText: CSSProperties = {
   fontSize,
 }
 export const expandCollapseButtonStyle = {
-  margin: 'auto 2.0rem',
+  margin: childMargin,
   width: '2.4rem',
   height: '2.4rem',
   padding: '0.7rem',
   borderRadius: '0.3rem',
   color: colors.grayscale.white,
+  // background: 'gray',
 }
 export const titleStyle: CSSProperties = {
   ...childText,
@@ -48,7 +49,7 @@ export const addedByStyle: CSSProperties = {
   flex: 1, //tableFlexValues.addedBy,
 }
 export const removeButtonStyle = {
-  margin: 'auto 2.0rem',
+  margin: childMargin,
   width: '2.4rem',
   height: '2.4rem',
   padding: '0.7rem',

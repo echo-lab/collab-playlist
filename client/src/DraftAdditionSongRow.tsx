@@ -30,22 +30,24 @@ export const DraftAdditionSongRow = ({
     })
   }
   
-  return <div style={styles.rowStyle} /*{...songHoverProps}*/>
+  return <tr style={styles.rowStyle} /*{...songHoverProps}*/>
     <td style={styles.expandCollapseButtonStyle}></td>
     <td style={styles.titleStyle}>{item.name}</td>
     <td style={styles.artistStyle}>{artistNames}</td>
     <td style={styles.albumStyle}>{item.album.name}</td>
     <td style={styles.addedByStyle}>{addedByUser}</td>
-    <IconButton
-      icon={faTimesCircle}
-      // style={removeButtonStyle({
-      //   hovered: buttonIsHovered,
-      //   visible,
-      //   // visible: modificationState.userAction === 'view',
-      // })}
-      onClick={cancelButtonOnClick}
-      // {...buttonHoverProps}
-    />
-  </div>
+    <td style={styles.removeButtonStyle}>
+      <IconButton
+        icon={faTimesCircle}
+        // style={removeButtonStyle({
+        //   hovered: buttonIsHovered,
+        //   visible,
+        //   // visible: modificationState.userAction === 'view',
+        // })}
+        onClick={cancelButtonOnClick}
+        // {...buttonHoverProps}
+      />
+    </td>
+  </tr>
 }
 

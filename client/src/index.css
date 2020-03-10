@@ -18,3 +18,8 @@ div#root {
 }
 
 
+
+table, thead, tbody, tfoot, tr, th, td {
+  all: unset;
+}
+

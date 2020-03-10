@@ -63,6 +63,10 @@ const playlistEditorStyle = {
   // padding: '2.0rem',
   backgroundColor: colors.grayscale.darkGray,
 }
+const tHeadStyle = {
+  background: colors.grayscale.gray,
+  padding: '2.0rem 2.0rem 0',
+}
 const songsStyle = {
   padding: '0 2.0rem 2.0rem',
   overflow: 'auto',
@@ -87,13 +91,15 @@ export const PlaylistEditor = ({
   return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
     <div style={panelStyle(style)}>
       <SearchPanel style={searchTabStyle}/>
-      <div style={playlistEditorStyle}>
+      <table style={playlistEditorStyle}>
         { playlistLoading
         ? null
         : <>
-            <PlaylistInfo playlist={playlist} />
-            <PlaylistTableHeader />
-            <div style={songsStyle}>
+            <thead style={tHeadStyle}>
+              <PlaylistInfo playlist={playlist} />
+              <PlaylistTableHeader />
+            </thead>
+            <tbody style={songsStyle}>
               { addedByUsersLoading
               ? null
               : playlist.tracks.items.map((item, index) => 
@@ -103,10 +109,10 @@ export const PlaylistEditor = ({
               { modificationState.userAction === 'add' &&
                 <DraftAdditionSongRow item={modificationState.songObject} />
               }
-            </div>
+            </tbody>
           </>
         }
-      </div>
+      </table>
     </div>
   </modificationReducerContext.Provider>
 }
