@@ -1,5 +1,5 @@
 
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { modificationReducerContext } from './modificationReducer'
 import { IconButton } from './IconButton'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
@@ -33,6 +33,12 @@ export const DraftAdditionSongRow = ({
     })
   }
   
+  const rowRef = useRef<HTMLTableRowElement>()
+  
+  useEffect(() => {
+    rowRef.current.scrollIntoView()
+  }, [])
+  
   const [buttonIsHovered, buttonHoverProps] = useHover()
   
   const rightButtonStyle = {
@@ -40,7 +46,7 @@ export const DraftAdditionSongRow = ({
     background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
   }
   
-  return <tr style={styles.rowStyle}>
+  return <tr style={styles.rowStyle} ref={rowRef}>
     <td style={styles.expandCollapseButtonStyle}></td>
     <td style={styles.titleStyle}>{item.name}</td>
     <td style={styles.artistStyle}>{artistNames}</td>
