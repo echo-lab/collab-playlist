@@ -35,11 +35,7 @@ export const SearchResults = ({
 
 
 
-const searchItemStyle = (style, songIsHovered) => ({
-  ...style,
-  ...classes.row,
-  ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
-})
+
 const imageStyle = {
   ...classes.centeredClippedImage,
   height: '6.0rem',
@@ -61,16 +57,16 @@ const artistNamesStyle = {
   ...classes.textOverflow({ lines: 2 }),
   fontSize: '1.4rem',
 }
-const addButtonStyle = (addButtonIsHovered): CSSProperties => ({
+const addButtonStyle = {
   width: '2.4rem',
   height: '2.4rem',
   padding: '0.7rem',
   boxSizing: 'content-box',
   margin: 'auto 2.0rem',
-  ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
+  // ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
   borderRadius: '0.3rem',
   color: colors.grayscale.white,
-})
+} as const
 
 const SearchItem = ({
   item,
@@ -95,7 +91,17 @@ const SearchItem = ({
     })
   }
   
-  return <div style={searchItemStyle(style, songIsHovered)} {...songHoverProps}>
+  const searchItemStyle = {
+    ...style,
+    ...classes.row,
+    background: colors.translucentWhite(songIsHovered ? 0.1 : 0),
+  }
+  const addButtonStyleWithHover = {
+    ...addButtonStyle,
+    background: colors.translucentWhite(addButtonIsHovered ? 0.2 : 0)
+  }
+  
+  return <div style={searchItemStyle} {...songHoverProps}>
     <img src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
@@ -104,7 +110,7 @@ const SearchItem = ({
     { modificationState.userAction === 'view' &&
       <IconButton
         icon={faPlusCircle}
-        style={addButtonStyle(addButtonIsHovered)}
+        style={addButtonStyleWithHover}
         onClick={addButtonOnClick}
         {...addButtonHoverProps}
       />
