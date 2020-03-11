@@ -3,7 +3,7 @@ import { useState, DOMAttributes } from 'react'
 
 
 
-export const useHover = (): [boolean, DOMAttributes<HTMLElement>] => {
+export const useHover = () => {
   
   const [isHovered, setIsHovered] = useState(false)
   
@@ -12,7 +12,7 @@ export const useHover = (): [boolean, DOMAttributes<HTMLElement>] => {
     onMouseLeave: () => { setIsHovered(false) },
   }
   
-  return [isHovered, containerProps]
+  return [isHovered, containerProps, setIsHovered] as const
   
 }
 

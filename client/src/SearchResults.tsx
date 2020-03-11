@@ -80,13 +80,14 @@ const SearchItem = ({
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  const [addButtonIsHovered, addButtonHoverProps] = useHover()
+  const [addButtonIsHovered, addButtonHoverProps, setAddButtonIsHovered] = useHover()
   
   const addButtonOnClick = () => {
     dispatch({
       type: 'select-add',
       payload: { songObject: item },
     })
+    setAddButtonIsHovered(false) // otherwise, stays hovered if addition is cancelled
   }
   
   const searchItemStyle = {
