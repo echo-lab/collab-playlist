@@ -24,7 +24,7 @@ export const PlaylistTableHeader = () => {
     <th style={styles.addedByStyle}>
       Added by
     </th>
-    <th style={styles.removeButtonStyle}></th>
+    <th style={styles.rightButtonWrapperStyle}></th>
   </tr>
 }
 

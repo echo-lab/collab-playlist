@@ -48,14 +48,16 @@ export const addedByStyle: CSSProperties = {
   margin: childMargin,
   flex: 1, //tableFlexValues.addedBy,
 }
-export const removeButtonWrapperStyle = {
+// the right button is for
+// 1) selecting for removal or for
+// 2) cancelling a removal/addition
+export const rightButtonWrapperStyle = {
   ...classes.row, // needed to center the button vertically because of the additional td wrapper
-}
-export const removeButtonStyle = {
   margin: childMargin,
-  boxSizing: 'border-box',
   width: '3.8rem',
   height: '3.8rem',
+}
+export const rightButtonStyle = {
   padding: '0.7rem',
   borderRadius: '0.3rem',
   color: colors.grayscale.white,

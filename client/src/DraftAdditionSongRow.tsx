@@ -8,6 +8,11 @@ import { useHover } from './useHover'
 import { colors } from './styles'
 
 
+/**
+ * A row of the playlist table showing a song that does not exist in the
+ * playlist yet, but has been selected by the user to be added.
+ * Addition can be confirmed or cancelled
+ */
 export const DraftAdditionSongRow = ({
   item,
   // addedByUsers,
@@ -15,14 +20,12 @@ export const DraftAdditionSongRow = ({
   item: SpotifyApi.TrackObjectFull,
   // addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
-  // const { track } = item
   
   const artistNames = item.artists.map(artist => artist.name).join(', ')
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  // const { data: addedByUser, loading: userLoading } = useUserData(item.added_by.id)
-  const addedByUser = 'You' //addedByUsers[item.added_by.id]
+  const addedByUser = 'You'
   
   const cancelButtonOnClick = () => {
     dispatch({
@@ -32,8 +35,8 @@ export const DraftAdditionSongRow = ({
   
   const [buttonIsHovered, buttonHoverProps] = useHover()
   
-  const removeButtonStyle = {
-    ...styles.removeButtonStyle,
+  const rightButtonStyle = {
+    ...styles.rightButtonStyle,
     background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
   }
   
@@ -43,10 +46,10 @@ export const DraftAdditionSongRow = ({
     <td style={styles.artistStyle}>{artistNames}</td>
     <td style={styles.albumStyle}>{item.album.name}</td>
     <td style={styles.addedByStyle}>{addedByUser}</td>
-    <td style={styles.removeButtonWrapperStyle}>
+    <td style={styles.rightButtonWrapperStyle}>
       <IconButton
         icon={faTimesCircle}
-        style={removeButtonStyle}
+        style={rightButtonStyle}
         onClick={cancelButtonOnClick}
         {...buttonHoverProps}
       />
