@@ -1,11 +1,11 @@
 
 import React, { useContext } from 'react'
 import { modificationReducerContext } from './modificationReducer'
-import { IconButton } from './IconButton'
+import { IconButton } from '../IconButton'
 import { faMinusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
-import { useHover } from './useHover'
-import { colors } from './styles'
+import { useHover } from '../useHover'
+import { colors } from '../styles'
 
 
 

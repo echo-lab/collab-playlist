@@ -1,10 +1,10 @@
 
 import React, { CSSProperties, useContext } from 'react'
-import { classes, colors } from './styles'
-import { ScrollArea } from './ScrollArea'
-import { IconButton } from './IconButton'
+import { classes, colors } from '../styles'
+import { ScrollArea } from '../ScrollArea'
+import { IconButton } from '../IconButton'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { useHover } from './useHover'
+import { useHover } from '../useHover'
 import { modificationReducerContext } from './modificationReducer'
 
 

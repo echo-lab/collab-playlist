@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useResource, apiWrapper, Resource } from './apiWrapper'
+import { useResource, apiWrapper, Resource } from '../apiWrapper'
 import { SearchResults } from "./SearchResults"
-import { classes, colors } from "./styles"
+import { classes, colors } from "../styles"
 
 
 type SongResults = SpotifyApi.TrackSearchResponse | null

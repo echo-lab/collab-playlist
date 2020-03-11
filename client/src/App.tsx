@@ -6,7 +6,7 @@ import { colors, classes } from './styles'
 // import { useWarnResize } from './warnResize'
 import { useRefreshToken } from './apiWrapper'
 import { PlaylistGrid } from './PlaylistGrid'
-import { PlaylistEditor } from './PlaylistEditor'
+import { PlaylistEditor } from './Playlist-Editor/PlaylistEditor'
 import { Header } from './Header'
 
 

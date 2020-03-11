@@ -1,6 +1,6 @@
 
 import { CSSProperties } from 'react'
-import { classes, colors } from './styles'
+import { classes, colors } from '../styles'
 
 
 
