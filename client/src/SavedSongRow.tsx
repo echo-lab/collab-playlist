@@ -4,6 +4,8 @@ import { modificationReducerContext } from './modificationReducer'
 import { IconButton } from './IconButton'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
+import { useHover } from './useHover'
+import { colors } from './styles'
 
 
 
@@ -35,9 +37,12 @@ export const SavedSongRow = ({
     })
   }
   
+  const [buttonIsHovered, buttonHoverProps] = useHover()
   
-  // const [songIsHovered, songHoverProps] = useHover()
-  // const [removeButtonIsHovered, removeButtonHoverProps] = useHover()
+  const removeButtonStyle = {
+    ...styles.removeButtonStyle,
+    background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
+  }
   
   
   return <tr style={styles.rowStyle} /*{...songHoverProps}*/>
@@ -49,13 +54,9 @@ export const SavedSongRow = ({
     <td style={styles.removeButtonWrapperStyle}>
       <IconButton
         icon={faMinusCircle}
-        style={styles.removeButtonStyle}
-        // style={removeButtonStyle({
-        //   hovered: removeButtonIsHovered,
-        // })}
-        // visible={modificationState.userAction === 'view'}
+        style={removeButtonStyle}
         onClick={removeButtonOnClick}
-        // {...removeButtonHoverProps}
+        {...buttonHoverProps}
       />
     </td>
   </tr>

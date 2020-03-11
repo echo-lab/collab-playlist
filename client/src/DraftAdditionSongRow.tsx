@@ -4,6 +4,8 @@ import { modificationReducerContext } from './modificationReducer'
 import { IconButton } from './IconButton'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
+import { useHover } from './useHover'
+import { colors } from './styles'
 
 
 export const DraftAdditionSongRow = ({
@@ -19,8 +21,6 @@ export const DraftAdditionSongRow = ({
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  // const [songIsHovered, songHoverProps] = useHover()
-  
   // const { data: addedByUser, loading: userLoading } = useUserData(item.added_by.id)
   const addedByUser = 'You' //addedByUsers[item.added_by.id]
   
@@ -30,23 +30,25 @@ export const DraftAdditionSongRow = ({
     })
   }
   
-  return <tr style={styles.rowStyle} /*{...songHoverProps}*/>
+  const [buttonIsHovered, buttonHoverProps] = useHover()
+  
+  const removeButtonStyle = {
+    ...styles.removeButtonStyle,
+    background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
+  }
+  
+  return <tr style={styles.rowStyle}>
     <td style={styles.expandCollapseButtonStyle}></td>
     <td style={styles.titleStyle}>{item.name}</td>
     <td style={styles.artistStyle}>{artistNames}</td>
     <td style={styles.albumStyle}>{item.album.name}</td>
     <td style={styles.addedByStyle}>{addedByUser}</td>
-    <td style={styles.removeButtonStyle}>
+    <td style={styles.removeButtonWrapperStyle}>
       <IconButton
         icon={faTimesCircle}
-        style={styles.removeButtonStyle}
-        // style={removeButtonStyle({
-        //   hovered: buttonIsHovered,
-        //   visible,
-        //   // visible: modificationState.userAction === 'view',
-        // })}
+        style={removeButtonStyle}
         onClick={cancelButtonOnClick}
-        // {...buttonHoverProps}
+        {...buttonHoverProps}
       />
     </td>
   </tr>

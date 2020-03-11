@@ -63,7 +63,6 @@ const addButtonStyle = {
   padding: '0.7rem',
   boxSizing: 'content-box',
   margin: 'auto 2.0rem',
-  // ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
   borderRadius: '0.3rem',
   color: colors.grayscale.white,
 } as const
@@ -81,7 +80,6 @@ const SearchItem = ({
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  const [songIsHovered, songHoverProps] = useHover()
   const [addButtonIsHovered, addButtonHoverProps] = useHover()
   
   const addButtonOnClick = () => {
@@ -94,14 +92,13 @@ const SearchItem = ({
   const searchItemStyle = {
     ...style,
     ...classes.row,
-    background: colors.translucentWhite(songIsHovered ? 0.1 : 0),
   }
   const addButtonStyleWithHover = {
     ...addButtonStyle,
-    background: colors.translucentWhite(addButtonIsHovered ? 0.2 : 0)
+    background: colors.translucentWhite(addButtonIsHovered ? 0.3 : 0.15)
   }
   
-  return <div style={searchItemStyle} {...songHoverProps}>
+  return <div style={searchItemStyle}>
     <img src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
