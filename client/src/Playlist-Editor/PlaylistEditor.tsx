@@ -28,20 +28,27 @@ const usePlaylistData = (id: string) => {
   
   
   useEffect(() => {
+    if (playlistResource.loading || playlistResource.error) { return }
     // once playlistResource has loaded:
-    if (!playlistResource.loading && !playlistResource.error) {
-      // get the list of addedBy user ids
-      const ids = playlistResource.data.tracks.items.map(item => item.added_by.id)
-      // filter out duplicates:
-      const uniqueIds = ids.reduce(
-        (aggregate: string[], id) =>
-          aggregate.includes(id)
-          ? aggregate
-          : [...aggregate, id]
-        , []
-      )
-      apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`, addedByUsersSetter)
+    // get the list of addedBy user ids
+    const ids = playlistResource.data.tracks.items.map(item => item.added_by.id)
+    // safeguard against empty list
+    if (ids.length === 0) {
+      addedByUsersSetter({
+        data: null,
+        loading: false,
+      })
+      return
     }
+    // filter out duplicates:
+    const uniqueIds = ids.reduce(
+      (aggregate: string[], id) =>
+        aggregate.includes(id)
+        ? aggregate
+        : [...aggregate, id]
+      , []
+    )
+    apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`, addedByUsersSetter)
   }, [playlistResource, addedByUsersSetter])
   
   return [playlistResource, addedByUsersResource] as const
