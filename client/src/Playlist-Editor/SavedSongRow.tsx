@@ -5,7 +5,8 @@ import { IconButton } from '../IconButton'
 import { faMinusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
-import { colors } from '../styles'
+import { colors, classes } from '../styles'
+import { SongChat } from './SongChat'
 
 
 
@@ -53,33 +54,38 @@ export const SavedSongRow = ({
   }
   
   
-  return <tr style={styles.rowStyle} /*{...songHoverProps}*/>
-    <td style={styles.expandCollapseButtonStyle}>
-      {/* TODO */}
-    </td>
-    <td style={styles.titleStyle}>{track.name}</td>
-    <td style={styles.artistStyle}>{artistNames}</td>
-    <td style={styles.albumStyle}>{track.album.name}</td>
-    <td style={styles.addedByStyle}>{addedByUser.display_name}</td>
-    <td style={styles.rightButtonWrapperStyle}>
-      { viewState
-      ? <IconButton
-          icon={faMinusCircle}
-          style={rightButtonStyle}
-          onClick={removeButtonOnClick}
-          {...buttonHoverProps}
-        />
-      : removeThisState
-      ? <IconButton
-          icon={faTimesCircle}
-          style={rightButtonStyle}
-          onClick={cancelButtonOnClick}
-          {...buttonHoverProps}
-        />
-      : <></>
-      }
-      
-    </td>
+  return <tr style={classes.column}>
+    <div style={styles.rowStyle}>
+      <td style={styles.expandCollapseButtonStyle}>
+        {/* TODO */}
+      </td>
+      <td style={styles.titleStyle}>{track.name}</td>
+      <td style={styles.artistStyle}>{artistNames}</td>
+      <td style={styles.albumStyle}>{track.album.name}</td>
+      <td style={styles.addedByStyle}>{addedByUser.display_name}</td>
+      <td style={styles.rightButtonWrapperStyle}>
+        { viewState
+        ? <IconButton
+            icon={faMinusCircle}
+            style={rightButtonStyle}
+            onClick={removeButtonOnClick}
+            {...buttonHoverProps}
+          />
+        : removeThisState
+        ? <IconButton
+            icon={faTimesCircle}
+            style={rightButtonStyle}
+            onClick={cancelButtonOnClick}
+            {...buttonHoverProps}
+          />
+        : <></>
+        }
+        
+      </td>
+    </div>
+    { removeThisState &&
+      <SongChat />
+    }
   </tr>
 }
 
