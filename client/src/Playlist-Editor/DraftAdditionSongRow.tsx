@@ -5,7 +5,8 @@ import { IconButton } from '../IconButton'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
-import { colors } from '../styles'
+import { colors, classes } from '../styles'
+import { SongChat } from './SongChat'
 
 
 /**
@@ -46,20 +47,23 @@ export const DraftAdditionSongRow = ({
     background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
   }
   
-  return <tr style={styles.rowStyle} ref={rowRef}>
-    <td style={styles.expandCollapseButtonStyle}></td>
-    <td style={styles.titleStyle}>{item.name}</td>
-    <td style={styles.artistStyle}>{artistNames}</td>
-    <td style={styles.albumStyle}>{item.album.name}</td>
-    <td style={styles.addedByStyle}>{addedByUser}</td>
-    <td style={styles.rightButtonWrapperStyle}>
-      <IconButton
-        icon={faTimesCircle}
-        style={rightButtonStyle}
-        onClick={cancelButtonOnClick}
-        {...buttonHoverProps}
-      />
-    </td>
+  return <tr style={classes.column} ref={rowRef}>
+    <div style={styles.rowStyle}>
+      <td style={styles.expandCollapseButtonStyle}></td>
+      <td style={styles.titleStyle}>{item.name}</td>
+      <td style={styles.artistStyle}>{artistNames}</td>
+      <td style={styles.albumStyle}>{item.album.name}</td>
+      <td style={styles.addedByStyle}>{addedByUser}</td>
+      <td style={styles.rightButtonWrapperStyle}>
+        <IconButton
+          icon={faTimesCircle}
+          style={rightButtonStyle}
+          onClick={cancelButtonOnClick}
+          {...buttonHoverProps}
+        />
+      </td>
+    </div>
+    <SongChat />
   </tr>
 }
 
