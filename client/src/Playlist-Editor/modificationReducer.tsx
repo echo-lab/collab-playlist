@@ -15,7 +15,7 @@ interface RemoveState {
 interface ViewState {
   userAction: 'view'
 }
-type State =
+export type State =
   | AddState
   | RemoveState
   | ViewState

@@ -84,7 +84,7 @@ export const SavedSongRow = ({
       </td>
     </div>
     { removeThisState &&
-      <SongChat />
+      <SongChat action={modificationState.userAction} />
     }
   </tr>
 }

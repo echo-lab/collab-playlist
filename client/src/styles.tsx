@@ -14,10 +14,14 @@ export const colors = {
     darkGray: '#2A2A2A',
     gray: '#3A3A3A',
     lightGray: '#606060',
+    brightGray: '#A0A0A0',
     lightText: '#B0B0B0',
+    darkerWhite: '#B8B8B8',
+    darkWhite: '#D0D0D0',
     white: '#F0F0F0',
   },
   translucentWhite: opacity => `rgba(255,255,255,${opacity})`,
+  translucentBlack: opacity => `rgba(0,0,0,${opacity})`,
   green1: '#1DB954', // 'spotify green'
   green2: '#1ED760',
   palette1: {

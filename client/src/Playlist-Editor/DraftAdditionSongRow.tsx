@@ -63,7 +63,7 @@ export const DraftAdditionSongRow = ({
         />
       </td>
     </div>
-    <SongChat />
+    <SongChat action={modificationState.userAction} />
   </tr>
 }
 
