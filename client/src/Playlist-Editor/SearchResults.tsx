@@ -1,11 +1,10 @@
 
 import React, { CSSProperties, useContext } from 'react'
-import { classes, colors } from './styles'
-import { ScrollArea } from './ScrollArea'
-import { Image } from './Image'
-import { IconButton } from './IconButton'
+import { classes, colors } from '../styles'
+import { ScrollArea } from '../ScrollArea'
+import { IconButton } from '../IconButton'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { useHover } from './useHover'
+import { useHover } from '../useHover'
 import { modificationReducerContext } from './modificationReducer'
 
 
@@ -36,12 +35,9 @@ export const SearchResults = ({
 
 
 
-const searchItemStyle = (style, songIsHovered) => ({
-  ...style,
-  ...classes.row,
-  ...(songIsHovered && { background: colors.translucentWhite(0.1) }),
-})
+
 const imageStyle = {
+  ...classes.centeredClippedImage,
   height: '6.0rem',
   width: '6.0rem',
 }
@@ -61,16 +57,15 @@ const artistNamesStyle = {
   ...classes.textOverflow({ lines: 2 }),
   fontSize: '1.4rem',
 }
-const addButtonStyle = (addButtonIsHovered): CSSProperties => ({
+const addButtonStyle = {
   width: '2.4rem',
   height: '2.4rem',
   padding: '0.7rem',
   boxSizing: 'content-box',
   margin: 'auto 2.0rem',
-  ...(addButtonIsHovered && { background: colors.translucentWhite(0.2) }),
   borderRadius: '0.3rem',
   color: colors.grayscale.white,
-})
+} as const
 
 const SearchItem = ({
   item,
@@ -85,18 +80,27 @@ const SearchItem = ({
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  const [songIsHovered, songHoverProps] = useHover()
-  const [addButtonIsHovered, addButtonHoverProps] = useHover()
+  const [addButtonIsHovered, addButtonHoverProps, setAddButtonIsHovered] = useHover()
   
   const addButtonOnClick = () => {
     dispatch({
       type: 'select-add',
       payload: { songObject: item },
     })
+    setAddButtonIsHovered(false) // otherwise, stays hovered if addition is cancelled
   }
   
-  return <div style={searchItemStyle(style, songIsHovered)} {...songHoverProps}>
-    <Image src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
+  const searchItemStyle = {
+    ...style,
+    ...classes.row,
+  }
+  const addButtonStyleWithHover = {
+    ...addButtonStyle,
+    background: colors.translucentWhite(addButtonIsHovered ? 0.3 : 0.15)
+  }
+  
+  return <div style={searchItemStyle}>
+    <img src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
     <div style={textDivStyle}>
       <div style={songNameStyle}>{name}</div>
       <div style={artistNamesStyle}>{artistNames}</div>
@@ -104,7 +108,7 @@ const SearchItem = ({
     { modificationState.userAction === 'view' &&
       <IconButton
         icon={faPlusCircle}
-        style={addButtonStyle(addButtonIsHovered)}
+        style={addButtonStyleWithHover}
         onClick={addButtonOnClick}
         {...addButtonHoverProps}
       />

@@ -1,7 +1,6 @@
 
 import React, { CSSProperties } from 'react'
-import { classes, colors } from './styles'
-import { Image } from './Image'
+import { classes, colors } from '../styles'
 
 
 
@@ -14,6 +13,7 @@ const containerStyle = {
   // padding: '2.0rem 2.0rem 0',
 }
 const imageStyle = {
+  ...classes.centeredClippedImage,
   width: '16.0rem',
   height: '16.0rem',
 }
@@ -55,7 +55,7 @@ export const PlaylistInfo = ({
 }) => {
   
   return <div style={containerStyle}>
-    <Image
+    <img
       src={playlist.images[0].url}
       alt={playlist.name}
       style={imageStyle}

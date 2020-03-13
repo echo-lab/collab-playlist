@@ -1,7 +1,6 @@
 
 import React, { CSSProperties, useEffect } from 'react'
 import { classes, colors } from './styles'
-import { Image } from './Image'
 import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
 import { useResource, apiWrapper, Resource } from './apiWrapper'
@@ -58,6 +57,7 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
     padding: '2.0rem',
   }
   const imageStyle = {
+    ...classes.centeredClippedImage,
     height: '18.0rem',
     width: '18.0rem',
   }
@@ -82,7 +82,7 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
     style={playlistCardStyle}
     {...hoverProps}
   >
-    <Image src={image.url} alt="" style={imageStyle} />
+    <img src={image.url} alt="" style={imageStyle} />
     <div style={textDivStyle}>
       <p style={nameStyle}>{item.name}</p>
       <p style={ownerStyle}>{owner}</p>
