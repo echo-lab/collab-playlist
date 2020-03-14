@@ -2,10 +2,10 @@
 import React, { CSSProperties, useContext } from 'react'
 import { classes, colors } from '../styles'
 import { ScrollArea } from '../ScrollArea'
-import { IconButton } from '../IconButton'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from '../useHover'
 import { modificationReducerContext } from './modificationReducer'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
 export const SearchResults = ({
@@ -58,6 +58,7 @@ const artistNamesStyle = {
   fontSize: '1.4rem',
 }
 const addButtonStyle = {
+  ...classes.button,
   width: '2.4rem',
   height: '2.4rem',
   padding: '0.7rem',
@@ -94,7 +95,7 @@ const SearchItem = ({
     ...style,
     ...classes.row,
   }
-  const addButtonStyleWithHover = {
+  const addButtonStyleDynamic = {
     ...addButtonStyle,
     background: colors.translucentWhite(addButtonIsHovered ? 0.3 : 0.15)
   }
@@ -106,12 +107,13 @@ const SearchItem = ({
       <div style={artistNamesStyle}>{artistNames}</div>
     </div>
     { modificationState.userAction === 'view' &&
-      <IconButton
-        icon={faPlusCircle}
-        style={addButtonStyleWithHover}
+      <button
+        style={addButtonStyleDynamic}
         onClick={addButtonOnClick}
         {...addButtonHoverProps}
-      />
+      >
+        <FontAwesomeIcon icon={faPlusCircle} style={classes.icon} />
+      </button>
     }
   </div>
 }

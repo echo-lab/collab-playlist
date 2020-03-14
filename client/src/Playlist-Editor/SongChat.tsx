@@ -2,10 +2,10 @@
 import React, { useState } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
-import { IconButton } from '../IconButton'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { State } from './modificationReducer'
 import { useHover } from '../useHover'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
 const chatStyle = {
@@ -33,6 +33,7 @@ const inputStyle = {
 }
 const submitStyle = {
   ...classes.text,
+  ...classes.button,
   color: colors.grayscale.black,
   height: '3.8rem',
   width: '3.8rem',
@@ -71,18 +72,22 @@ export const SongChat = ({
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
-        <IconButton
-          /*type="submit"*/
-          icon={
-            action === 'add'
-            ? faPlusCircle
-            : action === 'remove'
-            ? faMinusCircle
-            : faPaperPlane
-          }
+        <button
+          type="submit"
           style={submitStyleDynamic}
           {...submitHoverProps}
-        />
+        >
+          <FontAwesomeIcon
+            icon={
+              action === 'add'
+              ? faPlusCircle
+              : action === 'remove'
+              ? faMinusCircle
+              : faPaperPlane
+            }
+            style={classes.icon}
+          />
+        </button>
       </div>
     </div>
     <div style={styles.expandCollapseButtonStyle}>

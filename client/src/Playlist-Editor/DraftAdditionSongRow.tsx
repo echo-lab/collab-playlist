@@ -1,12 +1,12 @@
 
 import React, { useContext, useEffect, useRef } from 'react'
 import { modificationReducerContext } from './modificationReducer'
-import { IconButton } from '../IconButton'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SongChat } from './SongChat'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
 /**
@@ -42,7 +42,7 @@ export const DraftAdditionSongRow = ({
   
   const [buttonIsHovered, buttonHoverProps] = useHover()
   
-  const rightButtonStyle = {
+  const rightButtonStyleDynamic = {
     ...styles.rightButtonStyle,
     background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
   }
@@ -55,12 +55,13 @@ export const DraftAdditionSongRow = ({
       <td style={styles.albumStyle}>{item.album.name}</td>
       <td style={styles.addedByStyle}>{addedByUser}</td>
       <td style={styles.rightButtonWrapperStyle}>
-        <IconButton
-          icon={faTimesCircle}
-          style={rightButtonStyle}
+        <button
+          style={rightButtonStyleDynamic}
           onClick={cancelButtonOnClick}
           {...buttonHoverProps}
-        />
+        >
+          <FontAwesomeIcon icon={faTimesCircle} style={classes.icon} />
+        </button>
       </td>
     </div>
     <SongChat action={modificationState.userAction} />

@@ -1,12 +1,12 @@
 
 import React, { useContext } from 'react'
 import { modificationReducerContext } from './modificationReducer'
-import { IconButton } from '../IconButton'
 import { faMinusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SongChat } from './SongChat'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
 
@@ -65,19 +65,21 @@ export const SavedSongRow = ({
       <td style={styles.addedByStyle}>{addedByUser.display_name}</td>
       <td style={styles.rightButtonWrapperStyle}>
         { viewState
-        ? <IconButton
-            icon={faMinusCircle}
+        ? <button
             style={rightButtonStyle}
             onClick={removeButtonOnClick}
             {...buttonHoverProps}
-          />
+          >
+            <FontAwesomeIcon icon={faMinusCircle} style={classes.icon} />
+          </button>
         : removeThisState
-        ? <IconButton
-            icon={faTimesCircle}
+        ? <button
             style={rightButtonStyle}
             onClick={cancelButtonOnClick}
             {...buttonHoverProps}
-          />
+          >
+            <FontAwesomeIcon icon={faTimesCircle} style={classes.icon} />
+          </button>
         : <></>
         }
         
