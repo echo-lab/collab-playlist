@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react'
+import React, { useState, KeyboardEvent, useContext } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { State } from './modificationReducer'
+import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -17,8 +17,10 @@ const chatStyle = {
 
 export const SongChat = ({
   action,
+  id,
 }: {
-  action: State['userAction']//'add' | 'remove' | 'view'
+  action: State['userAction'], //'add' | 'remove' | 'view'
+  id: string,
 }) => {
   
 
@@ -31,7 +33,7 @@ export const SongChat = ({
       <div>
         {/* TODO chat history */}
       </div>
-      <MessageEditor action={action} />
+      <MessageEditor action={action} id={id} />
     </div>
     <div style={styles.expandCollapseButtonStyle}>
       {/* Just a spacer */}
@@ -71,11 +73,34 @@ const submitStyle = {
 
 const MessageEditor = ({
   action,
+  id,
 }: {
-  action: State['userAction']//'add' | 'remove' | 'view'
+  action: State['userAction'], //'add' | 'remove' | 'view'
+  id: string,
 }) => {
   
   const [message, setMessage] = useState('')
+  
+  
+  const { dispatch } = useContext(modificationReducerContext)
+  
+  const submitHandler = () => {
+    alert('submitted')
+    dispatch({
+      type: action === "add" ? 'submit-add' : 'submit-remove',
+      payload: {
+        id,
+        message,
+      }
+    })
+  }
+  const keyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+    // if the enter key was pressed, treat this like the submit button was pressed
+    if (event.key === 'Enter') {
+      submitHandler()
+    }
+  }
+  
   
   const [submitHovered, submitHoverProps] = useHover()
   
@@ -84,30 +109,36 @@ const MessageEditor = ({
     background: colors.translucentBlack(submitHovered ? 0.2 : 0),
   }
   
-  return <div style={messageEditorStyle}>
-    <input
-      type="text"
-      style={inputStyle}
-      value={message}
-      onChange={e => setMessage(e.target.value)}
-    />
-    <button
-      type="submit"
-      style={submitStyleDynamic}
-      {...submitHoverProps}
+  return <>
+    <form
+      style={messageEditorStyle}
+      onSubmit={submitHandler}
     >
-      <FontAwesomeIcon
-        icon={
-          action === 'add'
-          ? faPlusCircle
-          : action === 'remove'
-          ? faMinusCircle
-          : faPaperPlane
-        }
-        style={classes.icon}
+      <input
+        type="text"
+        style={inputStyle}
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+        onKeyDown={keyDownHandler}
       />
-    </button>
-  </div>
+      <button
+        type="submit"
+        style={submitStyleDynamic}
+        {...submitHoverProps}
+      >
+        <FontAwesomeIcon
+          icon={
+            action === 'add'
+            ? faPlusCircle
+            : action === 'remove'
+            ? faMinusCircle
+            : faPaperPlane
+          }
+          style={classes.icon}
+        />
+      </button>
+    </form>
+  </>
 }
 
 
