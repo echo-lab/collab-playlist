@@ -13,7 +13,34 @@ const chatStyle = {
   flex: 1,
   margin: '0 1.0rem 1.0rem',
 }
-const textEditorStyle = {
+
+
+export const SongChat = ({
+  action,
+}: {
+  action: State['userAction']//'add' | 'remove' | 'view'
+}) => {
+  
+
+  
+  return <div style={classes.row}>
+    <div style={styles.expandCollapseButtonStyle}>
+      {/* Just a spacer */}
+    </div>
+    <div style={chatStyle}>
+      <div>
+        {/* TODO chat history */}
+      </div>
+      <MessageEditor action={action} />
+    </div>
+    <div style={styles.expandCollapseButtonStyle}>
+      {/* Just a spacer */}
+    </div>
+  </div>
+}
+
+
+const messageEditorStyle = {
   ...classes.row,
   // margin: '1.0rem 1.5rem',
   border: 'none',
@@ -42,7 +69,7 @@ const submitStyle = {
   borderRadius: '50%',
 }
 
-export const SongChat = ({
+const MessageEditor = ({
   action,
 }: {
   action: State['userAction']//'add' | 'remove' | 'view'
@@ -57,42 +84,29 @@ export const SongChat = ({
     background: colors.translucentBlack(submitHovered ? 0.2 : 0),
   }
   
-  return <div style={classes.row}>
-    <div style={styles.expandCollapseButtonStyle}>
-      {/* Just a spacer */}
-    </div>
-    <div style={chatStyle}>
-      <div>
-        {/* TODO chat history */}
-      </div>
-      <div style={textEditorStyle}>
-        <input
-          type="text"
-          style={inputStyle}
-          value={message}
-          onChange={e => setMessage(e.target.value)}
-        />
-        <button
-          type="submit"
-          style={submitStyleDynamic}
-          {...submitHoverProps}
-        >
-          <FontAwesomeIcon
-            icon={
-              action === 'add'
-              ? faPlusCircle
-              : action === 'remove'
-              ? faMinusCircle
-              : faPaperPlane
-            }
-            style={classes.icon}
-          />
-        </button>
-      </div>
-    </div>
-    <div style={styles.expandCollapseButtonStyle}>
-      {/* Just a spacer */}
-    </div>
+  return <div style={messageEditorStyle}>
+    <input
+      type="text"
+      style={inputStyle}
+      value={message}
+      onChange={e => setMessage(e.target.value)}
+    />
+    <button
+      type="submit"
+      style={submitStyleDynamic}
+      {...submitHoverProps}
+    >
+      <FontAwesomeIcon
+        icon={
+          action === 'add'
+          ? faPlusCircle
+          : action === 'remove'
+          ? faMinusCircle
+          : faPaperPlane
+        }
+        style={classes.icon}
+      />
+    </button>
   </div>
 }
 
