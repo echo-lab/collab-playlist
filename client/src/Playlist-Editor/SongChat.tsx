@@ -1,5 +1,5 @@
 
-import React, { useState, KeyboardEvent, useContext } from 'react'
+import React, { useState, useContext, FormEvent } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
@@ -84,8 +84,8 @@ const MessageEditor = ({
   
   const { dispatch } = useContext(modificationReducerContext)
   
-  const submitHandler = () => {
-    alert('submitted')
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+    console.log('submitted')
     dispatch({
       type: action === "add" ? 'submit-add' : 'submit-remove',
       payload: {
@@ -93,12 +93,7 @@ const MessageEditor = ({
         message,
       }
     })
-  }
-  const keyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
-    // if the enter key was pressed, treat this like the submit button was pressed
-    if (event.key === 'Enter') {
-      submitHandler()
-    }
+    e.preventDefault()
   }
   
   
@@ -119,7 +114,6 @@ const MessageEditor = ({
         style={inputStyle}
         value={message}
         onChange={e => setMessage(e.target.value)}
-        onKeyDown={keyDownHandler}
       />
       <button
         type="submit"
