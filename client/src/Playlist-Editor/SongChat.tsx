@@ -1,11 +1,12 @@
 
-import React, { useState, useContext, FormEvent } from 'react'
+import React, { useState, useContext, FormEvent, useEffect } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useResource, apiWrapper } from '../apiWrapper'
 
 
 const chatStyle = {
@@ -84,8 +85,29 @@ const MessageEditor = ({
   
   const { dispatch } = useContext(modificationReducerContext)
   
+  const [postResource, postResourceSetter] = useResource(null)
+  
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     console.log('submitted')
+    apiWrapper(`/api/playlists/${id}/tracks/${id}/messages/`,
+      postResourceSetter,
+      { method: 'POST',
+        body: JSON.stringify({
+          message,
+          remove: action === 'remove',
+        }),
+      }
+    )
+    e.preventDefault()
+  }
+  
+  useEffect(() => {
+    if (postResource.loading) { return }
+    if (postResource.error) {
+      alert('error, try again')
+      return
+    }
+    if (!postResource.data) { return }
     dispatch({
       type: action === "add" ? 'submit-add' : 'submit-remove',
       payload: {
@@ -93,8 +115,7 @@ const MessageEditor = ({
         message,
       }
     })
-    e.preventDefault()
-  }
+  }, [postResource])
   
   
   const [submitHovered, submitHoverProps] = useHover()
