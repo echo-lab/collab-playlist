@@ -12,7 +12,7 @@ export const setupApi = (app: Application) => {
    * logs api requests
    */
   app.use('/api/', (req, res, next) => {
-    console.log(`${req.originalUrl} request`)
+    console.log(`${req.method} ${req.originalUrl} request`)
     next()
   })
   
@@ -158,7 +158,7 @@ export const setupApi = (app: Application) => {
   /**
    * catch all other api endpoints
    */
-  app.get(['/api', '/api/*'], (req, res) => {
+  app.all(['/api', '/api/*'], (req, res) => {
     console.log(`${req.path} not found`)
     res.sendStatus(404)
   })
