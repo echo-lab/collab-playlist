@@ -87,31 +87,35 @@ const MessageEditor = ({
   
   // const [postResource, postResourceSetter] = useResource(null)
   
-  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
-    console.log('submitted')
-    // set loading
-    const response = await fetchWrapper(
-      `/api/playlists/${id}/tracks/${id}/messages/`,
-      // postResourceSetter,
-      { method: 'POST',
-        body: JSON.stringify({
-          message,
-          remove: action === 'remove',
-        }),
-      }
-    )
-    if (response.error) {
-      alert('error, try again')
-    } else {
-      dispatch({
-        type: action === "add" ? 'submit-add' : 'submit-remove',
-        payload: {
-          id,
-          message,
-        }
-      })
-    }
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    ;(async () => {
+      console.log('submitted')
+      // set loading
+      const response = await fetchWrapper(
+        `/api/playlists/${id}/tracks/${id}/messages/`,
+        // postResourceSetter,
+        { method: 'POST',
+          body: JSON.stringify({
+            message,
+            remove: action === 'remove',
+          }),
+        }
+      )
+      
+      if (response.error) {
+        alert('error, try again')
+      } else {
+        dispatch({
+          type: action === "add" ? 'submit-add' : 'submit-remove',
+          payload: {
+            id,
+            message,
+          }
+        })
+      }
+    })()
   }
   
   
