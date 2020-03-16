@@ -1,5 +1,5 @@
 
-import { useResource, apiWrapper } from './apiWrapper'
+import { useResource, fetchWrapper } from './fetchWrapper'
 
 
 // TODO refactor

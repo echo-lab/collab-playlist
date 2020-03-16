@@ -2,7 +2,7 @@
 import React, { useEffect, CSSProperties, useReducer } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
-import { useResource, apiWrapper } from '../apiWrapper'
+import { useResource, fetchWrapper } from '../fetchWrapper'
 import { classes, colors } from '../styles'
 // import { SavedSongRow, DraftAdditionSongRow } from './SongRow'
 import { SavedSongRow } from './SavedSongRow'
@@ -14,7 +14,7 @@ import { SearchPanel } from './SearchPanel'
 import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
 
 
-const usePlaylistData = (id: string) => {
+const usePlaylistData = (playlistId: string) => {
   const [
     playlistResource, playlistSetter
   ] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
@@ -23,17 +23,24 @@ const usePlaylistData = (id: string) => {
   ] = useResource<Record<string, SpotifyApi.UserObjectPublic>>(null, true)
   
   useEffect(() => {
-    apiWrapper(`/api/playlists/${id}/`, playlistSetter)
-  }, [id, playlistSetter])
+    (async () => {
+      // playlistSetter({ loading: true })
+      const response = await fetchWrapper(`/api/playlists/${playlistId}/`)
+      playlistSetter({
+        loading: false,
+        ...response,
+      })
+    })()
+  }, [playlistId, playlistSetter])
   
   
   useEffect(() => {
     if (playlistResource.loading || playlistResource.error) { return }
     // once playlistResource has loaded:
     // get the list of addedBy user ids
-    const ids = playlistResource.data.tracks.items.map(item => item.added_by.id)
+    const userIds = playlistResource.data.tracks.items.map(item => item.added_by.id)
     // safeguard against empty list
-    if (ids.length === 0) {
+    if (userIds.length === 0) {
       addedByUsersSetter({
         data: null,
         loading: false,
@@ -41,14 +48,20 @@ const usePlaylistData = (id: string) => {
       return
     }
     // filter out duplicates:
-    const uniqueIds = ids.reduce(
-      (aggregate: string[], id) =>
-        aggregate.includes(id)
+    const uniqueIds = userIds.reduce(
+      (aggregate: string[], userId) =>
+        aggregate.includes(userId)
         ? aggregate
-        : [...aggregate, id]
+        : [...aggregate, userId]
       , []
     )
-    apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`, addedByUsersSetter)
+    ;(async () => {
+      const response = await fetchWrapper(`/api/users/?ids=${uniqueIds.join(',')}`)
+      addedByUsersSetter({
+        loading: false,
+        ...response,
+      })
+    })()
   }, [playlistResource, addedByUsersSetter])
   
   return [playlistResource, addedByUsersResource] as const
@@ -92,6 +105,8 @@ export const PlaylistEditor = ({
     { data: playlist, loading: playlistLoading },
     { data: addedByUsers, loading: addedByUsersLoading }
   ] = usePlaylistData(id)
+  
+  console.log(playlist, playlistLoading, addedByUsers, addedByUsersLoading)
   
   // console.log({data, loading})
   

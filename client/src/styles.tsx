@@ -68,7 +68,18 @@ export const classes = {
     objectPosition: 'center',
     // Make the image cover the area of the <img>, and clip the excess
     objectFit: 'cover',
-  }
+  },
+  // neutralizes browser styles of buttons
+  button: {
+    background: 'transparent',
+    border: 'none',
+    padding: 0,
+  },
+  // makes svg icons take up the size of the button contents
+  icon: {
+    width: '100%',
+    height: '100%',
+  },
 } as const
 
 

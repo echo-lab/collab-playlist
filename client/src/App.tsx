@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import { CookiesProvider, useCookies } from 'react-cookie'
 import { colors, classes } from './styles'
 // import { useWarnResize } from './warnResize'
-import { useRefreshToken } from './apiWrapper'
+import { useRefreshToken } from './fetchWrapper'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './Playlist-Editor/PlaylistEditor'
 import { Header } from './Header'

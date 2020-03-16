@@ -20,6 +20,7 @@ const childText: CSSProperties = {
   fontSize,
 }
 export const expandCollapseButtonStyle = {
+  ...classes.button,
   margin: childMargin,
   width: '2.4rem',
   height: '2.4rem',
@@ -58,6 +59,7 @@ export const rightButtonWrapperStyle = {
   height: '3.8rem',
 }
 export const rightButtonStyle = {
+  ...classes.button,
   padding: '0.7rem',
   borderRadius: '0.3rem',
   color: colors.grayscale.white,

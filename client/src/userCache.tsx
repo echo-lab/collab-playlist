@@ -1,6 +1,6 @@
 
 import { createContext, Dispatch, SetStateAction } from 'react'
-import { Resource } from './apiWrapper'
+import { Resource } from './fetchWrapper'
 
 
 

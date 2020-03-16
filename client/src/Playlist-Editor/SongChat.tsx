@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react'
+import React, { useState, useContext, FormEvent } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
-import { IconButton } from '../IconButton'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { State } from './modificationReducer'
+import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useResource, fetchWrapper } from '../fetchWrapper'
 
 
 const chatStyle = {
@@ -13,7 +14,36 @@ const chatStyle = {
   flex: 1,
   margin: '0 1.0rem 1.0rem',
 }
-const textEditorStyle = {
+
+
+export const SongChat = ({
+  action,
+  id,
+}: {
+  action: State['userAction'], //'add' | 'remove' | 'view'
+  id: string,
+}) => {
+  
+
+  
+  return <div style={classes.row}>
+    <div style={styles.expandCollapseButtonStyle}>
+      {/* Just a spacer */}
+    </div>
+    <div style={chatStyle}>
+      <div>
+        {/* TODO chat history */}
+      </div>
+      <MessageEditor action={action} id={id} />
+    </div>
+    <div style={styles.expandCollapseButtonStyle}>
+      {/* Just a spacer */}
+    </div>
+  </div>
+}
+
+
+const messageEditorStyle = {
   ...classes.row,
   // margin: '1.0rem 1.5rem',
   border: 'none',
@@ -33,6 +63,7 @@ const inputStyle = {
 }
 const submitStyle = {
   ...classes.text,
+  ...classes.button,
   color: colors.grayscale.black,
   height: '3.8rem',
   width: '3.8rem',
@@ -41,13 +72,52 @@ const submitStyle = {
   borderRadius: '50%',
 }
 
-export const SongChat = ({
+const MessageEditor = ({
   action,
+  id,
 }: {
-  action: State['userAction']//'add' | 'remove' | 'view'
+  action: State['userAction'], //'add' | 'remove' | 'view'
+  id: string,
 }) => {
   
   const [message, setMessage] = useState('')
+  
+  
+  const { dispatch } = useContext(modificationReducerContext)
+  
+  // const [postResource, postResourceSetter] = useResource(null)
+  
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    ;(async () => {
+      console.log('submitted')
+      // set loading
+      const response = await fetchWrapper(
+        `/api/playlists/${id}/tracks/${id}/messages/`,
+        // postResourceSetter,
+        { method: 'POST',
+          body: JSON.stringify({
+            message,
+            remove: action === 'remove',
+          }),
+        }
+      )
+      
+      if (response.error) {
+        alert('error, try again')
+      } else {
+        dispatch({
+          type: action === "add" ? 'submit-add' : 'submit-remove',
+          payload: {
+            id,
+            message,
+          }
+        })
+      }
+    })()
+  }
+  
   
   const [submitHovered, submitHoverProps] = useHover()
   
@@ -56,23 +126,23 @@ export const SongChat = ({
     background: colors.translucentBlack(submitHovered ? 0.2 : 0),
   }
   
-  return <div style={classes.row}>
-    <div style={styles.expandCollapseButtonStyle}>
-      {/* Just a spacer */}
-    </div>
-    <div style={chatStyle}>
-      <div>
-        {/* TODO chat history */}
-      </div>
-      <div style={textEditorStyle}>
-        <input
-          type="text"
-          style={inputStyle}
-          value={message}
-          onChange={e => setMessage(e.target.value)}
-        />
-        <IconButton
-          /*type="submit"*/
+  return <>
+    <form
+      style={messageEditorStyle}
+      onSubmit={submitHandler}
+    >
+      <input
+        type="text"
+        style={inputStyle}
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+      />
+      <button
+        type="submit"
+        style={submitStyleDynamic}
+        {...submitHoverProps}
+      >
+        <FontAwesomeIcon
           icon={
             action === 'add'
             ? faPlusCircle
@@ -80,15 +150,11 @@ export const SongChat = ({
             ? faMinusCircle
             : faPaperPlane
           }
-          style={submitStyleDynamic}
-          {...submitHoverProps}
+          style={classes.icon}
         />
-      </div>
-    </div>
-    <div style={styles.expandCollapseButtonStyle}>
-      {/* Just a spacer */}
-    </div>
-  </div>
+      </button>
+    </form>
+  </>
 }
 
 

@@ -3,7 +3,7 @@ import React, { CSSProperties, useEffect } from 'react'
 import { classes, colors } from './styles'
 import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
-import { useResource, apiWrapper, Resource } from './apiWrapper'
+import { useResource, fetchWrapper, Resource } from './fetchWrapper'
 
 
 
@@ -13,7 +13,14 @@ export const usePlaylists = (): Resource<Playlists> => {
   const [resource, setter] = useResource<Playlists>(null, true)
   
   useEffect(() => {
-    apiWrapper('/api/playlists/', setter)
+    (async () => {
+      // setter({ loading: true })
+      const response = await fetchWrapper('/api/playlists/')
+      setter({
+        loading: false,
+        ...response,
+      })
+    })()
   }, [setter])
   
   return resource
