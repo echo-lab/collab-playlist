@@ -13,7 +13,14 @@ export const usePlaylists = (): Resource<Playlists> => {
   const [resource, setter] = useResource<Playlists>(null, true)
   
   useEffect(() => {
-    apiWrapper('/api/playlists/', setter)
+    (async () => {
+      // setter({ loading: true })
+      const response = await apiWrapper('/api/playlists/')
+      setter({
+        loading: false,
+        ...response,
+      })
+    })()
   }, [setter])
   
   return resource

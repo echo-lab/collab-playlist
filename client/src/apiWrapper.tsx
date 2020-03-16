@@ -6,8 +6,6 @@ const useConst = <T extends any> (val: T) => {
 }
 
 
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>
-type Updater<T> = Setter<Partial<T>>
 
 export interface Resource<T> {
   data: T,
@@ -17,15 +15,17 @@ export interface Resource<T> {
 
 
 /**
+ * abstraction for a fetched resource
+ * makes most sense for an idempotent request like GET;
+ * can be used to store the response/loading/error for a nonidempotent
+ * request like POST
+ * 
  * updateResource (setter) has a stable reference identity
  */
 export const useResource = <T extends any>(
   initialVal: T,
   loading: boolean = false
-): [
-  Resource<T>,
-  Updater<Resource<T>>
-] => {
+) => {
   const [resource, setResource] = useState<Resource<T>>({
     data: initialVal,
     loading,
@@ -39,7 +39,7 @@ export const useResource = <T extends any>(
     }))
   })
   
-  return [resource, updateResource]
+  return [resource, updateResource] as const
 }
 
 class FetchError extends Error {
@@ -50,38 +50,43 @@ class FetchError extends Error {
   }
 }
 
+/**
+ * wrapper around fetch that handles errors and returns them as
+ */
 export const apiWrapper = async <T extends any> (
   url: string,
-  updateResource: Updater<Resource<T>>,
   fetchOptions: RequestInit = {},
-) => {
+): Promise<{
+  data: T,
+  error: any,
+}> => {
   try {
-    updateResource({ loading: true })
+    
     const data = await fetch(url, fetchOptions)
     if (!data.ok) {
       throw new FetchError({ status: data.status })
     }
-    const json = await data.json()
-    updateResource({
-      data: json,
-      loading: false,
-      error: null,
-    })
+    const json = await data.json() as T
     console.log({ url, json })
+    return {
+      data: json,
+      error: null,
+    }
+    
   } catch (e_) {
-    const e = e_ as FetchError
+    const e = e_ as FetchError | Error
     console.error({ url, e })
-    const { status } = e.payload
-    updateResource({
-      data: null,
-      loading: false,
-      error: e,
-    })
+    const { status } = 'payload' in e ? e.payload : 500
+    
     if (400 <= status && status < 500) {
       // client error, request new access_token
       // TODO
     } else if (500 <= status && status < 600) {
       // server error
+    }
+    return {
+      data: null,
+      error: e,
     }
   }
 }

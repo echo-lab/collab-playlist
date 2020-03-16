@@ -1,5 +1,5 @@
 
-import React, { useState, useContext, FormEvent, useEffect } from 'react'
+import React, { useState, useContext, FormEvent } from 'react'
 import { classes, colors } from '../styles'
 import * as styles from './playlistTableRowStyles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
@@ -85,12 +85,14 @@ const MessageEditor = ({
   
   const { dispatch } = useContext(modificationReducerContext)
   
-  const [postResource, postResourceSetter] = useResource(null)
+  // const [postResource, postResourceSetter] = useResource(null)
   
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     console.log('submitted')
-    apiWrapper(`/api/playlists/${id}/tracks/${id}/messages/`,
-      postResourceSetter,
+    // set loading
+    const response = await apiWrapper(
+      `/api/playlists/${id}/tracks/${id}/messages/`,
+      // postResourceSetter,
       { method: 'POST',
         body: JSON.stringify({
           message,
@@ -98,24 +100,19 @@ const MessageEditor = ({
         }),
       }
     )
+    if (response.error) {
+      alert('error, try again')
+    } else {
+      dispatch({
+        type: action === "add" ? 'submit-add' : 'submit-remove',
+        payload: {
+          id,
+          message,
+        }
+      })
+    }
     e.preventDefault()
   }
-  
-  useEffect(() => {
-    if (postResource.loading) { return }
-    if (postResource.error) {
-      alert('error, try again')
-      return
-    }
-    if (!postResource.data) { return }
-    dispatch({
-      type: action === "add" ? 'submit-add' : 'submit-remove',
-      payload: {
-        id,
-        message,
-      }
-    })
-  }, [postResource])
   
   
   const [submitHovered, submitHoverProps] = useHover()

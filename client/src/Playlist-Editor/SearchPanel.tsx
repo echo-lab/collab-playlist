@@ -15,7 +15,16 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
   
   useEffect(() => {
     if (query !== '') {
-      apiWrapper(`/api/search?q=${query}`, setter)
+      (async () => {
+        setter({
+          loading: true,
+        })
+        const response = await apiWrapper(`/api/search?q=${query}`)
+        setter({
+          loading: false,
+          ...response,
+        })
+      })()
     }
   }, [query, setter])
   
