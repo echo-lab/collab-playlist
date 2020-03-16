@@ -6,7 +6,7 @@ import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-sol
 import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useResource, apiWrapper } from '../apiWrapper'
+import { useResource, fetchWrapper } from '../fetchWrapper'
 
 
 const chatStyle = {
@@ -90,7 +90,7 @@ const MessageEditor = ({
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     console.log('submitted')
     // set loading
-    const response = await apiWrapper(
+    const response = await fetchWrapper(
       `/api/playlists/${id}/tracks/${id}/messages/`,
       // postResourceSetter,
       { method: 'POST',

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useResource, apiWrapper, Resource } from '../apiWrapper'
+import { useResource, fetchWrapper, Resource } from '../fetchWrapper'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "../styles"
 
@@ -19,7 +19,7 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
         setter({
           loading: true,
         })
-        const response = await apiWrapper(`/api/search?q=${query}`)
+        const response = await fetchWrapper(`/api/search?q=${query}`)
         setter({
           loading: false,
           ...response,

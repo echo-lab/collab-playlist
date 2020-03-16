@@ -2,7 +2,7 @@
 import React, { useEffect, CSSProperties, useReducer } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
-import { useResource, apiWrapper } from '../apiWrapper'
+import { useResource, fetchWrapper } from '../fetchWrapper'
 import { classes, colors } from '../styles'
 // import { SavedSongRow, DraftAdditionSongRow } from './SongRow'
 import { SavedSongRow } from './SavedSongRow'
@@ -25,7 +25,7 @@ const usePlaylistData = (playlistId: string) => {
   useEffect(() => {
     (async () => {
       // playlistSetter({ loading: true })
-      const response = await apiWrapper(`/api/playlists/${playlistId}/`)
+      const response = await fetchWrapper(`/api/playlists/${playlistId}/`)
       playlistSetter({
         loading: false,
         ...response,
@@ -56,7 +56,7 @@ const usePlaylistData = (playlistId: string) => {
       , []
     )
     ;(async () => {
-      const response = await apiWrapper(`/api/users/?ids=${uniqueIds.join(',')}`)
+      const response = await fetchWrapper(`/api/users/?ids=${uniqueIds.join(',')}`)
       addedByUsersSetter({
         loading: false,
         ...response,

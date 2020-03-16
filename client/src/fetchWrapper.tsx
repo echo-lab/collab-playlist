@@ -53,7 +53,7 @@ class FetchError extends Error {
 /**
  * wrapper around fetch that handles errors and returns them as
  */
-export const apiWrapper = async <T extends any> (
+export const fetchWrapper = async <T extends any> (
   url: string,
   fetchOptions: RequestInit = {},
 ): Promise<{
