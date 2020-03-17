@@ -125,6 +125,21 @@ export const setupApi = (app: Application) => {
   
   
   /**
+   * Post a message to a song's chat
+   * body should have a message string property and a remove boolean property
+   */
+  app.post('/api/playlists/:playlistId/tracks/:trackId/messages/',
+    async (req, res: ApiResponse) => {
+      const { message, remove } = req.body
+      const { playlistId, trackId } = req.params
+      console.log({message, remove, playlistId, trackId})
+      
+      res.status(201).json({})
+    }
+  )
+  
+  
+  /**
    * Get user information from multiple ids
    * query param ids should be a comma separated list of ids
    * returns an object where the keys are the ids and the values are the user objects

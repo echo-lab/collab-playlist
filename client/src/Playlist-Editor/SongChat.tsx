@@ -7,6 +7,7 @@ import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useResource, fetchWrapper } from '../fetchWrapper'
+import { useParams } from 'react-router-dom'
 
 
 const chatStyle = {
@@ -74,7 +75,7 @@ const submitStyle = {
 
 const MessageEditor = ({
   action,
-  id,
+  id: songId,
 }: {
   action: State['userAction'], //'add' | 'remove' | 'view'
   id: string,
@@ -85,6 +86,8 @@ const MessageEditor = ({
   
   const { dispatch } = useContext(modificationReducerContext)
   
+  const { id: playlistId } = useParams()
+  
   // const [postResource, postResourceSetter] = useResource(null)
   
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
@@ -94,9 +97,11 @@ const MessageEditor = ({
       console.log('submitted')
       // set loading
       const response = await fetchWrapper(
-        `/api/playlists/${id}/tracks/${id}/messages/`,
-        // postResourceSetter,
+        `/api/playlists/${playlistId}/tracks/${songId}/messages/`,
         { method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             message,
             remove: action === 'remove',
@@ -110,7 +115,7 @@ const MessageEditor = ({
         dispatch({
           type: action === "add" ? 'submit-add' : 'submit-remove',
           payload: {
-            id,
+            id: songId,
             message,
           }
         })
