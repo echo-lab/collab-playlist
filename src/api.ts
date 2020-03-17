@@ -100,7 +100,10 @@ export const setupApi = (app: Application) => {
    * /api/playlists/
    */
   app.get('/api/playlists/', async (req, res: ApiResponse) => {
-    const data = await res.locals.spotifyApi.getUserPlaylists()
+    const data = await res.locals.spotifyApi.getUserPlaylists({
+      limit: 50, // default 20
+      // good to have as many as possible since we'll filter some/a lot out
+    })
     console.log({data})
     
     const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
