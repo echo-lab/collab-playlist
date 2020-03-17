@@ -6,12 +6,10 @@ import { SearchResults } from "./SearchResults"
 import { classes, colors } from "../styles"
 
 
-type SongResults = SpotifyApi.TrackSearchResponse | null
+type SongResults = SpotifyApi.TrackSearchResponse
 
 export const useSongSearch = (query: string): Resource<SongResults> => {
-  const [{data: result, loading, error}, setter] = useResource<{body: SongResults}>(null) // TODO change API
-  // eventually:
-  // const [resource, setter] = useResource<SongResults>(null)
+  const [resource, setter] = useResource<SongResults>(null)
   
   useEffect(() => {
     if (query !== '') {
@@ -25,23 +23,16 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
           ...response,
         })
       })()
+    } else {
+      setter({
+        loading: false,
+        data: null,
+        error: null,
+      })
     }
   }, [query, setter])
   
-  // TODO return result either way and just show loading state/nothing if loading
-  if (query === '') {
-    return {
-      data: null,
-      loading: false,
-      error: null,
-    }
-  } else {
-    return {
-      data: result?.body,
-      loading,
-      error
-    }
-  }
+  return resource
   
 }
 
@@ -115,10 +106,12 @@ export const SearchPanel = ({
       style={inputStyle}
     />
     
-    <SearchResults
-      style={resultsStyle}
-      data={result}
-    />
+    { result &&
+      <SearchResults
+        style={resultsStyle}
+        data={result}
+      />
+    }
     
   </div>
 }

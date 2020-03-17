@@ -91,7 +91,7 @@ export const setupApi = (app: Application) => {
     
     const data = await res.locals.spotifyApi.searchTracks(q)
     
-    res.json(data)
+    res.json(data.body)
   })
   
   

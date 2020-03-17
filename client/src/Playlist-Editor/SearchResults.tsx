@@ -16,14 +16,14 @@ export const SearchResults = ({
   style?: CSSProperties,
 }) => {
   
-  const items = data?.tracks?.items
+  const items = data.tracks.items
   
   const itemNotFirstStyle = {
     marginTop: '1.0rem',
   }
   
   return <ScrollArea style={style}>
-    {items?.map((item, index) => 
+    {items.map((item, index) => 
       <SearchItem
         item={item}
         key={index}
