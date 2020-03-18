@@ -1,111 +1,92 @@
 
 
 import Nedb, { Cursor, CursorCount, UpdateOptions, RemoveOptions } from 'nedb'
-import util from 'util'
+import { promisify } from 'util'
 
 
+export interface Document {
+  _id: string,
+}
 
-// // nedb uses callbacks instead of promises
-// // these are the methods to be promisified:
-// const promiseMethods = [
-//   'find',
-//   'findOne',
-//   'count',
-//   'insert',
-//   'update',
-// ] as const
-// // type PromiseMethods = typeof promiseMethods[number]
+type Query = Record<string, any>
+type UpdateQuery = Query // same for now
+// just good to refer to them differently if they change
 
-// // these methods can be used without a callback to return a cursor, so we
-// // want to keep a non-promisified version of them:
-// const cursorMethods = [
-//   'find',
-//   'count',
-// ] as const
-// // const cursorMethodsNewNames = [
-// //   'findCursor',
-// //   'countCursor',
-// // ] as const
+type Projection = Record<string, number>
+
+type OneOrMany<T> = T | T[]
 
 
-// type f = Parameters<Datastore['find']>
-// type NedbPromisified = {
-//   [method in typeof promiseMethods[number]]:
-//     (...args: Parameters<Datastore[method]>[]) => Promise<any>;
-// } & {
-//   cursor: {
-//     [method2 in typeof cursorMethods[number]]: (...args) => Promise<any>
-//   }
-// }
-
-
-export const createNedbPromisified = <D> (filename: string) => {
+export const createNedbPromisified = <D extends Document> (filename: string) => {
   // create an nedb instance and open the file:
   const dbOriginal = new Nedb<D>({
     filename,
     autoload: true,
   })
   
+  // _id is optional when inserting:
+  type InsertD = D | Omit<D, '_id'>
+  
   const boundToDb = (method: string) => dbOriginal[method].bind(dbOriginal)
-  const promisifyBind = (method: string) => util.promisify(boundToDb(method))
+  const promisifyBind = (method: string) => promisify(boundToDb(method))
   
   return {
     insert: promisifyBind('insert') as
-        <T extends D | D[]>(newDocs: T) => Promise<T>,
+      <T extends OneOrMany<InsertD>>(newDocs: T) => Promise<T extends InsertD ? D : D[]>,
     
     count: promisifyBind('count') as
-        (query: D) => Promise<number>,
+      (query: Query) => Promise<number>,
     countCursor: boundToDb('count') as
-        (query: D) => CursorCount,
+      (query: Query) => CursorCount,
     
+    // If you're giving a projection, the result will be a different type than D;
+    // you know more about what type the result will be than the function does,
+    // so it makes more sense for you to give that type (ProjectedD); if you
+    // don't give that type, it will be D by default
     find: promisifyBind('find') as
-        (query: D, projection?: D) => Promise<D[]>,
+                      (query: Query)                         => Promise<D[]>,
+    findProjected: promisifyBind('find') as
+      <ProjectedD = D>(query: Query, projection: Projection) => Promise<ProjectedD[]>,
     // is this one even needed? do you ever use count with a cursor?
     findCursor: boundToDb('find') as
-        (query: D, projection?: D) => Cursor<D>,
+                      (query: Query)                         => Cursor<D>,
+    findCursorProjected: boundToDb('find') as
+      <ProjectedD = D>(query: Query, projection: Projection) => Cursor<ProjectedD>,
     
     findOne: promisifyBind('findOne') as
-        (query: D, projection?: D) => Promise<D>,
+                      (query: Query)                         => Promise<D>,
+    findOneProjected: promisifyBind('findOne') as
+      <ProjectedD = D>(query: Query, projection: Projection) => Promise<ProjectedD>,
     // should findOne have a cursor version?? unclear
     // findOneCursor: boundToDb('findOne') as
-    //     (query: D, projection?: D) => Cursor<D>,
+    //                   (query: Query)                         => Cursor<D>,
+    // findOneCursorProjected: boundToDb('findOne') as
+    //   <ProjectedD = D>(query: Query, projection: Projection) => Cursor<ProjectedD>,
     
     // TODO pretty sure promisify won't work for update because its callback
     // accepts multiple arguments after the error; need to write my own
     // promisify for this
     update: promisifyBind('update') as
-        (query: D, updateQuery: any, options?: UpdateOptions) => Promise<number>,
+      (query: Query, updateQuery: UpdateQuery, options?: UpdateOptions) => Promise<number>,
     
     remove: promisifyBind('remove') as
-        (query: D, options?: RemoveOptions) => Promise<number>,
+      (query: Query, options?: RemoveOptions) => Promise<number>,
     
     
     // instead of calling a cursor's .exec() method, call this on the cursor
     // you can still call a cursor's sort, limit, etc methods
-    execCursor: (cursor: Cursor<D>): Promise<D[]> =>
-        util.promisify(cursor.exec.bind(cursor))(),
+    // a cursor could be of some custom ProjectedD type, called T here
+    execCursor: <T = D>(cursor: Cursor<T>): Promise<T[]> =>
+      promisify(cursor.exec.bind(cursor))(),
     // is this one even needed? do you ever use count with a cursor?
     execCursorCount: (cursor: CursorCount): Promise<number> =>
-        util.promisify(cursor.exec.bind(cursor))(),
+      promisify(cursor.exec.bind(cursor))(),
     
     // access to the original db instance:
     _original: dbOriginal,
   }
   
   
-  
-  // // this is like a python dictionary comprehension:
-  // return Object.assign(
-  //   { },
-  //   ...promiseMethods.map(method => ({
-  //     // for each method, create a promisified version and bind 'this' variable
-  //     [method]: util.promisify(dbCallback[method].bind(dbCallback))
-  //   })),
-  //   ...cursorMethods.map(method => ({
-  //     // keep a direct reference to these methods under a different name
-  //     [`${method}Cursor`]: dbCallback[method].bind(dbCallback)
-  //   }))
-  // ) as NedbPromisified
 }
 
 
