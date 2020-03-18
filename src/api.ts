@@ -2,10 +2,13 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import { Application, Response } from 'express'
-// import zip from 'array-zip'
+
+import { createNedbPromisified } from './nedbPromisified'
 
 
 export const setupApi = (app: Application) => {
+  
+  const db = createNedbPromisified('db/playlists.0.db')
   
   
   /**
@@ -104,7 +107,7 @@ export const setupApi = (app: Application) => {
       limit: 50, // default 20
       // good to have as many as possible since we'll filter some/a lot out
     })
-    console.log({data})
+    // console.log({data})
     
     const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
     
@@ -118,9 +121,31 @@ export const setupApi = (app: Application) => {
   app.get('/api/playlists/:id/', async (req, res: ApiResponse) => {
     const { id } = req.params
     
-    const data = await res.locals.spotifyApi.getPlaylist(id)
+    // start off the promise for the data:
+    const spotifyPlaylistRequest = res.locals.spotifyApi.getPlaylist(id)
     
-    res.json(data.body)
+    // while that's fetching, check if this playlist exists in the db at the
+    // same time:
+    const dbPlaylistPromise = db.findOne({ _id: id })
+    
+    // doesn't matter which finishes first, they both happen at the same time
+    // and we just wait for both to finish:
+    const spotifyPlaylist = await spotifyPlaylistRequest
+    const dbPlaylist = await dbPlaylistPromise
+    console.log({dbPlaylist})
+    if (!dbPlaylist) {
+      // playlist doesn't currently exist in db
+      
+      await db.insert({
+        _id: id,
+        tracks: []
+      })
+    } else {
+      
+    }
+    
+    
+    res.json(spotifyPlaylist.body)
   })
   
   
