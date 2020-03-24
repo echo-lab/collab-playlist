@@ -4,11 +4,12 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import { Application, Response } from 'express'
 
 import { createNedbPromisified } from './nedbPromisified'
+import { PlaylistDocument } from './dbTypes'
 
 
 export const setupApi = (app: Application) => {
   
-  const db = createNedbPromisified('db/playlists.0.db')
+  const db = createNedbPromisified<PlaylistDocument>('db/playlists.0.db')
   
   
   /**
@@ -138,7 +139,14 @@ export const setupApi = (app: Application) => {
       
       await db.insert({
         _id: id,
-        tracks: []
+        tracks: [],
+        // tracks: spotifyPlaylist.body.tracks.items.map(item => ({
+        //   id: item.track.id,
+        //   chat: [],
+        //   removed: false,
+        // })),
+        chat: [],
+        chatMode: 'situated',
       })
     } else {
       
