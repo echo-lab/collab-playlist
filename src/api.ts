@@ -4,7 +4,13 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import { Application, Response } from 'express'
 
 import { createNedbPromisified } from './nedbPromisified'
-import { PlaylistDocument } from './dbTypes'
+import {
+  PlaylistDocument,
+  SituatedChatEvent,
+  TrackObject,
+  SeparateChatMessage,
+  SeparateChatAction,
+} from './dbTypes'
 
 
 export const setupApi = (app: Application) => {
@@ -211,13 +217,154 @@ export const setupApi = (app: Application) => {
   
   /**
    * Post a message to a song's chat
-   * body should have a message string property and a remove boolean property
+   * body should have a message string property
    */
-  app.post('/api/playlists/:playlistId/tracks/:trackId/messages/',
+  app.post('/api/playlists/:playlistId/tracks/:trackId/chat/',
     async (req, res: ApiResponse) => {
-      const { message, remove } = req.body
+      const { message } = req.body
       const { playlistId, trackId } = req.params
-      console.log({message, remove, playlistId, trackId})
+      console.log({message, playlistId, trackId})
+      
+      const dbPlaylist = await db.findOne({ _id: playlistId })
+      const dbTrackIndex = dbPlaylist.tracks.findIndex(
+        track => track.id === trackId
+      )
+      await db.update(
+        { _id: playlistId },
+        { $push: { [`tracks.${dbTrackIndex}.chat`]:
+          {
+            message,
+            timestamp: new Date(),
+            userId: (await res.locals.spotifyApi.getMe()).body.id,
+          } as SituatedChatEvent
+        } }
+      )
+      
+      res.status(201).json({})
+    }
+  )
+  
+  /**
+   * Remove existing song in playlist
+   * Removal is not a DELETE; it's gone from spotify, but our
+   * backend remembers the chat history
+   * Body should include a message, but it can be an empty string
+   */
+  app.put('/api/playlists/:playlistId/tracks/:trackId/removed',
+    async (req, res: ApiResponse) => {
+      const { message } = req.body
+      const { playlistId, trackId } = req.params
+      console.log({message, playlistId, trackId})
+      
+      await res.locals.spotifyApi.removeTracksFromPlaylist(
+        playlistId, [{ uri: `spotify:track:${trackId}` }]
+      )
+      
+      const dbPlaylist = await db.findOne({ _id: playlistId })
+      const dbTrackIndex = dbPlaylist.tracks.findIndex(
+        track => track.id === trackId
+      )
+      await db.update(
+        { _id: playlistId },
+        { $push: { [`tracks.${dbTrackIndex}.chat`]:
+          {
+            message,
+            timestamp: new Date(),
+            userId: (await res.locals.spotifyApi.getMe()).body.id,
+            action: 'remove',
+          } as SituatedChatEvent
+        } }
+      )
+      
+      await db.update(
+        { _id: playlistId },
+        { $push: { chat:
+          {
+            type: 'action',
+            action: 'remove',
+            trackId,
+            timestamp: new Date(),
+            userId: (await res.locals.spotifyApi.getMe()).body.id,
+          } as SeparateChatAction
+        } }
+      )
+      
+      res.status(200).json({})
+    }
+  )
+  
+  
+  /**
+   * Add song to playlist
+   * Body should include trackId
+   * Body should include a message, but it can be an empty string
+   */
+  app.post('/api/playlists/:playlistId/tracks/',
+    async (req, res: ApiResponse) => {
+      const { message, trackId } = req.body
+      const { playlistId } = req.params
+      console.log({message, playlistId, trackId})
+      
+      await res.locals.spotifyApi.addTracksToPlaylist(
+        playlistId, [`spotify:track:${trackId}`]
+      )
+      
+      await db.update(
+        { _id: playlistId },
+        { $push: { tracks:
+          {
+            id: trackId,
+            removed: false,
+            chat: [{
+              message,
+              timestamp: new Date(),
+              userId: (await res.locals.spotifyApi.getMe()).body.id,
+              action: 'add',
+            }]
+          } as TrackObject
+        } }
+      )
+      
+      await db.update(
+        { _id: playlistId },
+        { $push: { chat:
+          {
+            type: 'action',
+            action: 'add',
+            trackId,
+            timestamp: new Date(),
+            userId: (await res.locals.spotifyApi.getMe()).body.id,
+          } as SeparateChatAction
+        } }
+      )
+      
+      res.status(201).json({})
+    }
+  )
+  
+  
+  /**
+   * Post a message to the playlist's (separate) chat
+   * body should have a message string property
+   */
+  app.post('/api/playlists/:playlistId/chat/',
+    async (req, res: ApiResponse) => {
+      const { message } = req.body
+      const { playlistId } = req.params
+      console.log({message, playlistId })
+      
+      
+      await db.update(
+        { _id: playlistId },
+        { $push: { chat:
+          {
+            type: 'message',
+            message,
+            timestamp: new Date(),
+            userId: (await res.locals.spotifyApi.getMe()).body.id,
+          } as SeparateChatMessage
+        } }
+      )
       
       res.status(201).json({})
     }
