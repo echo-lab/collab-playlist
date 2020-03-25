@@ -119,15 +119,15 @@ export const setupApi = (app: Application) => {
   /**
    * Get songs in this playlist
    */
-  app.get('/api/playlists/:id/', async (req, res: ApiResponse) => {
-    const { id } = req.params
+  app.get('/api/playlists/:playlistId/', async (req, res: ApiResponse) => {
+    const { playlistId } = req.params
     
     // start off the promise for the data:
-    const spotifyPlaylistRequest = res.locals.spotifyApi.getPlaylist(id)
+    const spotifyPlaylistRequest = res.locals.spotifyApi.getPlaylist(playlistId)
     
     // while that's fetching, check if this playlist exists in the db at the
     // same time:
-    const dbPlaylistPromise = db.findOne({ _id: id })
+    const dbPlaylistPromise = db.findOne({ _id: playlistId })
     
     // doesn't matter which finishes first, they both happen at the same time
     // and we just wait for both to finish:
@@ -136,9 +136,11 @@ export const setupApi = (app: Application) => {
     console.log({dbPlaylist})
     if (!dbPlaylist) {
       // playlist doesn't currently exist in db
+      // keep track of playlist and its tracks, even though there's no messages
+      // yet
       
       await db.insert({
-        _id: id,
+        _id: playlistId,
         tracks: [],
         // tracks: spotifyPlaylist.body.tracks.items.map(item => ({
         //   id: item.track.id,
@@ -148,12 +150,62 @@ export const setupApi = (app: Application) => {
         chat: [],
         chatMode: 'situated',
       })
-    } else {
-      
     }
+    // } else {
     
+    // playlist already/now exists in db
+    // its tracks could have been modified since the last time our backend
+    // fetched the playlist from spotify (if a user modified the playlist
+    // through the spotify app instead of our app)
+    // so update the list of tracks
+    // also, a track could be in the db but marked as removed, while it was
+    // added back in on spotify, so also update the removed flag if necessary
+    
+    const dbTracks = dbPlaylist?.tracks ?? []
+    
+    spotifyPlaylist.body.tracks.items.forEach(async spotifyItem => {
+      const { id: trackId } = spotifyItem.track
+      const findIndex = dbTracks.findIndex(
+        dbTrack => dbTrack.id === trackId
+      )
+      const dbTrackFound = findIndex !== -1 ? dbTracks[findIndex] : null
+      if (dbTrackFound) {
+        // the track is in the db, so it's likely up to date
+        // however if it's marked as removed in the db, that means it was
+        // added back in on Spotify, so we need to reset removed
+        if (dbTrackFound.removed) {
+          await db.update(
+            { _id: playlistId },
+            { $set: { [`tracks.${findIndex}.removed`]: false }}
+          )
+        }
+      } else {
+        // the track isn't in the db, so add it
+        await db.update(
+          { _id: playlistId },
+          { $push: { tracks: {
+            id: trackId,
+            chat: [],
+            removed: false,
+          }}}
+        )
+      }
+    })
+    // }
+    
+    const updatedDbPlaylist = await db.findOne({
+      _id: playlistId
+    })
     
     res.json(spotifyPlaylist.body)
+    
+    // const response = {
+    //   spotifyPlaylist: spotifyPlaylist.body,
+    //   tracks: updatedDbPlaylist.tracks,
+    //   chat: updatedDbPlaylist.chat,
+    //   chatMode: updatedDbPlaylist.chatMode,
+    // }
+    // res.json(response)
   })
   
   
