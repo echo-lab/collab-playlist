@@ -45,7 +45,8 @@ export const setupAuth = (app: Application) => {
     const scope = [
       'user-read-private',
       'playlist-read-private',
-      'playlist-read-collaborative'
+      'playlist-read-collaborative',
+      'playlist-modify-private',
     ].join(' ') // like app permissions
     
     // the server requests authorization
