@@ -37,6 +37,7 @@ const buildPath = (...paths) => rootPath(BUILD_PATH, ...paths)
 const app = express()
 
 app.use(cookieParser())
+app.use(express.json())
 
 
 /**

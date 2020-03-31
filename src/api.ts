@@ -1,18 +1,19 @@
 
 
 import SpotifyWebApi from 'spotify-web-api-node'
-import { Application, Response } from 'express'
-// import zip from 'array-zip'
+import { Application } from 'express'
+import { setupUseApiWrapper, ApiResponse } from './useApiWrapper'
+import { setupPlaylistEndpoints } from './playlistEndpoints'
+
 
 
 export const setupApi = (app: Application) => {
-  
   
   /**
    * logs api requests
    */
   app.use('/api/', (req, res, next) => {
-    console.log(`${req.originalUrl} request`)
+    console.log(`${req.method} ${req.originalUrl} request`)
     next()
   })
   
@@ -52,34 +53,16 @@ export const setupApi = (app: Application) => {
   })
   
   
-  interface ApiResponseLocals {
-    spotifyApi: SpotifyWebApi // will this need to be optional?
-  }
-  interface ApiResponse extends Response {
-    locals: ApiResponseLocals
-  }
+  /**
+   * sets up api wrapper for every api endpoint (other than refresh_token)
+   */
+  setupUseApiWrapper(app)
   
   
   /**
-   * sets up api wrapper for every api endpoint other than refresh_token
-   * @statusCode 401 not authenticated if no access token found, meaning
-   * try refreshing access code through /api/refresh_token
+   * set up endpoints that relate to playlists and interface with the db
    */
-  app.use('/api/', (req, res: ApiResponse, next) => {
-    const { access_token } = req.cookies
-    
-    if (!access_token) {
-      // no access token, so we can't make a request
-      res.sendStatus(401)
-      return // no next()
-    }
-    
-    // might cause a problem if locals.spotifyApi is not optional
-    res.locals.spotifyApi = new SpotifyWebApi({
-      accessToken: access_token
-    })
-    next()
-  })
+  setupPlaylistEndpoints(app)
   
   
   /**
@@ -91,7 +74,7 @@ export const setupApi = (app: Application) => {
     
     const data = await res.locals.spotifyApi.searchTracks(q)
     
-    res.json(data)
+    res.json(data.body)
   })
   
   
@@ -100,25 +83,17 @@ export const setupApi = (app: Application) => {
    * /api/playlists/
    */
   app.get('/api/playlists/', async (req, res: ApiResponse) => {
-    const data = await res.locals.spotifyApi.getUserPlaylists()
-    console.log({data})
+    const data = await res.locals.spotifyApi.getUserPlaylists({
+      limit: 50, // default 20
+      // good to have as many as possible since we'll filter some/a lot out
+    })
+    // console.log({data})
     
     const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
     
     res.json(collabPlaylists)
   })
   
-  
-  /**
-   * Get songs in this playlist
-   */
-  app.get('/api/playlists/:id/', async (req, res: ApiResponse) => {
-    const { id } = req.params
-    
-    const data = await res.locals.spotifyApi.getPlaylist(id)
-    
-    res.json(data.body)
-  })
   
   
   /**
@@ -158,7 +133,7 @@ export const setupApi = (app: Application) => {
   /**
    * catch all other api endpoints
    */
-  app.get(['/api', '/api/*'], (req, res) => {
+  app.all(['/api', '/api/*'], (req, res) => {
     console.log(`${req.path} not found`)
     res.sendStatus(404)
   })

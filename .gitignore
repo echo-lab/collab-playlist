@@ -8,6 +8,9 @@ node_modules/
 # typescript build output
 build/
 
+# database
+db/
+
 # folder for ignored files
 ignore/
 
