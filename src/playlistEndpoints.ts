@@ -167,27 +167,26 @@ export const setupPlaylistEndpoints = (app: Application) => {
       )
       await db.update(
         { _id: playlistId },
-        { $push: { [`tracks.${dbTrackIndex}.chat`]:
-          {
-            message,
-            timestamp: new Date(),
-            userId: (await res.locals.spotifyApi.getMe()).body.id,
-            action: 'remove',
-          } as SituatedChatEvent
-        } }
-      )
-      
-      await db.update(
-        { _id: playlistId },
-        { $push: { chat:
-          {
-            type: 'action',
-            action: 'remove',
-            trackId,
-            timestamp: new Date(),
-            userId: (await res.locals.spotifyApi.getMe()).body.id,
-          } as SeparateChatAction
-        } }
+        {
+          $push: {
+            [`tracks.${dbTrackIndex}.chat`]: {
+              message,
+              timestamp: new Date(),
+              userId: (await res.locals.spotifyApi.getMe()).body.id,
+              action: 'remove',
+            } as SituatedChatEvent,
+            chat: {
+              type: 'action',
+              action: 'remove',
+              trackId,
+              timestamp: new Date(),
+              userId: (await res.locals.spotifyApi.getMe()).body.id,
+            } as SeparateChatAction,
+          },
+          $set: {
+            [`tracks.${dbTrackIndex}.removed`]: true
+          }
+        }
       )
       
       res.status(200).json({})
@@ -212,31 +211,27 @@ export const setupPlaylistEndpoints = (app: Application) => {
       
       await db.update(
         { _id: playlistId },
-        { $push: { tracks:
-          {
-            id: trackId,
-            removed: false,
-            chat: [{
-              message,
+        {
+          $push: {
+            tracks: {
+              id: trackId,
+              removed: false,
+              chat: [{
+                message,
+                timestamp: new Date(),
+                userId: (await res.locals.spotifyApi.getMe()).body.id,
+                action: 'add',
+              }]
+            } as TrackObject,
+            chat: {
+              type: 'action',
+              action: 'add',
+              trackId,
               timestamp: new Date(),
               userId: (await res.locals.spotifyApi.getMe()).body.id,
-              action: 'add',
-            }]
-          } as TrackObject
-        } }
-      )
-      
-      await db.update(
-        { _id: playlistId },
-        { $push: { chat:
-          {
-            type: 'action',
-            action: 'add',
-            trackId,
-            timestamp: new Date(),
-            userId: (await res.locals.spotifyApi.getMe()).body.id,
-          } as SeparateChatAction
-        } }
+            } as SeparateChatAction
+          }
+        }
       )
       
       res.status(201).json({})
