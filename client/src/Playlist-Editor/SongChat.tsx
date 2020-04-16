@@ -6,7 +6,7 @@ import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-sol
 import { State, modificationReducerContext } from './modificationReducer'
 import { useHover } from '../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useResource, fetchWrapper } from '../fetchWrapper'
+import { postWrapper } from '../fetchWrapper'
 import { useParams } from 'react-router-dom'
 
 
@@ -96,16 +96,10 @@ const MessageEditor = ({
     ;(async () => {
       console.log('submitted')
       // set loading
-      const response = await fetchWrapper(
-        `/api/playlists/${playlistId}/tracks/${songId}/messages/`,
-        { method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message,
-            remove: action === 'remove',
-          }),
+      const response = await postWrapper(
+        `/api/playlists/${playlistId}/tracks/${songId}/chat/`,
+        {
+          message,
         }
       )
       
