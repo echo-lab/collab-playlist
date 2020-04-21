@@ -1,8 +1,8 @@
 
 import React from 'react'
-import { classes } from '../styles'
-import * as styles from './playlistTableRowStyles'
-import { State } from './modificationReducer'
+import { classes } from '../../styles'
+import * as styles from '../playlistTableRowStyles'
+import { State } from '../modificationReducer'
 import { SituatedMessageEditor } from './MessageEditor'
 
 

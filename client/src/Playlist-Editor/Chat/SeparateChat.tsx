@@ -1,9 +1,9 @@
 
 import React, { CSSProperties } from 'react'
-import { classes } from '../styles'
+import { classes } from '../../styles'
 // import * as styles from './playlistTableRowStyles'
 // import { State } from './modificationReducer'
-import { SeparateMessageEditor } from './MessageEditor'
+import { SeparateMessageEditor } from '../MessageEditor'
 
 
 

@@ -1,11 +1,11 @@
 
 import React, { useState, useContext, FormEvent, Dispatch } from 'react'
-import { classes, colors } from '../styles'
+import { classes, colors } from '../../styles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { State, modificationReducerContext, Action } from './modificationReducer'
-import { useHover } from '../useHover'
+import { State, modificationReducerContext, Action } from '../modificationReducer'
+import { useHover } from '../../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { postWrapper } from '../fetchWrapper'
+import { postWrapper } from '../../fetchWrapper'
 import { useParams } from 'react-router-dom'
 
 

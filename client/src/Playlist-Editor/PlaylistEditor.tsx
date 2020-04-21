@@ -12,7 +12,7 @@ import { PlaylistTableHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
 import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
-import { SeparateChat } from './SeparateChat'
+import { SeparateChat } from './Chat/SeparateChat'
 
 
 const usePlaylistData = (playlistId: string) => {
