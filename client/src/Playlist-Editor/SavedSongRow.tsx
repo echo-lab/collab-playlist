@@ -5,7 +5,7 @@ import { faMinusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
-import { SituatedChat } from './SongChat'
+import { SituatedChat } from './SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
