@@ -43,6 +43,13 @@ const submitStyle = {
 type UserAction = State['userAction']
 
 
+const iconOfAction = (action: UserAction) =>
+  action === 'add'
+  ? faPlusCircle
+  : action === 'remove'
+  ? faMinusCircle
+  : faPaperPlane
+
 const modificationApiUrl = (
   action: UserAction,
   playlistId: string,
@@ -54,13 +61,17 @@ const modificationApiUrl = (
   ? `/api/playlists/${playlistId}/tracks/${trackId}/removed/`
   : `/api/playlists/${playlistId}/tracks/${trackId}/chat/`
 
+const modificationApiMethod = (action: UserAction) =>
+  action === 'remove'
+  ? 'PUT'
+  : 'POST'
 
-const situatedSubmitHandler = (
-  action: UserAction,
-  playlistId: string,
-  trackId: string,
-  message: string,
-  dispatch: Dispatch<Action>
+
+const createSubmitHandler = (
+  method: string,
+  url: string,
+  body: Record<string, any>,
+  onSuccess: () => void,
 ) => (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault()
   
@@ -68,23 +79,15 @@ const situatedSubmitHandler = (
     console.log('submitted')
     // set loading
     const response = await postWrapper(
-      modificationApiUrl(action, playlistId, trackId),
-      {
-        message,
-        ...(action === 'add' && { trackId }),
-      }
+      url,
+      body,
+      { method }
     )
     
     if (response.error) {
       alert('error, try again')
     } else {
-      dispatch({
-        type: action === "add" ? 'submit-add' : 'submit-remove',
-        payload: {
-          id: trackId,
-          message,
-        }
-      })
+      onSuccess()
     }
   })()
 }
@@ -100,15 +103,29 @@ export const SituatedMessageEditor = ({
 }) => {
   const [message, setMessage] = useState('')
   
-  
   const { dispatch } = useContext(modificationReducerContext)
   
   const { id: playlistId } = useParams()
   
-  const submitHandler = situatedSubmitHandler(
-    action, playlistId, trackId, message, dispatch
-  )
+  const submitBody: any = { message } // TODO use API type
+  if (action === 'add') {
+    submitBody.trackId = trackId
+  }
   
+  const onSuccess = () => dispatch({
+    type: action === "add" ? 'submit-add' : 'submit-remove',
+    payload: {
+      id: trackId,
+      message,
+    }
+  })
+  
+  const submitHandler = createSubmitHandler(
+    modificationApiMethod(action),
+    modificationApiUrl(action, playlistId, trackId),
+    submitBody,
+    onSuccess
+  )
   
   const [submitHovered, submitHoverProps] = useHover()
   
@@ -117,11 +134,7 @@ export const SituatedMessageEditor = ({
     background: colors.translucentBlack(submitHovered ? 0.2 : 0),
   }
   
-  const icon = action === 'add'
-    ? faPlusCircle
-    : action === 'remove'
-    ? faMinusCircle
-    : faPaperPlane
+  const icon = iconOfAction(action)
   
   const submitText = action === 'add'
     ? 'Add'
@@ -170,26 +183,12 @@ export const SeparateMessageEditor = ({
   
   const { id: playlistId } = useParams()
   
-  // const [postResource, postResourceSetter] = useResource(null)
-  
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    ;(async () => {
-      console.log('submitted')
-      // set loading
-      const response = await postWrapper(
-        `/api/playlists/${playlistId}/chat/`,
-        { message }
-      )
-      
-      if (response.error) {
-        alert('error, try again')
-      } else {
-        reloadPlaylist()
-      }
-    })()
-  }
+  const submitHandler = createSubmitHandler(
+    'POST',
+    `/api/playlists/${playlistId}/chat/`,
+    { message },
+    reloadPlaylist
+  )
   
   
   const [submitHovered, submitHoverProps] = useHover()
