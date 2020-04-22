@@ -12,6 +12,7 @@ import { PlaylistTableHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
 import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
+import { SeparateChat } from './Chat/SeparateChat'
 
 
 const usePlaylistData = (playlistId: string) => {
@@ -70,16 +71,13 @@ const usePlaylistData = (playlistId: string) => {
 
 
 
-const panelStyle = (style): CSSProperties => ({
-  ...classes.row,
-  ...style,
-})
+
 const searchTabStyle = {
   flex: 0.2,
 }
 const playlistEditorStyle = {
   ...classes.column,
-  flex: 0.8,
+  flex: 0.6,
   // padding: '2.0rem',
   backgroundColor: colors.grayscale.darkGray,
   overflow: 'auto',
@@ -93,6 +91,10 @@ const tHeadStyle = {
 const songsStyle = {
   padding: '0 2.0rem 2.0rem',
 }
+const separateChatStyle = {
+  flex: 0.2,
+}
+
 
 export const PlaylistEditor = ({
   style,
@@ -112,8 +114,14 @@ export const PlaylistEditor = ({
   
   const [modificationState, dispatch] = useReducer(modificationReducer, initialState)
   
+  
+  const panelStyle = {
+    ...classes.row,
+    ...style,
+  }
+  
   return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
-    <div style={panelStyle(style)}>
+    <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>
       <table style={playlistEditorStyle}>
         { playlistLoading
@@ -137,6 +145,11 @@ export const PlaylistEditor = ({
           </>
         }
       </table>
+      <SeparateChat
+        chat={[]}
+        reloadPlaylist={() => void(0)}
+        style={separateChatStyle}
+      />
     </div>
   </modificationReducerContext.Provider>
 }

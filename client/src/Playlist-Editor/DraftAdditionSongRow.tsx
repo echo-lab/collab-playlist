@@ -5,7 +5,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
-import { SongChat } from './SongChat'
+import { SituatedChat } from './Chat/SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
@@ -64,7 +64,7 @@ export const DraftAdditionSongRow = ({
         </button>
       </td>
     </div>
-    <SongChat action={modificationState.userAction} id={item.id} />
+    <SituatedChat action={modificationState.userAction} id={item.id} />
   </tr>
 }
 

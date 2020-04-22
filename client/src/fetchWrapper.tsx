@@ -92,6 +92,29 @@ export const fetchWrapper = async <T extends any> (
 }
 
 
+export const postWrapper = async <T extends any> (
+  url: string,
+  body: Record<string, any>,
+  fetchOptions: RequestInit = {},
+): Promise<{
+  data: T,
+  error: any,
+}> => {
+  return await fetchWrapper(
+    url,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...fetchOptions.headers,
+      },
+      body: JSON.stringify(body),
+      ...fetchOptions,
+    }
+  )
+}
+
+
 // TODO refactor in useRefreshToken.tsx
 export const useRefreshToken = (isLoggedIn, logout) => {
   useEffect(() => {

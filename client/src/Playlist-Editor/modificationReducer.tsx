@@ -58,7 +58,7 @@ interface SubmitRemoveAction {
     message: string,
   }
 }
-type Action =
+export type Action =
   | SelectAddAction
   | SelectRemoveAction
   | CancelAction
