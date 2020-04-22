@@ -1,5 +1,10 @@
 
-import { Document } from './nedbPromisified'
+
+// This type is defined in src/nedbPromisified, but that is not accessible
+// to the client code, so we redundantly define it here
+interface Document {
+  _id: string,
+}
 
 
 /**

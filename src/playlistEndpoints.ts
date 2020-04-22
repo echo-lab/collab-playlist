@@ -11,7 +11,7 @@ import {
   TrackObject,
   SeparateChatMessage,
   SeparateChatAction,
-} from './dbTypes'
+} from '../client/src/shared/dbTypes'
 
 
 

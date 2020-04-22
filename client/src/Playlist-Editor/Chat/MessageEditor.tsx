@@ -7,7 +7,7 @@ import { useHover } from '../../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { postWrapper } from '../../fetchWrapper'
 import { useParams } from 'react-router-dom'
-
+import { SituatedChatEvent } from '../../shared/dbTypes'
 
 
 const messageEditorStyle = {
@@ -107,7 +107,8 @@ export const SituatedMessageEditor = ({
   
   const { id: playlistId } = useParams()
   
-  const submitBody: any = { message } // TODO use API type
+  type SubmitBody = SituatedChatEvent | any // TODO fix
+  const submitBody: SubmitBody = { message } // TODO use API type
   if (action === 'add') {
     submitBody.trackId = trackId
   }

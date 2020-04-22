@@ -24,7 +24,8 @@
     "outDir": "build",
   },
   "include": [
-    "src"
+    "src",
+    "client/src/shared/"
   ],
   "exclude": [
     "client",
