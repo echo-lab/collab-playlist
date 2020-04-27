@@ -4,6 +4,9 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
 import { setupUseApiWrapper, ApiResponse } from './useApiWrapper'
 import { setupPlaylistEndpoints } from './playlistEndpoints'
+import {
+  GetRefreshTokenResponse, GetTrackSearchResponse, GetPlaylistsResponse
+} from '../client/src/shared/apiTypes'
 
 
 
@@ -43,7 +46,7 @@ export const setupApi = (app: Application) => {
       const data = await spotifyApi.refreshAccessToken()
       
       res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
-      res.json({ expires_in: data.body.expires_in })
+      res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
       
     } catch (e) {
       console.error({e})
@@ -74,7 +77,7 @@ export const setupApi = (app: Application) => {
     
     const data = await res.locals.spotifyApi.searchTracks(q)
     
-    res.json(data.body)
+    res.json(data.body as GetTrackSearchResponse)
   })
   
   
@@ -91,7 +94,7 @@ export const setupApi = (app: Application) => {
     
     const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
     
-    res.json(collabPlaylists)
+    res.json(collabPlaylists as GetPlaylistsResponse)
   })
   
   
