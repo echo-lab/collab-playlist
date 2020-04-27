@@ -76,8 +76,12 @@ const searchTabStyle = {
   flex: 0.2,
 }
 const playlistEditorStyle = {
+  ...classes.row,
+  flex: 0.8,
+}
+const playlistTableStyle = {
   ...classes.column,
-  flex: 0.6,
+  flex: 3,
   // padding: '2.0rem',
   backgroundColor: colors.grayscale.darkGray,
   overflow: 'auto',
@@ -92,7 +96,7 @@ const songsStyle = {
   padding: '0 2.0rem 2.0rem',
 }
 const separateChatStyle = {
-  flex: 0.2,
+  flex: 1,
 }
 
 
@@ -123,33 +127,35 @@ export const PlaylistEditor = ({
   return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
     <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>
-      <table style={playlistEditorStyle}>
-        { playlistLoading
-        ? null
-        : <>
-            <thead style={tHeadStyle}>
-              <PlaylistInfo playlist={playlist} />
-              <PlaylistTableHeader />
-            </thead>
-            <tbody style={songsStyle}>
-              { addedByUsersLoading
-              ? null
-              : playlist.tracks.items.map((item, index) => 
-                  <SavedSongRow item={item} addedByUsers={addedByUsers} key={index}/>
-                )
-              }
-              { modificationState.userAction === 'add' &&
-                <DraftAdditionSongRow item={modificationState.songObject} />
-              }
-            </tbody>
-          </>
-        }
-      </table>
-      <SeparateChat
-        chat={[]}
-        reloadPlaylist={() => void(0)}
-        style={separateChatStyle}
-      />
+      <div style={playlistEditorStyle}>
+        <table style={playlistTableStyle}>
+          { playlistLoading
+          ? null
+          : <>
+              <thead style={tHeadStyle}>
+                <PlaylistInfo playlist={playlist} />
+                <PlaylistTableHeader />
+              </thead>
+              <tbody style={songsStyle}>
+                { addedByUsersLoading
+                ? null
+                : playlist.tracks.items.map((item, index) => 
+                    <SavedSongRow item={item} addedByUsers={addedByUsers} key={index}/>
+                  )
+                }
+                { modificationState.userAction === 'add' &&
+                  <DraftAdditionSongRow item={modificationState.songObject} />
+                }
+              </tbody>
+            </>
+          }
+        </table>
+        { false && <SeparateChat
+          chat={[]}
+          reloadPlaylist={() => void(0)}
+          style={separateChatStyle}
+        /> }
+      </div>
     </div>
   </modificationReducerContext.Provider>
 }
