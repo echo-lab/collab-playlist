@@ -13,12 +13,13 @@ import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
 import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
 import { SeparateChat } from './Chat/SeparateChat'
+import { GetPlaylistIdResponse } from '../shared/apiTypes'
 
 
 const usePlaylistData = (playlistId: string) => {
   const [
     playlistResource, playlistSetter
-  ] = useResource<SpotifyApi.PlaylistObjectFull>(null, true)
+  ] = useResource<GetPlaylistIdResponse>(null, true)
   const [
     addedByUsersResource, addedByUsersSetter
   ] = useResource<Record<string, SpotifyApi.UserObjectPublic>>(null, true)
@@ -39,7 +40,7 @@ const usePlaylistData = (playlistId: string) => {
     if (playlistResource.loading || playlistResource.error) { return }
     // once playlistResource has loaded:
     // get the list of addedBy user ids
-    const userIds = playlistResource.data.tracks.items.map(item => item.added_by.id)
+    const userIds = playlistResource.data.tracks.map(track => track.added_by.id)
     // safeguard against empty list
     if (userIds.length === 0) {
       addedByUsersSetter({
@@ -139,8 +140,8 @@ export const PlaylistEditor = ({
               <tbody style={songsStyle}>
                 { addedByUsersLoading
                 ? null
-                : playlist.tracks.items.map((item, index) => 
-                    <SavedSongRow item={item} addedByUsers={addedByUsers} key={index}/>
+                : playlist.tracks.map((track, index) => 
+                    <SavedSongRow item={track} addedByUsers={addedByUsers} key={index}/>
                   )
                 }
                 { modificationState.userAction === 'add' &&

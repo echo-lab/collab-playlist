@@ -1,6 +1,7 @@
 
 import React, { CSSProperties } from 'react'
 import { classes, colors } from '../styles'
+import { GetPlaylistIdResponse } from '../shared/apiTypes'
 
 
 
@@ -51,7 +52,7 @@ const followersCountStyle = {
 export const PlaylistInfo = ({
   playlist,
 }: {
-  playlist: SpotifyApi.PlaylistObjectFull,
+  playlist: GetPlaylistIdResponse,
 }) => {
   
   return <div style={containerStyle}>

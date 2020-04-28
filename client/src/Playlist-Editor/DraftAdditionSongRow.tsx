@@ -7,6 +7,7 @@ import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SituatedChat } from './Chat/SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { PlaylistTrackObject } from '../shared/apiTypes'
 
 
 /**
@@ -18,11 +19,13 @@ export const DraftAdditionSongRow = ({
   item,
   // addedByUsers,
 }: {
-  item: SpotifyApi.TrackObjectFull,
+  item: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
   // addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
   
-  const artistNames = item.artists.map(artist => artist.name).join(', ')
+  const { track } = item
+  
+  const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
@@ -50,9 +53,9 @@ export const DraftAdditionSongRow = ({
   return <tr style={classes.column} ref={rowRef}>
     <div style={styles.rowStyle}>
       <td style={styles.expandCollapseButtonStyle}></td>
-      <td style={styles.titleStyle}>{item.name}</td>
+      <td style={styles.titleStyle}>{track.name}</td>
       <td style={styles.artistStyle}>{artistNames}</td>
-      <td style={styles.albumStyle}>{item.album.name}</td>
+      <td style={styles.albumStyle}>{track.album.name}</td>
       <td style={styles.addedByStyle}>{addedByUser}</td>
       <td style={styles.rightButtonWrapperStyle}>
         <button
@@ -64,7 +67,7 @@ export const DraftAdditionSongRow = ({
         </button>
       </td>
     </div>
-    <SituatedChat action={modificationState.userAction} id={item.id} />
+    <SituatedChat action={modificationState.userAction} track={item} />
   </tr>
 }
 

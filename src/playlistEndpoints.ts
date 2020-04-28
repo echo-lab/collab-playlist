@@ -39,7 +39,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
     
     // doesn't matter which finishes first, they both happen at the same time
     // and we just wait for both to finish:
-    const spotifyPlaylist = await spotifyPlaylistRequest
+    const spotifyPlaylistResponse = await spotifyPlaylistRequest
     const dbPlaylist = await dbPlaylistPromise
     console.log({dbPlaylist})
     if (!dbPlaylist) {
@@ -71,7 +71,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
     
     const dbTracks = dbPlaylist?.tracks ?? []
     
-    spotifyPlaylist.body.tracks.items.forEach(async spotifyItem => {
+    spotifyPlaylistResponse.body.tracks.items.forEach(async spotifyItem => {
       const { id: trackId } = spotifyItem.track
       const findIndex = dbTracks.findIndex(
         dbTrack => dbTrack.id === trackId
@@ -105,15 +105,23 @@ export const setupPlaylistEndpoints = (app: Application) => {
       _id: playlistId
     })
     
-    res.json(spotifyPlaylist.body as GetPlaylistIdResponse)
+    // const t: number = 'r';
+    // res.json(spotifyPlaylist.body as GetPlaylistIdResponse)
     
-    // const response = {
-    //   spotifyPlaylist: spotifyPlaylist.body,
-    //   tracks: updatedDbPlaylist.tracks,
-    //   chat: updatedDbPlaylist.chat,
-    //   chatMode: updatedDbPlaylist.chatMode,
-    // }
-    // res.json(response)
+    const response: GetPlaylistIdResponse = {
+      ...spotifyPlaylistResponse.body,
+      ...updatedDbPlaylist,
+      tracks: spotifyPlaylistResponse.body.tracks.items.map((spotifyTrack, index) => ({
+        ...spotifyTrack,
+        ...updatedDbPlaylist.tracks.find(dbTrack => dbTrack.id === spotifyTrack.track.id),
+      }))
+      // spotifyPlaylist: spotifyPlaylist.body,
+      // tracks: updatedDbPlaylist.tracks,
+      // chat: updatedDbPlaylist.chat,
+      // chatMode: updatedDbPlaylist.chatMode,
+    }
+    console.log({response})
+    res.json(response)
   })
   
   

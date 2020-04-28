@@ -1,12 +1,28 @@
 
+import { PlaylistDocument, TrackObject } from './dbTypes'
+
 
 
 export interface GetRefreshTokenResponse {
   expires_in: number,
 }
 
+// const t: number = 't'
 
-export interface GetPlaylistIdResponse extends SpotifyApi.SinglePlaylistResponse { }
+export interface PlaylistTrackObject
+  extends SpotifyApi.PlaylistTrackObject, TrackObject { }
+
+export interface GetPlaylistIdResponse
+  extends Omit<SpotifyApi.SinglePlaylistResponse, 'tracks'>, PlaylistDocument
+{
+  tracks: PlaylistTrackObject[]
+}
+// export interface GetPlaylistIdResponse {
+//   spotifyPlaylist: SpotifyApi.SinglePlaylistResponse,
+//   tracks: PlaylistDocument['tracks'],
+//   chat: PlaylistDocument['chat'],
+//   chatMode: PlaylistDocument['chatMode'],
+// }
 
 
 export interface PostSituatedChatRequest {

@@ -7,6 +7,7 @@ import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SituatedChat } from './Chat/SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { PlaylistTrackObject } from '../shared/apiTypes'
 
 
 
@@ -18,7 +19,7 @@ export const SavedSongRow = ({
   item,
   addedByUsers,
 }: {
-  item: SpotifyApi.PlaylistTrackObject,
+  item: PlaylistTrackObject,
   addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
   
@@ -86,7 +87,7 @@ export const SavedSongRow = ({
       </td>
     </div>
     { removeThisState &&
-      <SituatedChat action={modificationState.userAction} id={track.id} />
+      <SituatedChat action={modificationState.userAction} track={item} />
     }
   </tr>
 }
