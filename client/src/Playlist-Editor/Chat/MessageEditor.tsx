@@ -1,24 +1,24 @@
 
-import React, { useState, useContext, FormEvent, Dispatch } from 'react'
+import React, { useState, useContext, CSSProperties } from 'react'
 import { classes, colors } from '../../styles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { State, modificationReducerContext, Action } from '../modificationReducer'
+import { State, modificationReducerContext } from '../modificationReducer'
 import { useHover } from '../../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { postWrapper } from '../../fetchWrapper'
 import { useParams } from 'react-router-dom'
 import { SituatedChatEvent } from '../../shared/dbTypes'
+import { SongActionConfirm, createSubmitHandler } from './SongActionConfirm'
 
 
 const messageEditorStyle = {
-  ...classes.row,
+  ...classes.column,
   // margin: '1.0rem 1.5rem',
   border: 'none',
   borderRadius: '2.25rem',
-  background: colors.grayscale.darkerWhite,
-  height: '4.5rem',
+  // background: colors.grayscale.darkerWhite,
+  // height: '4.5rem',
 }
-const inputStyle = {
+const inputStyle: CSSProperties = {
   ...classes.text,
   background: colors.grayscale.white,
   color: colors.grayscale.black,
@@ -27,7 +27,8 @@ const inputStyle = {
   fontSize: '1.6rem',
   padding: '1.0rem 1.5rem',
   flex: 1,
-}
+  resize: 'none',
+} as const
 const submitStyle = {
   ...classes.text,
   ...classes.button,
@@ -37,6 +38,14 @@ const submitStyle = {
   padding: '0.7rem',
   margin: 'auto 0.5rem',
   borderRadius: '50%',
+}
+const submitIconStyle: CSSProperties = {
+  ...classes.text,
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  height: '2.4rem',
+  width: '2.4rem',
+  // padding: '0.7rem',
 }
 
 
@@ -67,30 +76,6 @@ const modificationApiMethod = (action: UserAction) =>
   : 'POST'
 
 
-const createSubmitHandler = (
-  method: string,
-  url: string,
-  body: Record<string, any>,
-  onSuccess: () => void,
-) => (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-  
-  ;(async () => {
-    console.log('submitted')
-    // set loading
-    const response = await postWrapper(
-      url,
-      body,
-      { method }
-    )
-    
-    if (response.error) {
-      alert('error, try again')
-    } else {
-      onSuccess()
-    }
-  })()
-}
 
 
 
@@ -128,12 +113,12 @@ export const SituatedMessageEditor = ({
     onSuccess
   )
   
-  const [submitHovered, submitHoverProps] = useHover()
+  // const [submitHovered, submitHoverProps] = useHover()
   
-  const submitStyleDynamic = {
-    ...submitStyle,
-    background: colors.translucentBlack(submitHovered ? 0.2 : 0),
-  }
+  // const submitStyleDynamic = {
+  //   ...submitStyle,
+  //   background: colors.translucentBlack(submitHovered ? 0.2 : 0),
+  // }
   
   const icon = iconOfAction(action)
   
@@ -154,7 +139,7 @@ export const SituatedMessageEditor = ({
         value={message}
         onChange={e => setMessage(e.target.value)}
       />
-      <button
+      {/* <button
         type="submit"
         style={submitStyleDynamic}
         {...submitHoverProps}
@@ -164,7 +149,23 @@ export const SituatedMessageEditor = ({
           icon={icon}
           style={classes.icon}
         />
-      </button>
+      </button> */}
+      <SongActionConfirm
+        confirmChildren={<>
+          {submitText}{' '}
+          <div style={submitIconStyle}>
+            <FontAwesomeIcon
+              icon={icon}
+              style={classes.icon}
+            />
+          </div>
+        </>}
+        onCancel={() => {
+          dispatch({
+            type: 'cancel',
+          })
+        }}
+      />
     </form>
   </>
 }
