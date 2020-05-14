@@ -5,6 +5,7 @@ import * as styles from '../playlistTableRowStyles'
 import { State } from '../modificationReducer'
 import { SituatedMessageEditor } from './MessageEditor'
 import { PlaylistTrackObject } from '../../shared/apiTypes'
+import { SituatedChatMessage } from './ChatMessage'
 
 
 const chatStyle = {
@@ -29,8 +30,10 @@ export const SituatedChat = ({
       {/* Just a spacer */}
     </div>
     <div style={chatStyle}>
-      <div style={classes.text}>
-        {JSON.stringify(track.chat, null, 2)}
+      <div style={classes.column}>
+        { track.chat.map(chatEvent =>
+          <SituatedChatMessage chatEvent={chatEvent} />
+        ) }
       </div>
       <SituatedMessageEditor action={action} trackId={track.id} />
     </div>
