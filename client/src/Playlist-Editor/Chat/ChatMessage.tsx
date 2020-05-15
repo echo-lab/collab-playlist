@@ -55,9 +55,12 @@ export const SituatedChatMessage = ({
   
   return <div style={messageStyle}>
     <div style={classes.row}>
-      { !userNameResource.loading &&
-        <h4 style={userNameStyle}>{userNameResource.data}</h4>
-      }
+      <h4 style={userNameStyle}>
+        { userNameResource.loading
+        ? '\xa0' // nbsp to preserve line height when loading
+        : userNameResource.data
+        }
+      </h4>
       <time style={timestampStyle}>
         {new Date(chatEvent.timestamp).toLocaleString()}
       </time>
