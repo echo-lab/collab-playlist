@@ -47,10 +47,12 @@ const DebouncedInput = ({
   onChange,
   delay = 500,
   style,
+  placeholder,
 }: {
   onChange: (arg: string) => void,
   delay?: number,
   style?: CSSProperties,
+  placeholder?: string,
 }) => {
   // the controlled input state, gets updated immediately on change:
   const [value, setValue] = useState('')
@@ -61,6 +63,7 @@ const DebouncedInput = ({
     style={style}
     type="text"
     value={value}
+    placeholder={placeholder}
     onChange={ ({ target: { value: newVal }}) => {
       setValue(newVal)
       debouncedOnChange(newVal)
@@ -104,6 +107,7 @@ export const SearchPanel = ({
     <DebouncedInput
       onChange={setQuery}
       style={inputStyle}
+      placeholder="Search to add track..."
     />
     
     { result &&

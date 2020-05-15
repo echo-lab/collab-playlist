@@ -128,6 +128,12 @@ export const SituatedMessageEditor = ({
     ? 'Remove'
     : 'Post' // send? submit? comment?
   
+  const placeholderText = action === 'add'
+    ? 'Explain why you want to add this track... (optional)'
+    : action === 'remove'
+    ? 'Explain why you want to remove this track... (optional)'
+    : 'Comment on this track...'
+  
   return <>
     <form
       style={messageEditorStyle}
@@ -138,6 +144,7 @@ export const SituatedMessageEditor = ({
         style={inputStyle}
         value={message}
         onChange={e => setMessage(e.target.value)}
+        placeholder={placeholderText}
       />
       {/* <button
         type="submit"
@@ -210,6 +217,7 @@ export const SeparateMessageEditor = ({
         style={inputStyle}
         value={message}
         onChange={e => setMessage(e.target.value)}
+        placeholder="Leave a comment..."
       />
       <button
         type="submit"
