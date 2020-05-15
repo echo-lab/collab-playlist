@@ -74,6 +74,7 @@ export const classes = {
     background: 'transparent',
     border: 'none',
     padding: 0,
+    cursor: 'pointer',
   },
   // makes svg icons take up the size of the button contents
   icon: {
