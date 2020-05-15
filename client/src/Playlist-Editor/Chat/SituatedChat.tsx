@@ -31,8 +31,8 @@ export const SituatedChat = ({
     </div>
     <div style={chatStyle}>
       <div style={classes.column}>
-        { track.chat.map(chatEvent =>
-          <SituatedChatMessage chatEvent={chatEvent} />
+        { track.chat.map((chatEvent, index) =>
+          <SituatedChatMessage chatEvent={chatEvent} key={index} />
         ) }
       </div>
       <SituatedMessageEditor action={action} trackId={track.id} />
