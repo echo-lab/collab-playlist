@@ -48,7 +48,6 @@ const bothButtonsStyle: CSSProperties = {
 }
 const cancelStyle: CSSProperties = {
   ...bothButtonsStyle,
-  border: `0.2rem solid ${colors.grayscale.gray}`,
 }
 const submitStyle: CSSProperties = {
   ...bothButtonsStyle,
@@ -70,13 +69,14 @@ export const SongActionConfirm = ({
   const cancelStyleDynamic = {
     ...cancelStyle,
     background: colors.translucentWhite(cancelHovered ? 0.2 : 0),
+    border: `0.3rem solid ${colors.translucentWhite(cancelHovered ? 0 : 0.2)}`,
   }
   
   const [submitHovered, submitHoverProps] = useHover()
   
   const submitStyleDynamic = {
     ...submitStyle,
-    background: submitHovered ? 'red' : 'maroon',
+    background: submitHovered ? '#e81717' : '#a61111',
   }
   
   return <div style={rowStyle}>
