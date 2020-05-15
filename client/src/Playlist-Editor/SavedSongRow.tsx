@@ -1,7 +1,7 @@
 
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { modificationReducerContext } from './modificationReducer'
-import { faMinusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faMinusCircle, faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
@@ -36,25 +36,46 @@ export const SavedSongRow = ({
       type: 'select-remove',
       payload: { songId: track.id },
     })
-    setButtonIsHovered(false) // otherwise, stays hovered if cancelled
+    setRemoveButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
   const viewState = modificationState.userAction === "view"
   const removeThisState = modificationState.userAction === "remove"
     && modificationState.songId === track.id
+  const [viewThisState, setViewThisState] = useState(false)
   
-  const [buttonIsHovered, buttonHoverProps, setButtonIsHovered] = useHover()
+  const [expandButtonIsHovered, expandButtonHoverProps] = useHover()
+  const [removeButtonIsHovered, removeButtonHoverProps, setRemoveButtonIsHovered] = useHover()
   
+  
+  const expandButtonStyle = {
+    ...styles.rightButtonStyle,
+    background: colors.translucentWhite(expandButtonIsHovered ? 0.3 : 0.15),
+  }
   const rightButtonStyle = {
     ...styles.rightButtonStyle,
-    background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
+    background: colors.translucentWhite(removeButtonIsHovered ? 0.3 : 0.15),
   }
   
   
   return <tr style={classes.column}>
     <div style={styles.rowStyle}>
-      <td style={styles.expandCollapseButtonStyle}>
-        {/* TODO */}
+      <td style={styles.rightButtonWrapperStyle}>
+        { !removeThisState &&
+          <button
+            style={expandButtonStyle}
+            onClick={() => setViewThisState(currState => !currState)}
+            {...expandButtonHoverProps}
+          >
+            <FontAwesomeIcon
+              icon={ viewThisState
+                ? faChevronCircleUp
+                : faChevronCircleDown
+              }
+              style={classes.icon}
+            />
+          </button>
+        }
       </td>
       <td style={styles.titleStyle}>{track.name}</td>
       <td style={styles.artistStyle}>{artistNames}</td>
@@ -65,7 +86,7 @@ export const SavedSongRow = ({
         ? <button
             style={rightButtonStyle}
             onClick={removeButtonOnClick}
-            {...buttonHoverProps}
+            {...removeButtonHoverProps}
           >
             <FontAwesomeIcon icon={faMinusCircle} style={classes.icon} />
           </button>
@@ -74,7 +95,7 @@ export const SavedSongRow = ({
         
       </td>
     </div>
-    { removeThisState &&
+    { (removeThisState || viewThisState) &&
       <SituatedChat action={modificationState.userAction} track={item} />
     }
   </tr>
