@@ -36,18 +36,14 @@ export const SavedSongRow = ({
       type: 'select-remove',
       payload: { songId: track.id },
     })
-  }
-  const cancelButtonOnClick = () => {
-    dispatch({
-      type: 'cancel',
-    })
+    setButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
   const viewState = modificationState.userAction === "view"
   const removeThisState = modificationState.userAction === "remove"
     && modificationState.songId === track.id
   
-  const [buttonIsHovered, buttonHoverProps] = useHover()
+  const [buttonIsHovered, buttonHoverProps, setButtonIsHovered] = useHover()
   
   const rightButtonStyle = {
     ...styles.rightButtonStyle,
@@ -72,14 +68,6 @@ export const SavedSongRow = ({
             {...buttonHoverProps}
           >
             <FontAwesomeIcon icon={faMinusCircle} style={classes.icon} />
-          </button>
-        : removeThisState
-        ? <button
-            style={rightButtonStyle}
-            onClick={cancelButtonOnClick}
-            {...buttonHoverProps}
-          >
-            <FontAwesomeIcon icon={faTimesCircle} style={classes.icon} />
           </button>
         : <></>
         }
