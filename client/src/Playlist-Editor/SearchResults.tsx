@@ -86,7 +86,15 @@ const SearchItem = ({
   const addButtonOnClick = () => {
     dispatch({
       type: 'select-add',
-      payload: { songObject: item },
+      payload: { songObject: {
+        added_at: '',
+        added_by: null,
+        is_local: false,
+        track: item,
+        chat: [],
+        id: item.id,
+        removed: false,
+      }},
     })
     setAddButtonIsHovered(false) // otherwise, stays hovered if addition is cancelled
   }

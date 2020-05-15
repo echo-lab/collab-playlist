@@ -4,6 +4,8 @@ import { classes } from '../../styles'
 import * as styles from '../playlistTableRowStyles'
 import { State } from '../modificationReducer'
 import { SituatedMessageEditor } from './MessageEditor'
+import { PlaylistTrackObject } from '../../shared/apiTypes'
+import { SituatedChatMessage } from './ChatMessage'
 
 
 const chatStyle = {
@@ -15,10 +17,10 @@ const chatStyle = {
 
 export const SituatedChat = ({
   action,
-  id,
+  track,
 }: {
   action: State['userAction'], //'add' | 'remove' | 'view'
-  id: string,
+  track: PlaylistTrackObject,
 }) => {
   
 
@@ -28,10 +30,12 @@ export const SituatedChat = ({
       {/* Just a spacer */}
     </div>
     <div style={chatStyle}>
-      <div>
-        {/* TODO chat history */}
+      <div style={classes.column}>
+        { track.chat.map((chatEvent, index) =>
+          <SituatedChatMessage chatEvent={chatEvent} key={index} />
+        ) }
       </div>
-      <SituatedMessageEditor action={action} trackId={id} />
+      <SituatedMessageEditor action={action} trackId={track.id} />
     </div>
     <div style={styles.expandCollapseButtonStyle}>
       {/* Just a spacer */}

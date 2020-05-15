@@ -12,6 +12,7 @@ import {
   SeparateChatMessage,
   SeparateChatAction,
 } from '../client/src/shared/dbTypes'
+import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
 
 
 
@@ -38,7 +39,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
     
     // doesn't matter which finishes first, they both happen at the same time
     // and we just wait for both to finish:
-    const spotifyPlaylist = await spotifyPlaylistRequest
+    const spotifyPlaylistResponse = await spotifyPlaylistRequest
     const dbPlaylist = await dbPlaylistPromise
     console.log({dbPlaylist})
     if (!dbPlaylist) {
@@ -70,7 +71,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
     
     const dbTracks = dbPlaylist?.tracks ?? []
     
-    spotifyPlaylist.body.tracks.items.forEach(async spotifyItem => {
+    spotifyPlaylistResponse.body.tracks.items.forEach(async spotifyItem => {
       const { id: trackId } = spotifyItem.track
       const findIndex = dbTracks.findIndex(
         dbTrack => dbTrack.id === trackId
@@ -104,15 +105,23 @@ export const setupPlaylistEndpoints = (app: Application) => {
       _id: playlistId
     })
     
-    res.json(spotifyPlaylist.body)
+    // const t: number = 'r';
+    // res.json(spotifyPlaylist.body as GetPlaylistIdResponse)
     
-    // const response = {
-    //   spotifyPlaylist: spotifyPlaylist.body,
-    //   tracks: updatedDbPlaylist.tracks,
-    //   chat: updatedDbPlaylist.chat,
-    //   chatMode: updatedDbPlaylist.chatMode,
-    // }
-    // res.json(response)
+    const response: GetPlaylistIdResponse = {
+      ...spotifyPlaylistResponse.body,
+      ...updatedDbPlaylist,
+      tracks: spotifyPlaylistResponse.body.tracks.items.map((spotifyTrack, index) => ({
+        ...spotifyTrack,
+        ...updatedDbPlaylist.tracks.find(dbTrack => dbTrack.id === spotifyTrack.track.id),
+      }))
+      // spotifyPlaylist: spotifyPlaylist.body,
+      // tracks: updatedDbPlaylist.tracks,
+      // chat: updatedDbPlaylist.chat,
+      // chatMode: updatedDbPlaylist.chatMode,
+    }
+    console.log({response})
+    res.json(response)
   })
   
   
@@ -122,7 +131,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    */
   app.post('/api/playlists/:playlistId/tracks/:trackId/chat/',
     async (req, res: ApiResponse) => {
-      const { message } = req.body
+      const { message } = req.body as PostSituatedChatRequest
       const { playlistId, trackId } = req.params
       console.log({message, playlistId, trackId})
       
@@ -153,7 +162,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    */
   app.put('/api/playlists/:playlistId/tracks/:trackId/removed',
     async (req, res: ApiResponse) => {
-      const { message } = req.body
+      const { message } = req.body as PutTrackRemovedRequest
       const { playlistId, trackId } = req.params
       console.log({message, playlistId, trackId})
       
@@ -201,7 +210,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    */
   app.post('/api/playlists/:playlistId/tracks/',
     async (req, res: ApiResponse) => {
-      const { message, trackId } = req.body
+      const { message, trackId } = req.body as PostTrackRequest
       const { playlistId } = req.params
       console.log({message, playlistId, trackId})
       
@@ -245,7 +254,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    */
   app.post('/api/playlists/:playlistId/chat/',
     async (req, res: ApiResponse) => {
-      const { message } = req.body
+      const { message } = req.body as PostSeparateChatRequest
       const { playlistId } = req.params
       console.log({message, playlistId })
       

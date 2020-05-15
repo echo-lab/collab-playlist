@@ -2,7 +2,7 @@
   "name": "collab-playlist",
   "version": "1.0.0",
   "description": "",
-  "main": "build/server.js",
+  "main": "build/src/server.js",
   "scripts": {
     "start": "node .",
     "watch": "nodemon",

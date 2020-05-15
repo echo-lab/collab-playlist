@@ -1,12 +1,13 @@
 
 import { createContext, Dispatch } from 'react'
+import { PlaylistTrackObject } from '../shared/apiTypes'
 
 
 
 
 interface AddState {
   userAction: 'add',
-  songObject: SpotifyApi.TrackObjectFull,
+  songObject: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
 }
 interface RemoveState {
   userAction: 'remove',
@@ -30,7 +31,7 @@ interface SelectAddAction {
   type: 'select-add',
   payload: {
     // id: string,
-    songObject: SpotifyApi.TrackObjectFull,
+    songObject: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
   }
 }
 interface SelectRemoveAction {
