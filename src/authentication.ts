@@ -43,7 +43,6 @@ export const setupAuth = (app: Application) => {
     res.cookie(stateKey, state) // store state in client for later
     
     const scope = [
-      'user-read-private',
       'playlist-read-private',
       'playlist-read-collaborative',
       'playlist-modify-private',
