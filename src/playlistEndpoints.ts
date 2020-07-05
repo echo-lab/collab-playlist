@@ -2,8 +2,6 @@
 // import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
 
-import { ApiResponse } from './useApiWrapper'
-
 import { createNedbPromisified } from './nedbPromisified'
 import {
   PlaylistDocument,
@@ -13,13 +11,14 @@ import {
   SeparateChatAction,
 } from '../client/src/shared/dbTypes'
 import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
+import SpotifyWebApi from 'spotify-web-api-node'
 
 
 
 /**
  * set up endpoints that relate to playlists and interface with the db
  */
-export const setupPlaylistEndpoints = (app: Application) => {
+export const setupPlaylistEndpoints = (app: Application, spotifyApi: SpotifyWebApi) => {
   
   const db = createNedbPromisified<PlaylistDocument>('db/playlists.0.db')
   
@@ -27,12 +26,12 @@ export const setupPlaylistEndpoints = (app: Application) => {
   /**
    * Get songs in this playlist
    */
-  app.get('/api/playlists/:playlistId/', async (req, res: ApiResponse, next) => {
+  app.get('/api/playlists/:playlistId/', async (req, res, next) => {
     try {
       const { playlistId } = req.params
       
       // start off the promise for the data:
-      const spotifyPlaylistRequest = res.locals.spotifyApi.getPlaylist(playlistId)
+      const spotifyPlaylistRequest = spotifyApi.getPlaylist(playlistId)
       
       // while that's fetching, check if this playlist exists in the db at the
       // same time:
@@ -134,7 +133,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * body should have a message string property
    */
   app.post('/api/playlists/:playlistId/tracks/:trackId/chat/',
-    async (req, res: ApiResponse, next) => {
+    async (req, res, next) => {
       try {
         const { message } = req.body as PostSituatedChatRequest
         const { playlistId, trackId } = req.params
@@ -150,7 +149,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
             {
               message,
               timestamp: new Date(),
-              userId: (await res.locals.spotifyApi.getMe()).body.id,
+              userId: (await spotifyApi.getMe()).body.id,
             } as SituatedChatEvent
           } }
         )
@@ -169,13 +168,13 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * Body should include a message, but it can be an empty string
    */
   app.put('/api/playlists/:playlistId/tracks/:trackId/removed',
-    async (req, res: ApiResponse, next) => {
+    async (req, res, next) => {
       try {
         const { message } = req.body as PutTrackRemovedRequest
         const { playlistId, trackId } = req.params
         console.log({message, playlistId, trackId})
         
-        await res.locals.spotifyApi.removeTracksFromPlaylist(
+        await spotifyApi.removeTracksFromPlaylist(
           playlistId, [{ uri: `spotify:track:${trackId}` }]
         )
         
@@ -190,7 +189,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
               [`tracks.${dbTrackIndex}.chat`]: {
                 message,
                 timestamp: new Date(),
-                userId: (await res.locals.spotifyApi.getMe()).body.id,
+                userId: (await spotifyApi.getMe()).body.id,
                 action: 'remove',
               } as SituatedChatEvent,
               chat: {
@@ -198,7 +197,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
                 action: 'remove',
                 trackId,
                 timestamp: new Date(),
-                userId: (await res.locals.spotifyApi.getMe()).body.id,
+                userId: (await spotifyApi.getMe()).body.id,
               } as SeparateChatAction,
             },
             $set: {
@@ -221,13 +220,13 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * Body should include a message, but it can be an empty string
    */
   app.post('/api/playlists/:playlistId/tracks/',
-    async (req, res: ApiResponse, next) => {
+    async (req, res, next) => {
       try {
         const { message, trackId } = req.body as PostTrackRequest
         const { playlistId } = req.params
         console.log({message, playlistId, trackId})
         
-        await res.locals.spotifyApi.addTracksToPlaylist(
+        await spotifyApi.addTracksToPlaylist(
           playlistId, [`spotify:track:${trackId}`]
         )
         
@@ -241,7 +240,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
                 chat: [{
                   message,
                   timestamp: new Date(),
-                  userId: (await res.locals.spotifyApi.getMe()).body.id,
+                  userId: (await spotifyApi.getMe()).body.id,
                   action: 'add',
                 }]
               } as TrackObject,
@@ -250,7 +249,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
                 action: 'add',
                 trackId,
                 timestamp: new Date(),
-                userId: (await res.locals.spotifyApi.getMe()).body.id,
+                userId: (await spotifyApi.getMe()).body.id,
               } as SeparateChatAction
             }
           }
@@ -269,7 +268,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * body should have a message string property
    */
   app.post('/api/playlists/:playlistId/chat/',
-    async (req, res: ApiResponse, next) => {
+    async (req, res, next) => {
       try {
         const { message } = req.body as PostSeparateChatRequest
         const { playlistId } = req.params
@@ -283,7 +282,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
               type: 'message',
               message,
               timestamp: new Date(),
-              userId: (await res.locals.spotifyApi.getMe()).body.id,
+              userId: (await spotifyApi.getMe()).body.id,
             } as SeparateChatMessage
           } }
         )

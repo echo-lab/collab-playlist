@@ -2,7 +2,6 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
-import { setupUseApiWrapper, ApiResponse } from './useApiWrapper'
 import { setupPlaylistEndpoints } from './playlistEndpoints'
 import {
   GetRefreshTokenResponse, GetTrackSearchResponse, GetPlaylistsResponse
@@ -10,7 +9,7 @@ import {
 
 
 
-export const setupApi = (app: Application) => {
+export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
   
   /**
    * logs api requests
@@ -36,14 +35,14 @@ export const setupApi = (app: Application) => {
       res.sendStatus(401)
       return
     }
-    const spotifyApi = new SpotifyWebApi({
+    const userAccountSpotifyApi = new SpotifyWebApi({
       refreshToken: refresh_token,
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET
     })
     
     try {
-      const data = await spotifyApi.refreshAccessToken()
+      const data = await userAccountSpotifyApi.refreshAccessToken()
       
       res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
       res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
@@ -57,25 +56,35 @@ export const setupApi = (app: Application) => {
   
   
   /**
-   * sets up api wrapper for every api endpoint (other than refresh_token)
+   * Ensures user is authenticated (has access_token)
+   * TODO use access_token to get user ID or other info
    */
-  setupUseApiWrapper(app)
+  app.use('/api/', (req, res, next) => {
+    const { access_token } = req.cookies
+    
+    if (!access_token) {
+      // no access token, user isn't authenticated
+      res.sendStatus(401)
+      return // no next()
+    }
+    next()
+  })
   
   
   /**
    * set up endpoints that relate to playlists and interface with the db
    */
-  setupPlaylistEndpoints(app)
+  setupPlaylistEndpoints(app, spotifyApi)
   
   
   /**
    * Search for tracks by query
    * /api/search?q=query
    */
-  app.get('/api/search', async (req, res: ApiResponse) => {
+  app.get('/api/search', async (req, res) => {
     const { q } = req.query
     
-    const data = await res.locals.spotifyApi.searchTracks(q)
+    const data = await spotifyApi.searchTracks(q)
     
     res.json(data.body as GetTrackSearchResponse)
   })
@@ -85,8 +94,8 @@ export const setupApi = (app: Application) => {
    * Get user's collaborative playlists
    * /api/playlists/
    */
-  app.get('/api/playlists/', async (req, res: ApiResponse) => {
-    const data = await res.locals.spotifyApi.getUserPlaylists({
+  app.get('/api/playlists/', async (req, res) => {
+    const data = await spotifyApi.getUserPlaylists({
       limit: 50, // default 20
       // good to have as many as possible since we'll filter some/a lot out
     })
@@ -104,11 +113,11 @@ export const setupApi = (app: Application) => {
    * query param ids should be a comma separated list of ids
    * returns an object where the keys are the ids and the values are the user objects
    */
-  app.get('/api/users/', async (req, res: ApiResponse) => {
+  app.get('/api/users/', async (req, res) => {
     const ids = (req.query.ids as string).split(',')
     
     // make all the requests:
-    const requests = ids.map(id => res.locals.spotifyApi.getUser(id))
+    const requests = ids.map(id => spotifyApi.getUser(id))
     const responses = await Promise.all(requests)
     const bodies = responses.map(response => response.body)
     
@@ -124,10 +133,10 @@ export const setupApi = (app: Application) => {
   /**
    * Get user information from id
    */
-  app.get('/api/users/:id', async (req, res: ApiResponse) => {
+  app.get('/api/users/:id', async (req, res) => {
     const { id } = req.params
     
-    const data = await res.locals.spotifyApi.getUser(id)
+    const data = await spotifyApi.getUser(id)
     
     res.json(data.body)
   })
