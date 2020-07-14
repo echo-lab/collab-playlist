@@ -6,6 +6,7 @@ import { setupPlaylistEndpoints } from './playlistEndpoints'
 import {
   GetRefreshTokenResponse, GetTrackSearchResponse, GetPlaylistsResponse
 } from '../client/src/shared/apiTypes'
+import { accessTokenCache, refreshTokenCache } from './userCache'
 
 
 
@@ -31,7 +32,14 @@ export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
    */
   app.get('/api/refresh_token', async (req, res) => {
     const { refresh_token } = req.cookies
-    if (!refresh_token) {
+    
+    // get saved user id, if it exists, from cache
+    // getIdFromToken(undefined) would throw error, so we guard against it
+    // userId == undefined if entry not found or if refresh_token cookie not set
+    const userId = refresh_token && refreshTokenCache.getIdFromToken(refresh_token)
+    
+    if (!userId) {
+      // no refresh token, or unrecognized refresh token
       res.sendStatus(401)
       return
     }
@@ -43,6 +51,10 @@ export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
     
     try {
       const data = await userAccountSpotifyApi.refreshAccessToken()
+      
+      // no need to clear old access token from cache because of TTL
+      // map new access token to user id
+      accessTokenCache.set(data.body.access_token, userId)
       
       res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
       res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
@@ -56,14 +68,16 @@ export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
   
   
   /**
-   * Ensures user is authenticated (has access_token)
-   * TODO use access_token to get user ID or other info
+   * Ensure user is authenticated and load user data
    */
   app.use('/api/', (req, res, next) => {
     const { access_token } = req.cookies
     
-    if (!access_token) {
-      // no access token, user isn't authenticated
+    // NodeCache#get fails on undefined/null key
+    res.locals.userId = access_token && accessTokenCache.get(access_token)
+    
+    if (!res.locals.userId) {
+      // no access token or access token not in cache, user isn't authenticated
       res.sendStatus(401)
       return // no next()
     }
