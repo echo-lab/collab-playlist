@@ -7,10 +7,11 @@ import {
   GetRefreshTokenResponse, GetTrackSearchResponse, GetPlaylistsResponse
 } from '../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from './userCache'
+import { spotifyApi } from './ownerAccount'
 
 
 
-export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
+export const setupApi = (app: Application) => {
   
   /**
    * logs api requests
@@ -88,7 +89,7 @@ export const setupApi = (app: Application, spotifyApi: SpotifyWebApi) => {
   /**
    * set up endpoints that relate to playlists and interface with the db
    */
-  setupPlaylistEndpoints(app, spotifyApi)
+  setupPlaylistEndpoints(app)
   
   
   /**

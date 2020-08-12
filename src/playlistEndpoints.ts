@@ -12,13 +12,15 @@ import {
 } from '../client/src/shared/dbTypes'
 import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
 import SpotifyWebApi from 'spotify-web-api-node'
+import { spotifyApi } from './ownerAccount'
+import { initializePlaylist } from './initializePlaylist'
 
 
 
 /**
  * set up endpoints that relate to playlists and interface with the db
  */
-export const setupPlaylistEndpoints = (app: Application, spotifyApi: SpotifyWebApi) => {
+export const setupPlaylistEndpoints = (app: Application) => {
   
   const db = createNedbPromisified<PlaylistDocument>('db/playlists.0.db')
   
@@ -30,97 +32,34 @@ export const setupPlaylistEndpoints = (app: Application, spotifyApi: SpotifyWebA
     try {
       const { playlistId } = req.params
       
-      // start off the promise for the data:
-      const spotifyPlaylistRequest = spotifyApi.getPlaylist(playlistId)
+      // fetch both database playlist record and spotify playlist
+      let [
+        dbPlaylist,
+        { body: spotifyPlaylist },
+      ] = await Promise.all([
+        db.findOne({ _id: playlistId }),
+        spotifyApi.getPlaylist(playlistId)
+      ])
       
-      // while that's fetching, check if this playlist exists in the db at the
-      // same time:
-      const dbPlaylistPromise = db.findOne({ _id: playlistId })
-      
-      // doesn't matter which finishes first, they both happen at the same time
-      // and we just wait for both to finish:
-      const spotifyPlaylistResponse = await spotifyPlaylistRequest
-      const dbPlaylist = await dbPlaylistPromise
-      console.log({dbPlaylist})
       if (!dbPlaylist) {
-        // playlist doesn't currently exist in db
-        // keep track of playlist and its tracks, even though there's no messages
-        // yet
-        
-        await db.insert({
-          _id: playlistId,
-          tracks: [],
-          // tracks: spotifyPlaylist.body.tracks.items.map(item => ({
-          //   id: item.track.id,
-          //   chat: [],
-          //   removed: false,
-          // })),
-          chat: [],
-          chatMode: 'situated',
-        })
+        // playlist not found in db
+        dbPlaylist = await initializePlaylist(spotifyPlaylist, db)
       }
-      // } else {
       
-      // playlist already/now exists in db
-      // its tracks could have been modified since the last time our backend
-      // fetched the playlist from spotify (if a user modified the playlist
-      // through the spotify app instead of our app)
-      // so update the list of tracks
-      // also, a track could be in the db but marked as removed, while it was
-      // added back in on spotify, so also update the removed flag if necessary
-      
-      const dbTracks = dbPlaylist?.tracks ?? []
-      
-      spotifyPlaylistResponse.body.tracks.items.forEach(async spotifyItem => {
-        const { id: trackId } = spotifyItem.track
-        const findIndex = dbTracks.findIndex(
-          dbTrack => dbTrack.id === trackId
-        )
-        const dbTrackFound = findIndex !== -1 ? dbTracks[findIndex] : null
-        if (dbTrackFound) {
-          // the track is in the db, so it's likely up to date
-          // however if it's marked as removed in the db, that means it was
-          // added back in on Spotify, so we need to reset removed
-          if (dbTrackFound.removed) {
-            await db.update(
-              { _id: playlistId },
-              { $set: { [`tracks.${findIndex}.removed`]: false }}
-            )
-          }
-        } else {
-          // the track isn't in the db, so add it
-          await db.update(
-            { _id: playlistId },
-            { $push: { tracks: {
-              id: trackId,
-              chat: [],
-              removed: false,
-            }}}
-          )
-        }
-      })
-      // }
-      
-      const updatedDbPlaylist = await db.findOne({
-        _id: playlistId
-      })
-      
-      // const t: number = 'r';
-      // res.json(spotifyPlaylist.body as GetPlaylistIdResponse)
-      
+      // include spotify data that doesn't get saved to db, such as temporary
+      // urls or names that can change
       const response: GetPlaylistIdResponse = {
-        ...spotifyPlaylistResponse.body,
-        ...updatedDbPlaylist,
-        tracks: spotifyPlaylistResponse.body.tracks.items.map((spotifyTrack, index) => ({
+        ...dbPlaylist,
+        images: spotifyPlaylist.images,
+        name: spotifyPlaylist.name,
+        owner: spotifyPlaylist.owner,
+        followers: spotifyPlaylist.followers,
+        tracks: spotifyPlaylist.tracks.items.map(spotifyTrack => ({
           ...spotifyTrack,
-          ...updatedDbPlaylist.tracks.find(dbTrack => dbTrack.id === spotifyTrack.track.id),
+          ...dbPlaylist.tracks.find(dbTrack => dbTrack.id === spotifyTrack.track.id)
         }))
-        // spotifyPlaylist: spotifyPlaylist.body,
-        // tracks: updatedDbPlaylist.tracks,
-        // chat: updatedDbPlaylist.chat,
-        // chatMode: updatedDbPlaylist.chatMode,
       }
-      console.log({response})
+      
       res.json(response)
     } catch (e) {
       next(e)

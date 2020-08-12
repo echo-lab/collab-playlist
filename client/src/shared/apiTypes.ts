@@ -7,15 +7,17 @@ export interface GetRefreshTokenResponse {
   expires_in: number,
 }
 
-// const t: number = 't'
 
 export interface PlaylistTrackObject
   extends SpotifyApi.PlaylistTrackObject, TrackObject { }
 
-export interface GetPlaylistIdResponse
-  extends Omit<SpotifyApi.SinglePlaylistResponse, 'tracks'>, PlaylistDocument
+export interface GetPlaylistIdResponse extends
+  PlaylistDocument,
+  Pick<SpotifyApi.SinglePlaylistResponse,
+    'images' | 'name' | 'owner' | 'followers'
+  >
 {
-  tracks: PlaylistTrackObject[]
+  tracks: PlaylistTrackObject[],
 }
 // export interface GetPlaylistIdResponse {
 //   spotifyPlaylist: SpotifyApi.SinglePlaylistResponse,

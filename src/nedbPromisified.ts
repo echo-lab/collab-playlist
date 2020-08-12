@@ -89,5 +89,6 @@ export const createNedbPromisified = <D extends Document> (filename: string) => 
   
 }
 
+export type DB = ReturnType<typeof createNedbPromisified>
 
 

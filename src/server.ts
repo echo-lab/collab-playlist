@@ -51,7 +51,7 @@ app.use(express.static(buildPath(), { index: false }))
 
 
 // set up spotify api connection to owner account
-import { spotifyApi, refreshAccessToken } from './ownerAccount'
+import { refreshAccessToken } from './ownerAccount'
 refreshAccessToken()
 
 // set up authentication and api endpoints
@@ -59,7 +59,7 @@ import { setupAuth } from './authentication'
 setupAuth(app)
 
 import { setupApi } from './api'
-setupApi(app, spotifyApi)
+setupApi(app)
 
 /**
  * The react app tries to get these but webpack doesn't create them for some reason
