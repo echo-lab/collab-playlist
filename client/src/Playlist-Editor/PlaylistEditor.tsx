@@ -129,15 +129,15 @@ export const PlaylistEditor = ({
     <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>
       <div style={playlistEditorStyle}>
-        <table style={playlistTableStyle}>
+        <div style={playlistTableStyle}>
           { playlistLoading
           ? null
           : <>
-              <thead style={tHeadStyle}>
+              <div style={tHeadStyle}>
                 <PlaylistInfo playlist={playlist} />
                 <PlaylistTableHeader />
-              </thead>
-              <tbody style={songsStyle}>
+              </div>
+              <div style={songsStyle}>
                 { addedByUsersLoading
                 ? null
                 : playlist.tracks.map((track, index) => 
@@ -147,10 +147,10 @@ export const PlaylistEditor = ({
                 { modificationState.userAction === 'add' &&
                   <DraftAdditionSongRow item={modificationState.songObject} />
                 }
-              </tbody>
+              </div>
             </>
           }
-        </table>
+        </div>
         { false && <SeparateChat
           chat={[]}
           reloadPlaylist={() => void(0)}

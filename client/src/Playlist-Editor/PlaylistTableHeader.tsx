@@ -10,21 +10,21 @@ import * as styles from './playlistTableRowStyles'
 // }
 
 export const PlaylistTableHeader = () => {
-  return <tr style={styles.rowStyle}>
-    <th style={styles.expandCollapseButtonStyle}></th>
-    <th style={styles.titleStyle}>
+  return <div style={styles.rowStyle}>
+    <div style={styles.expandCollapseButtonStyle}></div>
+    <div style={styles.titleStyle}>
       Title
-    </th>
-    <th style={styles.artistStyle}>
+    </div>
+    <div style={styles.artistStyle}>
       Artist
-    </th>
-    <th style={styles.albumStyle}>
+    </div>
+    <div style={styles.albumStyle}>
       Album
-    </th>
-    <th style={styles.addedByStyle}>
+    </div>
+    <div style={styles.addedByStyle}>
       Added by
-    </th>
-    <th style={styles.rightButtonWrapperStyle}></th>
-  </tr>
+    </div>
+    <div style={styles.rightButtonWrapperStyle}></div>
+  </div>
 }
 

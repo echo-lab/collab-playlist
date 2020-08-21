@@ -50,14 +50,14 @@ export const DraftAdditionSongRow = ({
     background: colors.translucentWhite(buttonIsHovered ? 0.3 : 0.15),
   }
   
-  return <tr style={classes.column} ref={rowRef}>
+  return <div style={classes.column} ref={rowRef}>
     <div style={styles.rowStyle}>
-      <td style={styles.expandCollapseButtonStyle}></td>
-      <td style={styles.titleStyle}>{track.name}</td>
-      <td style={styles.artistStyle}>{artistNames}</td>
-      <td style={styles.albumStyle}>{track.album.name}</td>
-      <td style={styles.addedByStyle}>{addedByUser}</td>
-      <td style={styles.rightButtonWrapperStyle}>
+      <div style={styles.expandCollapseButtonStyle}></div>
+      <div style={styles.titleStyle}>{track.name}</div>
+      <div style={styles.artistStyle}>{artistNames}</div>
+      <div style={styles.albumStyle}>{track.album.name}</div>
+      <div style={styles.addedByStyle}>{addedByUser}</div>
+      <div style={styles.rightButtonWrapperStyle}>
         <button
           style={rightButtonStyleDynamic}
           onClick={cancelButtonOnClick}
@@ -65,9 +65,9 @@ export const DraftAdditionSongRow = ({
         >
           <FontAwesomeIcon icon={faTimesCircle} style={classes.icon} />
         </button>
-      </td>
+      </div>
     </div>
     <SituatedChat action={modificationState.userAction} track={item} />
-  </tr>
+  </div>
 }
 
