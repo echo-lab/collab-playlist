@@ -89,7 +89,7 @@ export const SituatedMessageEditor = ({
 }) => {
   const [message, setMessage] = useState('')
   
-  const { dispatch } = useContext(playlistContext)
+  const { dispatch, loadPlaylist } = useContext(playlistContext)
   
   const { id: playlistId } = useParams()
   
@@ -99,13 +99,16 @@ export const SituatedMessageEditor = ({
     submitBody.trackId = trackId
   }
   
-  const onSuccess = () => dispatch({
-    type: action === "add" ? 'submit-add' : 'submit-remove',
-    payload: {
-      id: trackId,
-      message,
-    }
-  })
+  const onSuccess = () => {
+    dispatch({
+      type: action === "add" ? 'submit-add' : 'submit-remove',
+      payload: {
+        id: trackId,
+        message,
+      }
+    })
+    loadPlaylist()
+  }
   
   const submitHandler = createSubmitHandler(
     modificationApiMethod(action),
