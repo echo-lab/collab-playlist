@@ -1,5 +1,4 @@
 
-import { createContext, Dispatch } from 'react'
 import { PlaylistTrackObject } from '../shared/apiTypes'
 
 
@@ -70,10 +69,6 @@ export type Action =
   | SubmitAddAction
   | SubmitRemoveAction
 
-export const modificationReducerContext = createContext<{
-  modificationState: State,
-  dispatch: Dispatch<Action>
-}>(null)
 
 export const modificationReducer = (state: State, action: Action): State => {
   switch (action.type) {

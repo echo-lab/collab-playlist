@@ -1,5 +1,5 @@
 
-import React, { useEffect, CSSProperties, useReducer } from 'react'
+import React, { useEffect, CSSProperties, useReducer, useCallback } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
 import { useResource, fetchWrapper } from '../fetchWrapper'
@@ -11,7 +11,8 @@ import { DraftAdditionSongRow } from './DraftAdditionSongRow'
 import { PlaylistTableHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
-import { initialState, modificationReducer, modificationReducerContext } from './modificationReducer'
+import { initialState, modificationReducer } from './modificationReducer'
+import { playlistContext } from './playlistContext'
 import { SeparateChat } from './Chat/SeparateChat'
 import { GetPlaylistIdResponse } from '../shared/apiTypes'
 
@@ -24,16 +25,18 @@ const usePlaylistData = (playlistId: string) => {
     addedByUsersResource, addedByUsersSetter
   ] = useResource<Record<string, SpotifyApi.UserObjectPublic>>(null, true)
   
-  useEffect(() => {
-    (async () => {
-      // playlistSetter({ loading: true })
-      const response = await fetchWrapper<GetPlaylistIdResponse>(`/api/playlists/${playlistId}/`)
-      playlistSetter({
-        loading: false,
-        ...response,
-      })
-    })()
+  
+  const loadPlaylist = useCallback(async () => {
+    const response = await fetchWrapper<GetPlaylistIdResponse>(`/api/playlists/${playlistId}/`)
+    playlistSetter({
+      loading: false,
+      ...response,
+    })
   }, [playlistId, playlistSetter])
+  
+  useEffect(() => {
+    loadPlaylist()
+  }, [loadPlaylist])
   
   
   useEffect(() => {
@@ -66,7 +69,7 @@ const usePlaylistData = (playlistId: string) => {
     })()
   }, [playlistResource, addedByUsersSetter])
   
-  return [playlistResource, addedByUsersResource] as const
+  return [playlistResource, addedByUsersResource, loadPlaylist] as const
 }
 
 
@@ -110,7 +113,8 @@ export const PlaylistEditor = ({
   
   const [
     { data: playlist, loading: playlistLoading },
-    { data: addedByUsers, loading: addedByUsersLoading }
+    { data: addedByUsers, loading: addedByUsersLoading },
+    loadPlaylist,
   ] = usePlaylistData(id)
   
   console.log(playlist, playlistLoading, addedByUsers, addedByUsersLoading)
@@ -125,7 +129,9 @@ export const PlaylistEditor = ({
     ...style,
   }
   
-  return <modificationReducerContext.Provider value={{ modificationState, dispatch }}>
+  return <playlistContext.Provider value={{
+    modificationState, dispatch, loadPlaylist
+  }}>
     <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>
       <div style={playlistEditorStyle}>
@@ -158,7 +164,7 @@ export const PlaylistEditor = ({
         /> }
       </div>
     </div>
-  </modificationReducerContext.Provider>
+  </playlistContext.Provider>
 }
 
 

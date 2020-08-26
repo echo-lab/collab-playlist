@@ -4,7 +4,7 @@ import { classes, colors } from '../styles'
 import { ScrollArea } from '../ScrollArea'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from '../useHover'
-import { modificationReducerContext } from './modificationReducer'
+import { playlistContext } from './playlistContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
@@ -79,7 +79,7 @@ const SearchItem = ({
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
   
-  const { modificationState, dispatch } = useContext(modificationReducerContext)
+  const { modificationState, dispatch } = useContext(playlistContext)
   
   const [addButtonIsHovered, addButtonHoverProps, setAddButtonIsHovered] = useHover()
   

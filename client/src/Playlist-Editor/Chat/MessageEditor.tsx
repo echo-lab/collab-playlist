@@ -2,7 +2,8 @@
 import React, { useState, useContext, CSSProperties } from 'react'
 import { classes, colors } from '../../styles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { State, modificationReducerContext } from '../modificationReducer'
+import { State } from '../modificationReducer'
+import { playlistContext } from '../playlistContext'
 import { useHover } from '../../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useParams } from 'react-router-dom'
@@ -88,7 +89,7 @@ export const SituatedMessageEditor = ({
 }) => {
   const [message, setMessage] = useState('')
   
-  const { dispatch } = useContext(modificationReducerContext)
+  const { dispatch } = useContext(playlistContext)
   
   const { id: playlistId } = useParams()
   

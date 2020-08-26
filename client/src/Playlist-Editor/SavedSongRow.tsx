@@ -1,6 +1,6 @@
 
 import React, { useContext, useState } from 'react'
-import { modificationReducerContext } from './modificationReducer'
+import { playlistContext } from './playlistContext'
 import { faMinusCircle, faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
@@ -26,7 +26,7 @@ export const SavedSongRow = ({
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   
-  const { modificationState, dispatch } = useContext(modificationReducerContext)
+  const { modificationState, dispatch } = useContext(playlistContext)
   
   const addedByUser = addedByUsers[track.addedBy]
   

@@ -1,6 +1,7 @@
 
 import React, { useContext, useEffect, useRef } from 'react'
-import { modificationReducerContext, DraftTrackData } from './modificationReducer'
+import { DraftTrackData } from './modificationReducer'
+import { playlistContext } from './playlistContext'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
@@ -30,7 +31,7 @@ export const DraftAdditionSongRow = ({
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
-  const { modificationState, dispatch } = useContext(modificationReducerContext)
+  const { modificationState, dispatch } = useContext(playlistContext)
     
   const cancelButtonOnClick = () => {
     dispatch({
