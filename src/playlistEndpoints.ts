@@ -22,7 +22,7 @@ import { initializePlaylist } from './initializePlaylist'
  */
 export const setupPlaylistEndpoints = (app: Application) => {
   
-  const db = createNedbPromisified<PlaylistDocument>('db/playlists.0.db')
+  const db = createNedbPromisified<PlaylistDocument>(process.env.DB_PLAYLISTS)
   
   
   /**
@@ -54,9 +54,11 @@ export const setupPlaylistEndpoints = (app: Application) => {
         name: spotifyPlaylist.name,
         owner: spotifyPlaylist.owner,
         followers: spotifyPlaylist.followers,
-        tracks: spotifyPlaylist.tracks.items.map(spotifyTrack => ({
-          ...spotifyTrack,
-          ...dbPlaylist.tracks.find(dbTrack => dbTrack.id === spotifyTrack.track.id)
+        tracks: dbPlaylist.tracks.map(dbTrack => ({
+          ...dbTrack,
+          track: spotifyPlaylist.tracks.items
+            .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
+            .track,
         }))
       }
       
@@ -88,7 +90,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
             {
               message,
               timestamp: new Date(),
-              userId: (await spotifyApi.getMe()).body.id,
+              userId: res.locals.userId,
             } as SituatedChatEvent
           } }
         )
@@ -128,7 +130,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
               [`tracks.${dbTrackIndex}.chat`]: {
                 message,
                 timestamp: new Date(),
-                userId: (await spotifyApi.getMe()).body.id,
+                userId: res.locals.userId,
                 action: 'remove',
               } as SituatedChatEvent,
               chat: {
@@ -136,7 +138,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
                 action: 'remove',
                 trackId,
                 timestamp: new Date(),
-                userId: (await spotifyApi.getMe()).body.id,
+                userId: res.locals.userId,
               } as SeparateChatAction,
             },
             $set: {
@@ -176,10 +178,11 @@ export const setupPlaylistEndpoints = (app: Application) => {
               tracks: {
                 id: trackId,
                 removed: false,
+                addedBy: res.locals.userId,
                 chat: [{
                   message,
                   timestamp: new Date(),
-                  userId: (await spotifyApi.getMe()).body.id,
+                  userId: res.locals.userId,
                   action: 'add',
                 }]
               } as TrackObject,
@@ -188,7 +191,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
                 action: 'add',
                 trackId,
                 timestamp: new Date(),
-                userId: (await spotifyApi.getMe()).body.id,
+                userId: res.locals.userId,
               } as SeparateChatAction
             }
           }
@@ -221,7 +224,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
               type: 'message',
               message,
               timestamp: new Date(),
-              userId: (await spotifyApi.getMe()).body.id,
+              userId: res.locals.userId,
             } as SeparateChatMessage
           } }
         )

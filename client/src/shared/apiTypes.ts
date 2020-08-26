@@ -8,8 +8,9 @@ export interface GetRefreshTokenResponse {
 }
 
 
-export interface PlaylistTrackObject
-  extends SpotifyApi.PlaylistTrackObject, TrackObject { }
+export interface PlaylistTrackObject extends
+  TrackObject,
+  Pick<SpotifyApi.PlaylistTrackObject, 'track'> { }
 
 export interface GetPlaylistIdResponse extends
   PlaylistDocument,

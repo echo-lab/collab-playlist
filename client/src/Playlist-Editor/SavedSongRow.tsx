@@ -29,7 +29,7 @@ export const SavedSongRow = ({
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  const addedByUser = addedByUsers[item.added_by.id]
+  const addedByUser = addedByUsers[item.addedBy]
   
   const removeButtonOnClick = () => {
     dispatch({

@@ -87,9 +87,7 @@ const SearchItem = ({
     dispatch({
       type: 'select-add',
       payload: { songObject: {
-        added_at: '',
-        added_by: null,
-        is_local: false,
+        addedBy: '',
         track: item,
         chat: [],
         id: item.id,

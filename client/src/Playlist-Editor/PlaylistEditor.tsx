@@ -40,7 +40,7 @@ const usePlaylistData = (playlistId: string) => {
     if (playlistResource.loading || playlistResource.error) { return }
     // once playlistResource has loaded:
     // get the list of addedBy user ids
-    const userIds = playlistResource.data.tracks.map(track => track.added_by.id)
+    const userIds = playlistResource.data.tracks.map(track => track.addedBy)
     // safeguard against empty list
     if (userIds.length === 0) {
       addedByUsersSetter({

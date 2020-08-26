@@ -129,7 +129,7 @@ export const setupApi = (app: Application) => {
    * returns an object where the keys are the ids and the values are the user objects
    */
   app.get('/api/users/', async (req, res) => {
-    const ids = (req.query.ids as string).split(',')
+    const ids = (req.query.ids as string).split(',').filter(id => id !== '')
     
     // make all the requests:
     const requests = ids.map(id => spotifyApi.getUser(id))
