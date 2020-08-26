@@ -27,7 +27,7 @@ const usePlaylistData = (playlistId: string) => {
   useEffect(() => {
     (async () => {
       // playlistSetter({ loading: true })
-      const response = await fetchWrapper(`/api/playlists/${playlistId}/`)
+      const response = await fetchWrapper<GetPlaylistIdResponse>(`/api/playlists/${playlistId}/`)
       playlistSetter({
         loading: false,
         ...response,
@@ -141,11 +141,11 @@ export const PlaylistEditor = ({
                 { addedByUsersLoading
                 ? null
                 : playlist.tracks.map((track, index) => 
-                    <SavedSongRow item={track} addedByUsers={addedByUsers} key={index}/>
+                    <SavedSongRow track={track} addedByUsers={addedByUsers} key={index}/>
                   )
                 }
                 { modificationState.userAction === 'add' &&
-                  <DraftAdditionSongRow item={modificationState.songObject} />
+                  <DraftAdditionSongRow trackData={modificationState.trackData} />
                 }
               </div>
             </>

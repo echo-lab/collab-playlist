@@ -10,7 +10,9 @@ export interface GetRefreshTokenResponse {
 
 export interface PlaylistTrackObject extends
   TrackObject,
-  Pick<SpotifyApi.PlaylistTrackObject, 'track'> { }
+  Pick<SpotifyApi.TrackObjectFull,
+    'name' | 'album' | 'artists'
+  > { }
 
 export interface GetPlaylistIdResponse extends
   PlaylistDocument,
@@ -20,12 +22,6 @@ export interface GetPlaylistIdResponse extends
 {
   tracks: PlaylistTrackObject[],
 }
-// export interface GetPlaylistIdResponse {
-//   spotifyPlaylist: SpotifyApi.SinglePlaylistResponse,
-//   tracks: PlaylistDocument['tracks'],
-//   chat: PlaylistDocument['chat'],
-//   chatMode: PlaylistDocument['chatMode'],
-// }
 
 
 export interface PostSituatedChatRequest {

@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect, useRef } from 'react'
-import { modificationReducerContext } from './modificationReducer'
+import { modificationReducerContext, DraftTrackData } from './modificationReducer'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
@@ -16,28 +16,29 @@ import { PlaylistTrackObject } from '../shared/apiTypes'
  * Addition can be confirmed or cancelled
  */
 export const DraftAdditionSongRow = ({
-  item,
-  // addedByUsers,
+  trackData,
 }: {
-  item: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
-  // addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
+  trackData: DraftTrackData,
 }) => {
   
-  const { track } = item
+  const track: PlaylistTrackObject = {
+    ...trackData,
+    chat: [],
+    removed: false,
+    addedBy: 'You', // supposed to be an id, idk whether to use user's id
+  }
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
-  
-  const addedByUser = 'You'
-  
+    
   const cancelButtonOnClick = () => {
     dispatch({
       type: 'cancel',
     })
   }
   
-  const rowRef = useRef<HTMLTableRowElement>()
+  const rowRef = useRef<HTMLDivElement>()
   
   useEffect(() => {
     rowRef.current.scrollIntoView()
@@ -56,7 +57,7 @@ export const DraftAdditionSongRow = ({
       <div style={styles.titleStyle}>{track.name}</div>
       <div style={styles.artistStyle}>{artistNames}</div>
       <div style={styles.albumStyle}>{track.album.name}</div>
-      <div style={styles.addedByStyle}>{addedByUser}</div>
+      <div style={styles.addedByStyle}>{track.addedBy}</div>
       <div style={styles.rightButtonWrapperStyle}>
         <button
           style={rightButtonStyleDynamic}
@@ -67,7 +68,7 @@ export const DraftAdditionSongRow = ({
         </button>
       </div>
     </div>
-    <SituatedChat action={modificationState.userAction} track={item} />
+    <SituatedChat action={modificationState.userAction} track={track} />
   </div>
 }
 

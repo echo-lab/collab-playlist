@@ -4,10 +4,14 @@ import { PlaylistTrackObject } from '../shared/apiTypes'
 
 
 
+export interface DraftTrackData extends Pick<PlaylistTrackObject,
+  'id' | 'name' | 'album' | 'artists'
+> { }
+
 
 interface AddState {
   userAction: 'add',
-  songObject: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
+  trackData: DraftTrackData,
 }
 interface RemoveState {
   userAction: 'remove',
@@ -31,7 +35,7 @@ interface SelectAddAction {
   type: 'select-add',
   payload: {
     // id: string,
-    songObject: PlaylistTrackObject,//SpotifyApi.TrackObjectFull,
+    trackData: DraftTrackData,
   }
 }
 interface SelectRemoveAction {
@@ -77,7 +81,7 @@ export const modificationReducer = (state: State, action: Action): State => {
       // assume state.userAction === 'view'?
       return {
         userAction: 'add',
-        songObject: action.payload.songObject,
+        trackData: action.payload.trackData,
       }
     case 'select-remove':
       // assume state.userAction === 'view'?

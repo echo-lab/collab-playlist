@@ -16,20 +16,19 @@ import { PlaylistTrackObject } from '../shared/apiTypes'
  * playlist. Can be selected to be removed, and removal can then be cancelled
  */
 export const SavedSongRow = ({
-  item,
+  track,
   addedByUsers,
 }: {
-  item: PlaylistTrackObject,
+  track: PlaylistTrackObject,
   addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
   
-  const { track } = item
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   
   const { modificationState, dispatch } = useContext(modificationReducerContext)
   
-  const addedByUser = addedByUsers[item.addedBy]
+  const addedByUser = addedByUsers[track.addedBy]
   
   const removeButtonOnClick = () => {
     dispatch({
@@ -96,7 +95,7 @@ export const SavedSongRow = ({
       </div>
     </div>
     { (removeThisState || viewThisState) &&
-      <SituatedChat action={modificationState.userAction} track={item} />
+      <SituatedChat action={modificationState.userAction} track={track} />
     }
   </div>
 }

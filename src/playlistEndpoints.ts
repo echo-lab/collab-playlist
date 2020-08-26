@@ -56,12 +56,18 @@ export const setupPlaylistEndpoints = (app: Application) => {
         followers: spotifyPlaylist.followers,
         tracks: dbPlaylist.tracks
           .filter(dbTrack => !dbTrack.removed)
-          .map(dbTrack => ({
-            ...dbTrack,
-            track: spotifyPlaylist.tracks.items
+          .map(dbTrack => {
+            const spotifyTrack = spotifyPlaylist.tracks.items
               .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
-              .track,
-          }))
+              .track
+            
+            return {
+              ...dbTrack,
+              album: spotifyTrack.album,
+              artists: spotifyTrack.artists,
+              name: spotifyTrack.name,
+            }
+          })
       }
       
       res.json(response)
