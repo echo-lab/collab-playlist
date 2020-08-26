@@ -100,6 +100,7 @@ export const SituatedMessageEditor = ({
   }
   
   const onSuccess = () => {
+    // just resets modification state to 'view'
     dispatch({
       type: action === "add" ? 'submit-add' : 'submit-remove',
       payload: {
@@ -107,7 +108,10 @@ export const SituatedMessageEditor = ({
         message,
       }
     })
+    // reload playlist to get updated tracks/chats
     loadPlaylist()
+    // clear message in form
+    setMessage('')
   }
   
   const submitHandler = createSubmitHandler(
