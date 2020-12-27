@@ -18,7 +18,7 @@
     "express": "^4.17.1",
     "nedb": "^1.8.0",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "spotify-web-api-node": "^4.0.0"
   },
   "devDependencies": {
