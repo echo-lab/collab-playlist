@@ -1,7 +1,7 @@
 
 
 // Express library
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 import cookieParser from 'cookie-parser'
 
 import path from 'path'
@@ -50,7 +50,11 @@ app.use(express.json())
 app.use(express.static(buildPath(), { index: false }))
 
 
-// setup authentication and api endpoints
+// set up spotify api connection to owner account
+import { refreshAccessToken } from './ownerAccount'
+refreshAccessToken()
+
+// set up authentication and api endpoints
 import { setupAuth } from './authentication'
 setupAuth(app)
 
@@ -77,6 +81,15 @@ app.get('/sockjs-node', (req, res) => {
 app.get('/*', (req, res) => {
   console.log(`get ${req.url}`)
   res.sendFile(buildPath('index.html'))
+})
+
+
+/**
+ * Error handler
+ */
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(`ERROR at ${req.method} ${req.originalUrl}: ${error}`)
+  res.status(500).json({ error })
 })
 
 

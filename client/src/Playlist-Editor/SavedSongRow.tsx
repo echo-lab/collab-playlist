@@ -1,6 +1,6 @@
 
 import React, { useContext, useState } from 'react'
-import { modificationReducerContext } from './modificationReducer'
+import { playlistContext } from './playlistContext'
 import { faMinusCircle, faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
 import * as styles from './playlistTableRowStyles'
 import { useHover } from '../useHover'
@@ -16,20 +16,19 @@ import { PlaylistTrackObject } from '../shared/apiTypes'
  * playlist. Can be selected to be removed, and removal can then be cancelled
  */
 export const SavedSongRow = ({
-  item,
+  track,
   addedByUsers,
 }: {
-  item: PlaylistTrackObject,
+  track: PlaylistTrackObject,
   addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
   
-  const { track } = item
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   
-  const { modificationState, dispatch } = useContext(modificationReducerContext)
+  const { modificationState, dispatch } = useContext(playlistContext)
   
-  const addedByUser = addedByUsers[item.added_by.id]
+  const addedByUser = addedByUsers[track.addedBy]
   
   const removeButtonOnClick = () => {
     dispatch({
@@ -58,9 +57,9 @@ export const SavedSongRow = ({
   }
   
   
-  return <tr style={classes.column}>
+  return <div style={classes.column}>
     <div style={styles.rowStyle}>
-      <td style={styles.rightButtonWrapperStyle}>
+      <div style={styles.rightButtonWrapperStyle}>
         { !removeThisState &&
           <button
             style={expandButtonStyle}
@@ -76,12 +75,12 @@ export const SavedSongRow = ({
             />
           </button>
         }
-      </td>
-      <td style={styles.titleStyle}>{track.name}</td>
-      <td style={styles.artistStyle}>{artistNames}</td>
-      <td style={styles.albumStyle}>{track.album.name}</td>
-      <td style={styles.addedByStyle}>{addedByUser.display_name}</td>
-      <td style={styles.rightButtonWrapperStyle}>
+      </div>
+      <div style={styles.titleStyle}>{track.name}</div>
+      <div style={styles.artistStyle}>{artistNames}</div>
+      <div style={styles.albumStyle}>{track.album.name}</div>
+      <div style={styles.addedByStyle}>{addedByUser.display_name}</div>
+      <div style={styles.rightButtonWrapperStyle}>
         { viewState
         ? <button
             style={rightButtonStyle}
@@ -93,11 +92,11 @@ export const SavedSongRow = ({
         : <></>
         }
         
-      </td>
+      </div>
     </div>
     { (removeThisState || viewThisState) &&
-      <SituatedChat action={modificationState.userAction} track={item} />
+      <SituatedChat action={modificationState.userAction} track={track} />
     }
-  </tr>
+  </div>
 }
 

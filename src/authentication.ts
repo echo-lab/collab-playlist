@@ -4,7 +4,9 @@ import { URLSearchParams } from "url"
 
 import fetch from 'node-fetch'
 import { Application } from "express"
+import SpotifyWebApi from 'spotify-web-api-node'
 
+import { accessTokenCache, refreshTokenCache } from './userCache'
 
 export const setupAuth = (app: Application) => {
   
@@ -43,7 +45,6 @@ export const setupAuth = (app: Application) => {
     res.cookie(stateKey, state) // store state in client for later
     
     const scope = [
-      'user-read-private',
       'playlist-read-private',
       'playlist-read-collaborative',
       'playlist-modify-private',
@@ -99,7 +100,27 @@ export const setupAuth = (app: Application) => {
       
       res.cookie('access_token', access_token, { maxAge: 15 * 60 * 1000 })
         .cookie('refresh_token', refresh_token, { maxAge: 24 * 60 * 60 * 1000 })
-        // .redirect('/')
+      
+      
+      // add user to accessTokenCache and refreshTokenCache
+      // we need to await this before responding to the request to avoid
+      // race conditions with the user's next request needing the caches to be updated
+      
+      // get user id
+      const spotifyApi = new SpotifyWebApi({
+        accessToken: access_token,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+      })
+      const user = await spotifyApi.getMe()
+      
+      // delete old refresh token entry, if it exists
+      refreshTokenCache.deleteByUserId(user.body.id)
+      
+      // add access token and refresh token entries
+      accessTokenCache.set(access_token, user.body.id)
+      refreshTokenCache.set(refresh_token, user.body.id)
+      
       
       if (DEVELOPMENT_ENV) {
         // back to CRA's npm start server

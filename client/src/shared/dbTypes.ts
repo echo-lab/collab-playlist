@@ -63,6 +63,9 @@ export interface TrackObject {
   // different playlists can have the same track, so I'm not sure if I'm
   // allowed to use _id; instead I use id:
   id: string,
+  // user id of adder; different from spotify api bc the owner account will
+  // always be the adder in spotify's data:
+  addedBy: string,
   chat: SituatedChatEvent[], // situated
   removed: boolean,
 }
