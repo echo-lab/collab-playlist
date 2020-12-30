@@ -2,18 +2,16 @@
 // import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
 
-import { createNedbPromisified } from './nedbPromisified'
 import {
-  PlaylistDocument,
   SituatedChatEvent,
   TrackObject,
   SeparateChatMessage,
   SeparateChatAction,
 } from '../client/src/shared/dbTypes'
 import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
-import SpotifyWebApi from 'spotify-web-api-node'
 import { spotifyApi } from './ownerAccount'
 import { initializePlaylist } from './initializePlaylist'
+import { db } from './db'
 
 
 
@@ -21,9 +19,6 @@ import { initializePlaylist } from './initializePlaylist'
  * set up endpoints that relate to playlists and interface with the db
  */
 export const setupPlaylistEndpoints = (app: Application) => {
-  
-  const db = createNedbPromisified<PlaylistDocument>(process.env.DB_PLAYLISTS)
-  
   
   /**
    * Get songs in this playlist

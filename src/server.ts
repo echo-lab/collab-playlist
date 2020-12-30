@@ -61,6 +61,9 @@ setupAuth(app)
 import { setupApi } from './api'
 setupApi(app)
 
+import { setupAdmin } from './admin'
+setupAdmin(app)
+
 /**
  * The react app tries to get these but webpack doesn't create them for some reason
  * 
