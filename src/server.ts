@@ -14,24 +14,14 @@ const result = config()
 if (result.error) {
   throw result.error
 }
-// const { PORT: PORTSTR, CLIENT_ID, CLIENT_SECRET, HOST_NAME } = result.parsed
 const PORT = Number.parseInt(process.env.PORT, 10)
 
-const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
-
-
-const BUILD_PATH = DEVELOPMENT_ENV
-  ? '/client/dev_build'
-  : '/client/build'
-// console.log(BUILD_PATH)
-
-// console.log({__dirname})
-// console.log({port: process.env.PORT})
-
 // join path helper
-// __dirname is in the build/ folder
-const rootPath = (...paths) => path.join(__dirname, '..', ...paths)
-const buildPath = (...paths) => rootPath(BUILD_PATH, ...paths)
+// __dirname is in the build/src/ folder
+// get path relative to project root:
+const rootPath = (...paths) => path.join(__dirname, '../..', ...paths)
+// get path relative to frontend build root
+const buildPath = (...paths) => rootPath('/client/build', ...paths)
 
 // create the server
 const app = express()
@@ -41,9 +31,10 @@ app.use(express.json())
 
 
 /**
- * Serve all routes that exist in the react app's build
+ * Serve all routes that exist in the react app's build. If a file is not found
+ * this just calls the next() handler (instead of responding with an error)
  * 
- * This will be triggered by files like *.json abd *.js
+ * This will be triggered by files like *.css and *.js
  * 
  * index: false makes it so this doesn't match the '/' route, which serves the app
  */

@@ -24,14 +24,14 @@ export const setupAuth = (app: Application) => {
     ).join('')
   }
   
-  const { HOST_NAME, PORT, FRONTEND_PORT, CLIENT_ID, CLIENT_SECRET } = process.env
+  const { HOST_NAME, PORT, FRONTEND_ADDRESS, CLIENT_ID, CLIENT_SECRET } = process.env
   const DEVELOPMENT_ENV = process.env.NODE_ENV === 'development'
 
   const stateKey = 'spotify_auth_state'
 
   const redirect_uri = `${HOST_NAME}:${PORT}/auth/callback`
   
-  const API_TARGET = process.env.API_TARGET || 'https://accounts.spotify.com'
+  const API_TARGET = 'https://accounts.spotify.com'
 
   const authHeader = `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
 
@@ -124,7 +124,7 @@ export const setupAuth = (app: Application) => {
       
       if (DEVELOPMENT_ENV) {
         // back to CRA's npm start server
-        res.redirect(`${HOST_NAME}:${FRONTEND_PORT}/`)
+        res.redirect(`${FRONTEND_ADDRESS}/`)
       } else {
         res.redirect('/')
       }
