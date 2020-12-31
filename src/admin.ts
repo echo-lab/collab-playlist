@@ -1,10 +1,7 @@
 
 
-// import { EROFS } from 'constants' // don't remember what this is for
 import { Application } from 'express'
-// import { readFile } from 'promise-fs'
-// import { PlaylistDocument } from '../client/src/shared/dbTypes'
-// import { db } from './db'
+import { parseIdsCsv } from './parseIdsCsv'
 
 
 
@@ -38,6 +35,50 @@ export const setupAdmin = (app: Application) => {
   app.get('/admin/test', (req, res) => {
     res.sendStatus(200)
   })
+  
+  
+  
+  
+  /**
+   * endpoint for telling server to read ids.csv and update the DBs
+   */
+  app.post('/admin/load-ids', async (req, res) => {
+    try {
+      const configData = await parseIdsCsv(process.env.DB_IDS)
+      
+      // console.log({configData})
+      
+      /**
+       * TODO
+       * for each playlist in configData:
+       * - if playlistId found in db:
+       *   - set chatMode; all data inside is valid for all chatModes so it's not complicated
+       *   - set users array in playlist, push playlist for each user
+       *     - if user is new to playlist, do anything like a separate chat event?
+       *     - if user is removed from playlist, do anything? TODO ask team what should be done in frontend
+       *       - considering this bc of possible future features like listing names, color coding
+       *       - activeUsers and archivedUsers arrays?
+       * - else:
+       *   - initializePlaylist
+       *     - remove call from get playlist endpoint
+       *     - in playlist endpoint, if dbPlaylist or spotifyPlaylist not found, error
+       */
+      
+      res.send(JSON.stringify(configData, null, 2))
+      
+    } catch (e) {
+      console.error(e)
+      if (e.type === 'invalid chatMode') {
+        res.status(400).send(e.error.message)
+      } else if (e.code === 'ENOENT') {
+        // don't naively send e.error.message, which has the full file path
+        res.send(`File ${process.env.DB_IDS} not found`)
+      } else {
+        res.end()
+      }
+    }
+  })
+  
   
   
   /**
