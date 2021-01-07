@@ -75,8 +75,22 @@ export interface TrackObject {
  * Chat can be empty array if no messages/actions yet or if in situated mode
  */
 export interface PlaylistDocument extends Document {
+  users: string[], // many-to-many
   tracks: TrackObject[],
   chat: SeparateChatEvent[], // separate
   chatMode: 'situated' | 'separate' | 'hybrid',
 }
+
+
+
+
+
+/**
+ * An entry in the Users collection
+ * keeps track of the playlists a user belongs to
+ */
+export interface UserDocument extends Document {
+  playlists: string[], // many-to-many
+}
+
 

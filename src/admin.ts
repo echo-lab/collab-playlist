@@ -1,6 +1,9 @@
 
 
 import { Application } from 'express'
+import { playlistsDB, usersDB } from './db'
+import { initializePlaylist } from './initializePlaylist'
+import { spotifyApi } from './ownerAccount'
 import { parseIdsCsv } from './parseIdsCsv'
 
 
@@ -44,12 +47,9 @@ export const setupAdmin = (app: Application) => {
    */
   app.post('/admin/load-ids', async (req, res) => {
     try {
-      const configData = await parseIdsCsv(process.env.DB_IDS)
-      
-      // console.log({configData})
+      const { byPlaylist, byUser } = await parseIdsCsv(process.env.DB_IDS)
       
       /**
-       * TODO
        * for each playlist in configData:
        * - if playlistId found in db:
        *   - set chatMode; all data inside is valid for all chatModes so it's not complicated
@@ -62,9 +62,64 @@ export const setupAdmin = (app: Application) => {
        *   - initializePlaylist
        *     - remove call from get playlist endpoint
        *     - in playlist endpoint, if dbPlaylist or spotifyPlaylist not found, error
+       * TODO make the promises parallel
        */
+      for (const config of byPlaylist) {
+        const dbPlaylist = await playlistsDB.findOne({ _id: config.playlistId })
+        if (dbPlaylist) {
+          // playlistId found in db
+          // TODO to do things with new/removed users, compare config.userIds to
+          // dbPlaylist.users here
+          await playlistsDB.update({ _id: config.playlistId }, {
+            $set: {
+              chatMode: config.chatMode,
+              users: config.userIds,
+            }
+          })
+        } else {
+          // playlist must exist in spotify, otherwise there's an error
+          await initializePlaylist(
+            (await spotifyApi.getPlaylist(config.playlistId)).body,
+            config
+          )
+          
+          // for testing with fake playlist ids, replace above line with below:
+          // await initializePlaylist({ tracks: { items: [
+          //   { track: { id: 'mock track' }, added_by: { id: 'mock user' } }
+          // ]}} as SpotifyApi.SinglePlaylistResponse, config)
+        }
+      }
       
-      res.send(JSON.stringify(configData, null, 2))
+      // fetch all users currently in db
+      const users = await usersDB.find({})
+      
+      // a user can either be in the config but not the db, in the db but not
+      // the config, or in both
+      
+      // for each user in the config, either set playlists or insert into db
+      for (const [userId, playlists] of byUser) {
+        // not using the upsert feature of nedb because i don't know how
+        // reliable it is with promisify
+        if (users.filter(user => user._id === userId).length) {
+          // the user exists in the db
+          await usersDB.update({ _id: userId }, { $set: { playlists } })
+        } else {
+          await usersDB.insert({ _id: userId, playlists })
+        }
+      }
+      
+      // we missed all the db users who aren't mentioned in the config
+      for (const { _id: userId } of users) {
+        // for all users, if they were not listed in the config then set
+        // playlists to []
+        if (!byUser.has(userId)) {
+          await usersDB.update({ _id: userId }, { $set: { playlists: [] }})
+        }
+      }
+      
+      // manually stringify json to make spacing human readable
+      res.type('application/json')
+      res.send(JSON.stringify({byPlaylist, byUser: [...byUser]}, null, 2))
       
     } catch (e) {
       console.error(e)

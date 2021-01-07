@@ -10,8 +10,7 @@ import {
 } from '../client/src/shared/dbTypes'
 import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
 import { spotifyApi } from './ownerAccount'
-import { initializePlaylist } from './initializePlaylist'
-import { db } from './db'
+import { playlistsDB } from './db'
 
 
 
@@ -32,14 +31,17 @@ export const setupPlaylistEndpoints = (app: Application) => {
         dbPlaylist,
         { body: spotifyPlaylist },
       ] = await Promise.all([
-        db.findOne({ _id: playlistId }),
+        playlistsDB.findOne({ _id: playlistId }),
         spotifyApi.getPlaylist(playlistId)
       ])
       
       if (!dbPlaylist) {
-        // playlist not found in db
-        dbPlaylist = await initializePlaylist(spotifyPlaylist, db)
+        // playlist not found in db, doesn't exist as far as the user is concerned
+        res.status(404).json({})
       }
+      // TODO 404 if user is not a member of this playlist
+      // TODO catch spotifyApi.getPlaylist rejection if spotify playlist doesn't
+      // exist, -> 404
       
       // include spotify data that doesn't get saved to db, such as temporary
       // urls or names that can change
@@ -83,11 +85,11 @@ export const setupPlaylistEndpoints = (app: Application) => {
         const { playlistId, trackId } = req.params
         console.log({message, playlistId, trackId})
         
-        const dbPlaylist = await db.findOne({ _id: playlistId })
+        const dbPlaylist = await playlistsDB.findOne({ _id: playlistId })
         const dbTrackIndex = dbPlaylist.tracks.findIndex(
           track => track.id === trackId
         )
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           { $push: { [`tracks.${dbTrackIndex}.chat`]:
             {
@@ -122,11 +124,11 @@ export const setupPlaylistEndpoints = (app: Application) => {
           playlistId, [{ uri: `spotify:track:${trackId}` }]
         )
         
-        const dbPlaylist = await db.findOne({ _id: playlistId })
+        const dbPlaylist = await playlistsDB.findOne({ _id: playlistId })
         const dbTrackIndex = dbPlaylist.tracks.findIndex(
           track => track.id === trackId
         )
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           {
             $push: {
@@ -174,7 +176,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
           playlistId, [`spotify:track:${trackId}`]
         )
         
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           {
             $push: {
@@ -220,7 +222,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
         console.log({message, playlistId })
         
         
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           { $push: { chat:
             {
