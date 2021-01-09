@@ -2,7 +2,7 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
-import { setupPlaylistEndpoints } from './playlistEndpoints'
+import { LocalsUserId, Res, setupPlaylistEndpoints } from './playlistEndpoints'
 import {
   GetRefreshTokenResponse, GetTrackSearchResponse
 } from '../client/src/shared/apiTypes'
@@ -71,7 +71,7 @@ export const setupApi = (app: Application) => {
   /**
    * Ensure user is authenticated and load user data
    */
-  app.use('/api/', (req, res, next) => {
+  app.use('/api/', (req, res: Res<LocalsUserId>, next) => {
     const { access_token } = req.cookies
     
     // NodeCache#get fails on undefined/null key
