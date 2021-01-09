@@ -8,9 +8,12 @@ import {
   SeparateChatMessage,
   SeparateChatAction,
 } from '../client/src/shared/dbTypes'
-import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
+import {
+  GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest,
+  PostTrackRequest, PostSeparateChatRequest, GetPlaylistsResponse, PlaylistSimple
+} from '../client/src/shared/apiTypes'
 import { spotifyApi } from './ownerAccount'
-import { playlistsDB } from './db'
+import { playlistsDB, usersDB } from './db'
 
 
 
@@ -18,6 +21,60 @@ import { playlistsDB } from './db'
  * set up endpoints that relate to playlists and interface with the db
  */
 export const setupPlaylistEndpoints = (app: Application) => {
+  
+  /**
+   * Get playlists that the user belongs to
+   */
+  app.get('/api/playlists/', async (req, res, next) => {
+    try {
+      const user = await usersDB.findOne({ _id: res.locals.userId })
+      
+      // equivalent ways of getting playlists the user belongs to
+      // const dbPlaylists = await playlistsDB.find({ users: { $elemMatch: user._id }})
+      // const dbPlaylists = await playlistsDB.find({ _id: { $in: user.playlists } })
+      
+      // get all spotify playlists and find the right ones by id
+      // const allSpotifyPlaylists = (await spotifyApi.getUserPlaylists({
+      //   limit: 50, // default 20
+      // })).body.items
+      
+      // const [
+      //   dbPlaylists,
+      //   spotifyPlaylists
+      // ] = await Promise.all([
+      //   playlistsDB.find({ _id: { $in: user.playlists } }),
+      //   Promise.all(user.playlists.map(id =>
+      //     spotifyApi.getPlaylist(id).then(res => res.body)
+      //   ))
+      // ])
+      
+      // get db and spotify playlist for each id, keeping them in order.
+      // in-order Promise.all allows us to destructure [db, spotify] later
+      const playlists = await Promise.all(user.playlists.map(id => 
+        Promise.all([
+          playlistsDB.findOne({ _id: id }),
+          spotifyApi.getPlaylist(id).then(res => res.body)
+        ])
+      ))
+      
+      const response: GetPlaylistsResponse = playlists.map(
+        ([dbPlaylist, spotifyPlaylist]): PlaylistSimple => ({
+          id: dbPlaylist._id,
+          users: dbPlaylist.users,
+          name: spotifyPlaylist.name,
+          // if multiple images present, image [1] has the closest resolution;
+          // else use the only image
+          image: (spotifyPlaylist.images[1] ?? spotifyPlaylist.images[0]).url,
+        })
+      )
+      
+      res.json(response)
+    } catch (e) {
+      next(e)
+    }
+  })
+  
+  
   
   /**
    * Get songs in this playlist
