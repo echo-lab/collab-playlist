@@ -28,10 +28,11 @@ export const setupPlaylistEndpoints = (app: Application) => {
   app.get('/api/playlists/', async (req, res, next) => {
     try {
       const user = await usersDB.findOne({ _id: res.locals.userId })
+      const playlistIds = user?.playlists ?? []
       
       // get db and spotify playlist for each id, keeping them in order.
       // in-order Promise.all allows us to destructure [db, spotify] later
-      const playlists = await Promise.all(user.playlists.map(id => 
+      const playlists = await Promise.all(playlistIds.map(id => 
         Promise.all([
           playlistsDB.findOne({ _id: id }),
           spotifyApi.getPlaylist(id).then(res => res.body)
