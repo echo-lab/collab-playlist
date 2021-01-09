@@ -44,7 +44,11 @@ export const PlaylistGrid = ({
   }
   
   return <div style={playlistGridStyle}>
-    {!loading && playlists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)}
+    {!loading && (
+      playlists.length
+      ? playlists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)
+      : <h2 style={classes.text}>You are not a member of any playlists.</h2>
+    )}
   </div>
 }
 
