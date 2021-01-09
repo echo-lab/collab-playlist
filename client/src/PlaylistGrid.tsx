@@ -4,18 +4,18 @@ import { classes, colors } from './styles'
 import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
 import { useResource, fetchWrapper, Resource } from './fetchWrapper'
+import { GetPlaylistsResponse, PlaylistSimple } from './shared/apiTypes'
 
 
 
-type Playlists = SpotifyApi.PlaylistObjectSimplified[]
 
-export const usePlaylists = (): Resource<Playlists> => {
-  const [resource, setter] = useResource<Playlists>(null, true)
+export const usePlaylists = (): Resource<GetPlaylistsResponse> => {
+  const [resource, setter] = useResource<GetPlaylistsResponse>(null, true)
   
   useEffect(() => {
     (async () => {
       // setter({ loading: true })
-      const response = await fetchWrapper('/api/playlists/')
+      const response = await fetchWrapper<GetPlaylistsResponse>('/api/playlists/')
       setter({
         loading: false,
         ...response,
@@ -33,7 +33,7 @@ export const PlaylistGrid = ({
 }: {
   style?: CSSProperties,
 }) => {
-  const { data: result } = usePlaylists()
+  const { data: playlists, loading } = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
     ...style,
@@ -44,17 +44,31 @@ export const PlaylistGrid = ({
   }
   
   return <div style={playlistGridStyle}>
-    {result && result.map((playlist, index) => <PlaylistCard key={index} item={playlist} />)}
+    {!loading && playlists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)}
   </div>
 }
 
 
-const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) => {
-  const owner = item.owner?.display_name ?? '' // apparently not always present?
-  
-  // if multiple images present, image [1] has the closest resolution; else
-  // use the only image
-  const image = item.images[1] ?? item.images[0]
+
+const imageStyle = {
+  ...classes.centeredClippedImage,
+  height: '18.0rem',
+  width: '18.0rem',
+}
+const textDivStyle = {
+  ...classes.column,
+  flex: 1,
+}
+const nameStyle = {
+  ...classes.text,
+  ...classes.textOverflow(),
+}
+const usersStyle = {
+  ...classes.text,
+  ...classes.textOverflow(),
+}
+
+const PlaylistCard = ({ playlist }: { playlist: PlaylistSimple }) => {
   
   const [isHovered, hoverProps] = useHover()
   
@@ -63,36 +77,16 @@ const PlaylistCard = ({ item }: { item: SpotifyApi.PlaylistObjectSimplified }) =
     ...(isHovered && { backgroundColor: colors.grayscale.darkGray }),
     padding: '2.0rem',
   }
-  const imageStyle = {
-    ...classes.centeredClippedImage,
-    height: '18.0rem',
-    width: '18.0rem',
-  }
-  const textDivStyle = {
-    ...classes.column,
-    flex: 1,
-  }
-  const nameStyle = {
-    ...classes.text,
-    ...classes.textOverflow(),
-  }
-  const ownerStyle = {
-    ...classes.text,
-    ...classes.textOverflow(),
-  }
   
-  // TODO The Link causes the search tab to be rerendered and thus lose its
-  // state (query); add state to Link? will changing structure of
-  // Routers/Switches make that not happen?
   return <Link
-    to={`/playlists/${item.id}/`}
+    to={`/playlists/${playlist.id}/`}
     style={playlistCardStyle}
     {...hoverProps}
   >
-    <img src={image.url} alt="" style={imageStyle} />
+    <img src={playlist.image} alt="" style={imageStyle} />
     <div style={textDivStyle}>
-      <p style={nameStyle}>{item.name}</p>
-      <p style={ownerStyle}>{owner}</p>
+      <p style={nameStyle}>{playlist.name}</p>
+      <p style={usersStyle}>{playlist.users.join(', ')}</p>
     </div>
   </Link>
 }
