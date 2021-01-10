@@ -1,8 +1,7 @@
 
-import { DB } from './nedbPromisified'
-import { spotifyApi } from './ownerAccount'
 import { PlaylistDocument, TrackObject } from '../client/src/shared/dbTypes'
-
+import { playlistsDB } from './db'
+import { PlaylistIdsConfig } from './parseIdsCsv'
 
 
 
@@ -11,14 +10,13 @@ import { PlaylistDocument, TrackObject } from '../client/src/shared/dbTypes'
  * this will usually happen when an empty playlist is created by admins and a
  * user requests it for the first time
  */
-export const initializePlaylist = async (spotifyPlaylist: SpotifyApi.SinglePlaylistResponse, db: DB) => {
-  // const { body: spotifyPlaylist } = await spotifyApi.getPlaylist(playlistId)
-  
-  // TODO handle error
-  
-  return await db.insert<PlaylistDocument>({
-    _id: spotifyPlaylist.id,
-    chatMode: 'hybrid',
+export const initializePlaylist = async (
+  spotifyPlaylist: SpotifyApi.SinglePlaylistResponse, config: PlaylistIdsConfig
+) => {
+  return await playlistsDB.insert<PlaylistDocument>({
+    _id: config.playlistId,
+    chatMode: config.chatMode,
+    users: config.userIds,
     chat: [],
     tracks: spotifyPlaylist.tracks.items.map(initializeTrackObject),
   }) as PlaylistDocument
@@ -35,7 +33,7 @@ const initializeTrackObject = (spotifyTrack: SpotifyApi.PlaylistTrackObject): Tr
     id: spotifyTrack.track.id,
     chat: [],
     removed: false,
-    addedBy: spotifyTrack.added_by.id,
+    addedBy: spotifyTrack.added_by.id, // TODO will always be wrong, wont-fix?
   }
 }
 

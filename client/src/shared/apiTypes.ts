@@ -46,5 +46,11 @@ export interface GetTrackSearchResponse extends SpotifyApi.SearchResponse {
   
 }
 
-export type GetPlaylistsResponse = SpotifyApi.PlaylistObjectSimplified[]
+export interface PlaylistSimple {
+  id: string,
+  users: string[], // ids or display names?
+  name: string,
+  image: string, // temporary source url from spotify
+}
+export type GetPlaylistsResponse = PlaylistSimple[]
 

@@ -1,0 +1,22 @@
+# format of each line:
+# playlist_id,chat_mode,user_id1,user_id2,...# comments for convenience
+
+# chat_mode can be `situated`, `separate`, or `hybrid`
+# playlist_id and chat_mode are required; you can have 0 or more user_ids
+# trailing commas are ok
+# spaces are not ok
+
+# for convenience you could list (in comments!) the display names of all
+# the playlist ids and user ids here to help you keep track of them:
+# "Playlist name": playlist_id
+# "User name": user_id
+# remember the same user id can show up in multiple playlists if they're
+# involved in multiple groups
+
+# to remove a playlist / make a playlist inaccessible to all users, you MUST
+# still list the playlist here but remove all user_ids. if you leave out a
+# playlist it will be unaffected and still be accessible to users
+
+# line example if playlist id is js3n12p, mode is hybrid, user ids are p1428np,
+# 72k7l65, and grhj35a:
+# js3n12p,hybrid,p1428np,72k7l65,grhj35a# comment if needed

@@ -2,9 +2,9 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import { Application } from 'express'
-import { setupPlaylistEndpoints } from './playlistEndpoints'
+import { LocalsUserId, Res, setupPlaylistEndpoints } from './playlistEndpoints'
 import {
-  GetRefreshTokenResponse, GetTrackSearchResponse, GetPlaylistsResponse
+  GetRefreshTokenResponse, GetTrackSearchResponse
 } from '../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from './userCache'
 import { spotifyApi } from './ownerAccount'
@@ -71,7 +71,7 @@ export const setupApi = (app: Application) => {
   /**
    * Ensure user is authenticated and load user data
    */
-  app.use('/api/', (req, res, next) => {
+  app.use('/api/', (req, res: Res<LocalsUserId>, next) => {
     const { access_token } = req.cookies
     
     // NodeCache#get fails on undefined/null key
@@ -104,22 +104,6 @@ export const setupApi = (app: Application) => {
     res.json(data.body as GetTrackSearchResponse)
   })
   
-  
-  /**
-   * Get user's collaborative playlists
-   * /api/playlists/
-   */
-  app.get('/api/playlists/', async (req, res) => {
-    const data = await spotifyApi.getUserPlaylists({
-      limit: 50, // default 20
-      // good to have as many as possible since we'll filter some/a lot out
-    })
-    // console.log({data})
-    
-    const collabPlaylists = data.body.items.filter(playlist => playlist.collaborative)
-    
-    res.json(collabPlaylists as GetPlaylistsResponse)
-  })
   
   
   

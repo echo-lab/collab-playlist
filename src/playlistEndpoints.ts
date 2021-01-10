@@ -1,74 +1,67 @@
 
-// import SpotifyWebApi from 'spotify-web-api-node'
-import { Application } from 'express'
+import Express from 'express'
 
-import { createNedbPromisified } from './nedbPromisified'
 import {
-  PlaylistDocument,
   SituatedChatEvent,
   TrackObject,
   SeparateChatMessage,
   SeparateChatAction,
+  PlaylistDocument,
 } from '../client/src/shared/dbTypes'
-import { GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest, PostTrackRequest, PostSeparateChatRequest } from '../client/src/shared/apiTypes'
-import SpotifyWebApi from 'spotify-web-api-node'
+import {
+  GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest,
+  PostTrackRequest, PostSeparateChatRequest, GetPlaylistsResponse,
+  PlaylistSimple
+} from '../client/src/shared/apiTypes'
 import { spotifyApi } from './ownerAccount'
-import { initializePlaylist } from './initializePlaylist'
+import { playlistsDB, usersDB } from './db'
 
+
+
+/**
+ * for type checking the res.locals object
+ */
+export interface Res<L> extends Express.Response { locals: L }
+
+/**
+ * use these like: Res<LocalsUserId & LocalsDBPlaylist>
+ */
+export interface LocalsUserId { userId: string }
+export interface LocalsDBPlaylist { dbPlaylist: PlaylistDocument }
 
 
 /**
  * set up endpoints that relate to playlists and interface with the db
  */
-export const setupPlaylistEndpoints = (app: Application) => {
-  
-  const db = createNedbPromisified<PlaylistDocument>(process.env.DB_PLAYLISTS)
-  
+export const setupPlaylistEndpoints = (app: Express.Application) => {
   
   /**
-   * Get songs in this playlist
+   * Get playlists that the user belongs to
    */
-  app.get('/api/playlists/:playlistId/', async (req, res, next) => {
+  app.get('/api/playlists/', async (req, res: Res<LocalsUserId>, next) => {
     try {
-      const { playlistId } = req.params
+      const user = await usersDB.findOne({ _id: res.locals.userId })
+      const playlistIds = user?.playlists ?? []
       
-      // fetch both database playlist record and spotify playlist
-      let [
-        dbPlaylist,
-        { body: spotifyPlaylist },
-      ] = await Promise.all([
-        db.findOne({ _id: playlistId }),
-        spotifyApi.getPlaylist(playlistId)
-      ])
+      // get db and spotify playlist for each id, keeping them in order.
+      // in-order Promise.all allows us to destructure [db, spotify] later
+      const playlists = await Promise.all(playlistIds.map(id => 
+        Promise.all([
+          playlistsDB.findOne({ _id: id }),
+          spotifyApi.getPlaylist(id).then(res => res.body)
+        ])
+      ))
       
-      if (!dbPlaylist) {
-        // playlist not found in db
-        dbPlaylist = await initializePlaylist(spotifyPlaylist, db)
-      }
-      
-      // include spotify data that doesn't get saved to db, such as temporary
-      // urls or names that can change
-      const response: GetPlaylistIdResponse = {
-        ...dbPlaylist,
-        images: spotifyPlaylist.images,
-        name: spotifyPlaylist.name,
-        owner: spotifyPlaylist.owner,
-        followers: spotifyPlaylist.followers,
-        tracks: dbPlaylist.tracks
-          .filter(dbTrack => !dbTrack.removed)
-          .map(dbTrack => {
-            const spotifyTrack = spotifyPlaylist.tracks.items
-              .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
-              .track
-            
-            return {
-              ...dbTrack,
-              album: spotifyTrack.album,
-              artists: spotifyTrack.artists,
-              name: spotifyTrack.name,
-            }
-          })
-      }
+      const response: GetPlaylistsResponse = playlists.map(
+        ([dbPlaylist, spotifyPlaylist]): PlaylistSimple => ({
+          id: dbPlaylist._id,
+          users: dbPlaylist.users,
+          name: spotifyPlaylist.name,
+          // if multiple images present, image [1] has the closest resolution;
+          // else use the only image
+          image: (spotifyPlaylist.images[1] ?? spotifyPlaylist.images[0]).url,
+        })
+      )
       
       res.json(response)
     } catch (e) {
@@ -77,22 +70,84 @@ export const setupPlaylistEndpoints = (app: Application) => {
   })
   
   
+  
+  /**
+   * guard for /api/playlists/:id/*; check that playlist exists and user belongs
+   * to playlist
+   */
+  app.use('/api/playlists/:playlistId/',
+    async (req, res: Res<LocalsUserId & LocalsDBPlaylist>, next) => {
+      const { playlistId } = req.params
+      const dbPlaylist = await playlistsDB.findOne({ _id: playlistId })
+      if (!dbPlaylist || !dbPlaylist.users.includes(res.locals.userId)) {
+        // playlist not found in db or user doesn't belong, either way, doesn't
+        // exist as far as the user is concerned
+        return res.status(404).json({})
+      }
+      res.locals.dbPlaylist = dbPlaylist
+      next()
+    }
+  )
+  
+  
+  /**
+   * Get this playlist
+   */
+  app.get('/api/playlists/:playlistId/',
+    async (req, res: Res<LocalsDBPlaylist>, next) => {
+      try {
+        const { playlistId } = req.params
+        
+        // rejected if spotify playlist doesn't exist, -> 500
+        const spotifyPlaylist = (await spotifyApi.getPlaylist(playlistId)).body
+        
+        // include spotify data that doesn't get saved to db, such as temporary
+        // urls or names that can change
+        const response: GetPlaylistIdResponse = {
+          ...res.locals.dbPlaylist,
+          images: spotifyPlaylist.images,
+          name: spotifyPlaylist.name,
+          owner: spotifyPlaylist.owner,
+          followers: spotifyPlaylist.followers,
+          tracks: res.locals.dbPlaylist.tracks
+            .filter(dbTrack => !dbTrack.removed)
+            .map(dbTrack => {
+              const spotifyTrack = spotifyPlaylist.tracks.items
+                .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
+                .track
+              
+              return {
+                ...dbTrack,
+                album: spotifyTrack.album,
+                artists: spotifyTrack.artists,
+                name: spotifyTrack.name,
+              }
+            })
+        }
+        
+        res.json(response)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  
+  
   /**
    * Post a message to a song's chat
    * body should have a message string property
    */
   app.post('/api/playlists/:playlistId/tracks/:trackId/chat/',
-    async (req, res, next) => {
+    async (req, res: Res<LocalsDBPlaylist & LocalsUserId>, next) => {
       try {
         const { message } = req.body as PostSituatedChatRequest
         const { playlistId, trackId } = req.params
         console.log({message, playlistId, trackId})
         
-        const dbPlaylist = await db.findOne({ _id: playlistId })
-        const dbTrackIndex = dbPlaylist.tracks.findIndex(
+        const dbTrackIndex = res.locals.dbPlaylist.tracks.findIndex(
           track => track.id === trackId
         )
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           { $push: { [`tracks.${dbTrackIndex}.chat`]:
             {
@@ -117,7 +172,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * Body should include a message, but it can be an empty string
    */
   app.put('/api/playlists/:playlistId/tracks/:trackId/removed',
-    async (req, res, next) => {
+    async (req, res: Res<LocalsDBPlaylist & LocalsUserId>, next) => {
       try {
         const { message } = req.body as PutTrackRemovedRequest
         const { playlistId, trackId } = req.params
@@ -127,11 +182,10 @@ export const setupPlaylistEndpoints = (app: Application) => {
           playlistId, [{ uri: `spotify:track:${trackId}` }]
         )
         
-        const dbPlaylist = await db.findOne({ _id: playlistId })
-        const dbTrackIndex = dbPlaylist.tracks.findIndex(
+        const dbTrackIndex = res.locals.dbPlaylist.tracks.findIndex(
           track => track.id === trackId
         )
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           {
             $push: {
@@ -169,7 +223,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * Body should include a message, but it can be an empty string
    */
   app.post('/api/playlists/:playlistId/tracks/',
-    async (req, res, next) => {
+    async (req, res: Res<LocalsUserId>, next) => {
       try {
         const { message, trackId } = req.body as PostTrackRequest
         const { playlistId } = req.params
@@ -179,7 +233,7 @@ export const setupPlaylistEndpoints = (app: Application) => {
           playlistId, [`spotify:track:${trackId}`]
         )
         
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           {
             $push: {
@@ -218,14 +272,14 @@ export const setupPlaylistEndpoints = (app: Application) => {
    * body should have a message string property
    */
   app.post('/api/playlists/:playlistId/chat/',
-    async (req, res, next) => {
+    async (req, res: Res<LocalsUserId>, next) => {
       try {
         const { message } = req.body as PostSeparateChatRequest
         const { playlistId } = req.params
         console.log({message, playlistId })
         
         
-        await db.update(
+        await playlistsDB.update(
           { _id: playlistId },
           { $push: { chat:
             {
