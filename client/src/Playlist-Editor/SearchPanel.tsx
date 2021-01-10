@@ -17,7 +17,7 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
         setter({
           loading: true,
         })
-        const response = await fetchWrapper(`/api/search?q=${query}`)
+        const response = await fetchWrapper<SongResults>(`/api/search?q=${query}`)
         setter({
           loading: false,
           ...response,

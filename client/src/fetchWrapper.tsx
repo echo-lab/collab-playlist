@@ -6,11 +6,17 @@ const useConst = <T extends any> (val: T) => {
 }
 
 
+// base type for api data and error
+// TODO will api return arrays? then this will change
+type Json = Record<string, any>
 
-export interface Resource<T> {
+export interface Resource<T extends Json> {
   data: T,
   loading: boolean,
-  error: any
+  error: {
+    status: number,
+    json: Json,
+  }
 }
 
 
@@ -22,7 +28,7 @@ export interface Resource<T> {
  * 
  * updateResource (setter) has a stable reference identity
  */
-export const useResource = <T extends any>(
+export const useResource = <T extends Json>(
   initialVal: T,
   loading: boolean = false
 ) => {
@@ -32,6 +38,7 @@ export const useResource = <T extends any>(
     error: null
   })
   
+  // TODO remove this and just use setResource?
   const updateResource = useConst((updates: Partial<Resource<T>>) => {
     setResource(resource => ({
       ...resource,
@@ -42,74 +49,52 @@ export const useResource = <T extends any>(
   return [resource, updateResource] as const
 }
 
-class FetchError extends Error {
-  public payload: any
-  constructor(payload: any, message?: string) {
-    super(message)
-    this.payload = payload
-  }
-}
 
 /**
  * wrapper around fetch that handles errors and returns them as
  */
-export const fetchWrapper = async <T extends any> (
+export const fetchWrapper = async <T extends Json> (
   url: string,
   fetchOptions: RequestInit = {},
-): Promise<{
-  data: T,
-  error: any,
-}> => {
-  try {
-    
-    const data = await fetch(url, fetchOptions)
-    if (!data.ok) {
-      throw new FetchError({ status: data.status })
-    }
-    const json = await data.json() as T
-    console.log({ url, json })
-    return {
-      data: json,
+): Promise<Pick<Resource<T>, 'data' | 'error'>> => {
+  // fetch() and json() will reject (throw exceptions) on network error or if
+  // the response can't be parsed as json, but not on application level error.
+  // leave these exceptional cases unhandled
+  const data = await fetch(url, fetchOptions)
+  const json = await data.json() as Json
+  console.log({ url, status: data.status, json })
+  
+  // data.ok is false if status is 4xx or 5xx (application level error)
+  return data.ok
+    ? { // success
+      data: json as T,
       error: null,
     }
-    
-  } catch (e_) {
-    const e = e_ as FetchError | Error
-    console.error({ url, e })
-    const { status } = 'payload' in e ? e.payload : 500
-    
-    if (400 <= status && status < 500) {
-      // client error, request new access_token
-      // TODO
-    } else if (500 <= status && status < 600) {
-      // server error
-    }
-    return {
+    : { // error
       data: null,
-      error: e,
+      error: {
+        status: data.status,
+        json,
+      },
     }
-  }
 }
 
 
-export const postWrapper = async <T extends any> (
+export const postWrapper = async <T extends Json> (
   url: string,
-  body: Record<string, any>,
+  body: Json,
   fetchOptions: RequestInit = {},
-): Promise<{
-  data: T,
-  error: any,
-}> => {
+): Promise<Pick<Resource<T>, 'data' | 'error'>> => {
   return await fetchWrapper(
     url,
     {
       method: 'POST',
+      body: JSON.stringify(body),
+      ...fetchOptions,
       headers: {
         'Content-Type': 'application/json',
         ...fetchOptions.headers,
       },
-      body: JSON.stringify(body),
-      ...fetchOptions,
     }
   )
 }
