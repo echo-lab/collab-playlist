@@ -6,7 +6,7 @@ import fetch from 'node-fetch'
 import express from "express"
 import SpotifyWebApi from 'spotify-web-api-node'
 
-import { accessTokenCache, refreshTokenCache } from './userCache'
+import { accessTokenCache, refreshTokenCache } from '../userCache'
 
 export const authRouter = express.Router()
 

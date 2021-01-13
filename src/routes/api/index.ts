@@ -2,12 +2,12 @@
 
 import SpotifyWebApi from 'spotify-web-api-node'
 import express from 'express'
-import { LocalsUserId, Res, playlistsRouter } from './playlistEndpoints'
+import { LocalsUserId, Res, playlistsRouter } from './playlists'
 import {
   GetRefreshTokenResponse, GetTrackSearchResponse
-} from '../client/src/shared/apiTypes'
-import { accessTokenCache, refreshTokenCache } from './userCache'
-import { spotifyApi } from './ownerAccount'
+} from '../../../client/src/shared/apiTypes'
+import { accessTokenCache, refreshTokenCache } from '../../userCache'
+import { spotifyApi } from '../../ownerAccount'
 
 
 

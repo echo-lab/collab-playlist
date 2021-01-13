@@ -55,13 +55,13 @@ import { refreshAccessToken } from './ownerAccount'
 refreshAccessToken()
 
 // set up authentication and api endpoints
-import { authRouter } from './authentication'
+import { authRouter } from './routes/auth'
 app.use('/auth', authRouter)
 
-import { apiRouter } from './api'
+import { apiRouter } from './routes/api'
 app.use('/api', apiRouter)
 
-import { adminRouter } from './admin'
+import { adminRouter } from './routes/admin'
 app.use('/admin', adminRouter)
 
 

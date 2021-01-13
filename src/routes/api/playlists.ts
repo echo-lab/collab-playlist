@@ -7,14 +7,14 @@ import {
   SeparateChatMessage,
   SeparateChatAction,
   PlaylistDocument,
-} from '../client/src/shared/dbTypes'
+} from '../../../client/src/shared/dbTypes'
 import {
   GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest,
   PostTrackRequest, PostSeparateChatRequest, GetPlaylistsResponse,
   PlaylistSimple
-} from '../client/src/shared/apiTypes'
-import { spotifyApi } from './ownerAccount'
-import { playlistsDB, usersDB } from './db'
+} from '../../../client/src/shared/apiTypes'
+import { spotifyApi } from '../../ownerAccount'
+import { playlistsDB, usersDB } from '../../db'
 
 
 

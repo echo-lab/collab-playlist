@@ -1,10 +1,10 @@
 
 
 import express from 'express'
-import { playlistsDB, usersDB } from './db'
-import { initializePlaylist } from './initializePlaylist'
-import { spotifyApi } from './ownerAccount'
-import { parseIdsCsv } from './parseIdsCsv'
+import { playlistsDB, usersDB } from '../db'
+import { initializePlaylist } from '../initializePlaylist'
+import { spotifyApi } from '../ownerAccount'
+import { parseIdsCsv } from '../parseIdsCsv'
 
 
 
