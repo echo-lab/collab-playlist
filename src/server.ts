@@ -46,14 +46,14 @@ import { refreshAccessToken } from './ownerAccount'
 refreshAccessToken()
 
 // set up authentication and api endpoints
-import { setupAuth } from './authentication'
-setupAuth(app)
+import { authRouter } from './authentication'
+app.use('/auth', authRouter)
 
-import { setupApi } from './api'
-setupApi(app)
+import { apiRouter } from './api'
+app.use('/api', apiRouter)
 
-import { setupAdmin } from './admin'
-setupAdmin(app)
+import { adminRouter } from './admin'
+app.use('/admin', adminRouter)
 
 /**
  * The react app tries to get these but webpack doesn't create them for some reason
