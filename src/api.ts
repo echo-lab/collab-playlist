@@ -15,16 +15,6 @@ export const apiRouter = express.Router()
 
 
 /**
- * logs api requests
- */
-apiRouter.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl} request`)
-  next()
-})
-
-
-
-/**
  * client is requesting a new access_token using the refresh_token
  * @statusCode 401 not authenticated if no refresh token found, meaning
  * try authenticating again
@@ -32,7 +22,7 @@ apiRouter.use((req, res, next) => {
  * @responseCookie access_token with new access_token with expiration
  * @responseBody json with expires_in in seconds for setting timeout
  */
-apiRouter.get('/refresh_token', async (req, res) => {
+apiRouter.get('/refresh_token', async (req, res, next) => {
   const { refresh_token } = req.cookies
   
   // get saved user id, if it exists, from cache
@@ -42,8 +32,7 @@ apiRouter.get('/refresh_token', async (req, res) => {
   
   if (!userId) {
     // no refresh token, or unrecognized refresh token
-    res.sendStatus(401)
-    return
+    return next({ status: 401, cookies: req.cookies })
   }
   const userAccountSpotifyApi = new SpotifyWebApi({
     refreshToken: refresh_token,
@@ -51,21 +40,19 @@ apiRouter.get('/refresh_token', async (req, res) => {
     clientSecret: process.env.CLIENT_SECRET
   })
   
+  let data
   try {
-    const data = await userAccountSpotifyApi.refreshAccessToken()
-    
-    // no need to clear old access token from cache because of TTL
-    // map new access token to user id
-    accessTokenCache.set(data.body.access_token, userId)
-    
-    res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
-    res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
-    
+    data = await userAccountSpotifyApi.refreshAccessToken()
   } catch (e) {
-    console.error({e})
-    res.sendStatus(502)
+    return next({ err: e, status: 502, cookies: req.cookies })
   }
-  // no next()
+  
+  // no need to clear old access token from cache because of TTL
+  // map new access token to user id
+  accessTokenCache.set(data.body.access_token, userId)
+  
+  res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
+  res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
 })
 
 
@@ -80,8 +67,7 @@ apiRouter.use((req, res: Res<LocalsUserId>, next) => {
   
   if (!res.locals.userId) {
     // no access token or access token not in cache, user isn't authenticated
-    res.sendStatus(401)
-    return // no next()
+    return next({ status: 401, cookies: req.cookies })
   }
   next()
 })
@@ -143,11 +129,23 @@ apiRouter.get('/users/:id', async (req, res) => {
 
 
 /**
- * catch all other api endpoints
+ * catch server errors
+ */
+apiRouter.use(((err, req, res, next) => {
+  console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
+  console.error(err)
+  // always respond with json; never send err (might leak server info)
+  res.status(err.status ?? 500)
+     .json({}) // could use `err.client ?? {}`
+}) as express.ErrorRequestHandler)
+
+
+/**
+ * catch all 404s in api path
  */
 apiRouter.use((req, res) => {
-  console.log(`${req.path} not found`)
-  res.sendStatus(404)
+  console.log(`${req.originalUrl} not found`)
+  res.status(404).json({})
 })
 
 

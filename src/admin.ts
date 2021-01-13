@@ -10,14 +10,6 @@ import { parseIdsCsv } from './parseIdsCsv'
 
 export const adminRouter = express.Router()
 
-/**
- * log admin requests
- */
-adminRouter.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl} request`)
-  next()
-})
-
 
 
 /**
@@ -123,6 +115,7 @@ adminRouter.post('/load-ids', async (req, res) => {
     
   } catch (e) {
     console.error(e)
+    res.status(500)
     if (e.type === 'invalid chatMode') {
       res.status(400).send(e.error.message)
     } else if (e.code === 'ENOENT') {
@@ -140,7 +133,7 @@ adminRouter.post('/load-ids', async (req, res) => {
  * catch all other admin requests
  */
 adminRouter.use((req, res) => {
-  console.log(`${req.path} not found`)
+  console.log(`${req.originalUrl} not found`)
   res.sendStatus(404)
 })
 

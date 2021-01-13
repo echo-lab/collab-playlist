@@ -88,7 +88,7 @@ playlistIdRouter.use(
     if (!dbPlaylist || !dbPlaylist.users.includes(res.locals.userId)) {
       // playlist not found in db or user doesn't belong, either way, doesn't
       // exist as far as the user is concerned
-      return res.status(404).json({})
+      return next({ status: 404 })
     }
     res.locals.dbPlaylist = dbPlaylist
     next()

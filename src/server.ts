@@ -41,6 +41,15 @@ app.use(express.json())
 app.use(express.static(buildPath(), { index: false }))
 
 
+/**
+ * logs all requests other than static resources
+ */
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl} request`)
+  next()
+})
+
+
 // set up spotify api connection to owner account
 import { refreshAccessToken } from './ownerAccount'
 refreshAccessToken()
@@ -55,16 +64,6 @@ app.use('/api', apiRouter)
 import { adminRouter } from './admin'
 app.use('/admin', adminRouter)
 
-/**
- * The react app tries to get these but webpack doesn't create them for some reason
- * 
- * sockjs-node is probably related to hot reloading, but I thought I turned that off
- * 
- * I think manifest.json is a file that CRA created and that I deleted; I could bring it back
- */
-app.get('/sockjs-node', (req, res) => {
-  res.sendStatus(404)
-})
 
 
 /**
@@ -73,7 +72,7 @@ app.get('/sockjs-node', (req, res) => {
  */
 
 app.get('/*', (req, res) => {
-  console.log(`get ${req.url}`)
+  console.log(`respond to ${req.originalUrl} with index.html`)
   res.sendFile(buildPath('index.html'))
 })
 
@@ -81,10 +80,11 @@ app.get('/*', (req, res) => {
 /**
  * Error handler
  */
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(`ERROR at ${req.method} ${req.originalUrl}: ${error}`)
-  res.status(500).json({ error })
-})
+app.use(((err, req, res, next) => {
+  console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
+  console.error(err)
+  res.sendStatus(err.status ?? 500)
+}) as express.ErrorRequestHandler)
 
 
 app.listen(PORT, () => {
