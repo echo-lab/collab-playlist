@@ -32,7 +32,7 @@ apiRouter.get('/refresh_token', async (req, res, next) => {
   
   if (!userId) {
     // no refresh token, or unrecognized refresh token
-    return next({ status: 401, cookies: req.cookies })
+    return next({ status: 401, cookie: req.headers.cookie })
   }
   const userAccountSpotifyApi = new SpotifyWebApi({
     refreshToken: refresh_token,
@@ -44,7 +44,7 @@ apiRouter.get('/refresh_token', async (req, res, next) => {
   try {
     data = await userAccountSpotifyApi.refreshAccessToken()
   } catch (e) {
-    return next({ err: e, status: 502, cookies: req.cookies })
+    return next({ err: e, status: 502, cookie: req.headers.cookie })
   }
   
   // no need to clear old access token from cache because of TTL
@@ -67,7 +67,7 @@ apiRouter.use((req, res: Res<LocalsUserId>, next) => {
   
   if (!res.locals.userId) {
     // no access token or access token not in cache, user isn't authenticated
-    return next({ status: 401, cookies: req.cookies })
+    return next({ status: 401, cookie: req.headers.cookie })
   }
   next()
 })
