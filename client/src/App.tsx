@@ -1,27 +1,12 @@
 
-import React, { useCallback, CSSProperties } from 'react'
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
-import { CookiesProvider, useCookies } from 'react-cookie'
+import React, { CSSProperties } from 'react'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { colors, classes } from './styles'
 // import { useWarnResize } from './warnResize'
 import { useRefreshToken } from './fetchWrapper'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './Playlist-Editor/PlaylistEditor'
 import { Header } from './Header'
-
-
-const useLogin = (): [boolean, () => void] => {
-  const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token'])
-  return [
-    cookies.access_token && cookies.refresh_token,
-    useCallback(() => {
-      removeCookie('access_token')
-      removeCookie('refresh_token')
-    }, [removeCookie])
-  ]
-}
-
-
 
 
 const LoginPage = () => {
@@ -45,6 +30,8 @@ const LoggedInPage = ({
 }: {
   style?: CSSProperties,
 }) => {
+  useRefreshToken()
+  
   return <Switch>
     <Route exact path="/">
       <PlaylistGrid style={style} />
@@ -55,51 +42,43 @@ const LoggedInPage = ({
   </Switch>
 }
 
+
+
+const appStyle = {
+  ...classes.column,
+  width: '100%',
+  height: '100%',
+  backgroundColor: colors.grayscale.black,
+} as const
+const mainPanelStyle = {
+  overflow: 'hidden',
+  flex: 1,
+}
+const loggedInPageStyle = {
+  height: '100%',
+}
+
 export const App = () => {
-  const [isLoggedIn, logout] = useLogin()
-  
-  useRefreshToken(isLoggedIn, logout)
-  
-  // useWarnResize()
-  
-  const appStyle = {
-    ...classes.column,
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.grayscale.black,
-  } as const
-  const mainPanelStyle = {
-    overflow: 'hidden',
-    flex: 1,
-  }
-  const loggedInPageStyle = {
-    height: '100%',
-  }
-  
   return (
-    <CookiesProvider>
-      <Router>
-        <div style={appStyle}>
-          <Header logout={logout} />
-          <div style={mainPanelStyle}>
-            <Switch>
-              <Route path="/login">
-                <LoginPage />
-              </Route>
-              <Route path="/error/">
-                <ErrorPage />
-              </Route>
-              <Route path="/">
-                { isLoggedIn
-                ? <LoggedInPage style={loggedInPageStyle} />
-                : <Redirect to="/login"/>
-                }
-              </Route>
-            </Switch>
-          </div>
+    <Router>
+      <div style={appStyle}>
+        <Header />
+        <div style={mainPanelStyle}>
+          <Switch>
+            <Route path="/login">
+              <LoginPage />
+            </Route>
+            <Route path="/error/">
+              <ErrorPage />
+            </Route>
+            {/* default/all other paths */}
+            <Route path="/">
+              <LoggedInPage style={loggedInPageStyle} />
+            </Route>
+          </Switch>
         </div>
-      </Router>
-    </CookiesProvider>
+      </div>
+    </Router>
   )
 }
 

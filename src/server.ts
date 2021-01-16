@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser'
 
 import path from 'path'
 
+import { accessTokenCache } from './userCache'
+
 
 
 // Environment vars
@@ -71,7 +73,27 @@ app.use('/admin', adminRouter)
  * this app for all valid page urls
  */
 
+/**
+ * frontend paths that aren't guarded behind login:
+ */
+app.get(['/login', '/error/*'], (req, res) => {
+  console.log(`respond to ${req.originalUrl} with index.html`)
+  res.sendFile(buildPath('index.html'))
+})
+
+/**
+ * all other frontend paths require user to be logged in:
+ */
 app.get('/*', (req, res) => {
+  const access_token = req.cookies.access_token
+  
+  // NodeCache#get fails on undefined/null key
+  const userId = access_token && accessTokenCache.get(access_token)
+  if (!userId) {
+    res.redirect(303, '/login')
+    return
+  }
+  
   console.log(`respond to ${req.originalUrl} with index.html`)
   res.sendFile(buildPath('index.html'))
 })

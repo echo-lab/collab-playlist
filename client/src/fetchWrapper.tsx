@@ -100,33 +100,39 @@ export const postWrapper = async <T extends Json> (
 }
 
 
-// TODO refactor in useRefreshToken.tsx
-export const useRefreshToken = (isLoggedIn, logout) => {
+// TODO move to useRefreshToken.tsx?
+export const useRefreshToken = () => {
   useEffect(() => {
-    if (!isLoggedIn) return
-    
+    let timeout // setTimeout id
     const refresh = async () => {
-      try {
-        const response = await fetch('/api/refresh_token', { cache: 'no-store' })
-        if (!response.ok) {
-          throw response.status
-        }
-        const { expires_in } = await response.json() // number of seconds to expiration
-        console.log({expires_in})
-        setTimeout(refresh, expires_in * 1000 * 0.9) // anticipate expiration by a little
-      } catch (e) {
-        console.error({e})
-        if (400 <= e && e < 500) {
+      // TODO catch fetch exception?
+      const { data, error } = await fetchWrapper<{ expires_in: number }>(
+        '/api/refresh_token', { cache: 'no-store' }
+      )
+      if (error) {
+        if (400 <= error.status && error.status < 500) {
           // client error, tell user to re-authenticate
-          // alert('please login again')
-          logout()
-        } else if (500 <= e && e < 600) {
-          // server error, retry
-          setTimeout(refresh, 1000 * 10)
+          // TODO use proper helper
+          alert('please log out and log in again')
+        } else if (500 <= error.status && error.status < 600) {
+          // server error, retry in 10s
+          timeout = setTimeout(refresh, 1000 * 10)
         }
+      } else {
+        // success
+        // anticipate expiration by a little
+        timeout = setTimeout(refresh, data.expires_in * 1000 * 0.9)
       }
+      
     }
-    setTimeout(refresh, 1000 * 10)
-  }, [isLoggedIn, logout])
+    
+    // initial call in 10s
+    timeout = setTimeout(refresh, 1000 * 10)
+    return () => {
+      // clear timeout on unmount of calling component (when no longer logged
+      // in)
+      clearTimeout(timeout)
+    }
+  }, [])
 }
 

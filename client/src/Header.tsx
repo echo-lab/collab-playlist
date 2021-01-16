@@ -2,7 +2,7 @@
 import React, { CSSProperties } from 'react'
 import { classes, colors } from './styles'
 
-export const Header = ({ logout }: { logout: () => void }) => {
+export const Header = () => {
   const headerStyle: CSSProperties = {
     ...classes.row,
     // flexBasis: '6.0rem',
@@ -46,7 +46,7 @@ export const Header = ({ logout }: { logout: () => void }) => {
         style={imageStyle}
       />
     </div>
-    <button style={buttonStyle} onClick={logout}>Logout</button>
+    <button style={buttonStyle} onClick={() => void(0)}>Logout</button>
   </div>
 }
 
