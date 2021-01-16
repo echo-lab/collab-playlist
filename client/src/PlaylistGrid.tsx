@@ -5,6 +5,7 @@ import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
 import { useResource, fetchWrapper, Resource } from './fetchWrapper'
 import { GetPlaylistsResponse, PlaylistSimple } from './shared/apiTypes'
+import { handleApiError } from './api'
 
 
 
@@ -16,6 +17,7 @@ export const usePlaylists = (): Resource<GetPlaylistsResponse> => {
     (async () => {
       // setter({ loading: true })
       const response = await fetchWrapper<GetPlaylistsResponse>('/api/playlists/')
+      handleApiError(response)
       setter({
         loading: false,
         ...response,

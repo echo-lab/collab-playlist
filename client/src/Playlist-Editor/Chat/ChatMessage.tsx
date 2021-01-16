@@ -3,6 +3,7 @@ import React, { CSSProperties, useEffect } from 'react'
 import { SituatedChatEvent } from '../../shared/dbTypes'
 import { classes, colors } from '../../styles'
 import { useResource, fetchWrapper } from '../../fetchWrapper'
+import { handleApiError } from '../../api'
 
 
 
@@ -48,6 +49,7 @@ export const SituatedChatMessage = ({
   useEffect(() => {
     (async () => {
       const response = await fetchWrapper<SpotifyApi.UserProfileResponse>(`/api/users/${chatEvent.userId}`)
+      handleApiError(response)
       userSetter({
         data: response.data,
         loading: false,

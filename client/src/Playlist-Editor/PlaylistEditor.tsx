@@ -15,6 +15,7 @@ import { initialState, modificationReducer } from './modificationReducer'
 import { playlistContext } from './playlistContext'
 import { SeparateChat } from './Chat/SeparateChat'
 import { GetPlaylistIdResponse } from '../shared/apiTypes'
+import { handleApiError } from '../api'
 
 
 const usePlaylistData = (playlistId: string) => {
@@ -28,6 +29,7 @@ const usePlaylistData = (playlistId: string) => {
   
   const loadPlaylist = useCallback(async () => {
     const response = await fetchWrapper<GetPlaylistIdResponse>(`/api/playlists/${playlistId}/`)
+    handleApiError(response)
     playlistSetter({
       loading: false,
       ...response,
@@ -62,6 +64,7 @@ const usePlaylistData = (playlistId: string) => {
     )
     ;(async () => {
       const response = await fetchWrapper(`/api/users/?ids=${uniqueIds.join(',')}`)
+      handleApiError(response)
       addedByUsersSetter({
         loading: false,
         ...response,

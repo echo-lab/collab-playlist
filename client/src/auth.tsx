@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
+import { errorMessages } from './api'
 import { fetchWrapper } from './fetchWrapper'
 
 
@@ -38,14 +39,17 @@ export const useRefreshToken = () => {
       if (error) {
         if (400 <= error.status && error.status < 500) {
           // client error, tell user to re-authenticate
-          // TODO use proper helper
-          alert('please log out and log in again')
+          alert(errorMessages['401']) // a 400 error is specifically a 401 here
           // don't restart timeout;
           // if clearTimeout(timeout) gets called later nothing bad happens
           
         } else if (500 <= error.status && error.status < 600) {
-          // server error, retry in 10s
-          timeout = setTimeout(refresh, 1000 * 10)
+          alert(errorMessages['5xx'])
+          // server error, retry in 30s
+          timeout = setTimeout(refresh, 1000 * 30)
+        } else {
+          // shouldn't be possible, but we should cover it anyway
+          alert(errorMessages['unknown'])
         }
         
       } else {

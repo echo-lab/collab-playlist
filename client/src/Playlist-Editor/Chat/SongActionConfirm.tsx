@@ -1,5 +1,6 @@
 
 import React, { FormEvent, CSSProperties, ReactNode } from 'react'
+import { handleApiError } from '../../api';
 import { postWrapper } from '../../fetchWrapper'
 import { classes, colors } from '../../styles';
 import { useHover } from '../../useHover';
@@ -21,10 +22,9 @@ export const createSubmitHandler = (
       body,
       { method }
     )
+    handleApiError(response)
     
-    if (response.error) {
-      alert('error, try again')
-    } else {
+    if (!response.error) {
       onSuccess()
     }
   })()
