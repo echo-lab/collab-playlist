@@ -35,7 +35,7 @@ export const PlaylistGrid = ({
 }: {
   style?: CSSProperties,
 }) => {
-  const { data: playlists, loading } = usePlaylists()
+  const playlists = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
     ...style,
@@ -46,9 +46,9 @@ export const PlaylistGrid = ({
   }
   
   return <div style={playlistGridStyle}>
-    {!loading && (
-      playlists.length
-      ? playlists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)
+    {playlists.data && (
+      playlists.data.length
+      ? playlists.data.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)
       : <h2 style={classes.text}>You are not a member of any playlists.</h2>
     )}
   </div>

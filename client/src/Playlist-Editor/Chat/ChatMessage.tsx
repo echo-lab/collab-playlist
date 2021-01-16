@@ -60,9 +60,9 @@ export const SituatedChatMessage = ({
   return <div style={messageStyle}>
     <div style={classes.row}>
       <h4 style={userNameStyle}>
-        { user.loading
-        ? '\xa0' // nbsp to preserve line height when loading
-        : user.data.display_name
+        { user.data
+        ? user.data.display_name
+        : '\xa0' // nbsp to preserve line height when loading
         }
       </h4>
       <time style={timestampStyle}>

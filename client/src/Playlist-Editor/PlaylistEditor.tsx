@@ -115,12 +115,14 @@ export const PlaylistEditor = ({
   const { id } = useParams()
   
   const [
-    { data: playlist, loading: playlistLoading },
-    { data: addedByUsers, loading: addedByUsersLoading },
+    // { data: playlist, loading: playlistLoading },
+    // { data: addedByUsers, loading: addedByUsersLoading },
+    playlist,
+    addedByUsers,
     loadPlaylist,
   ] = usePlaylistData(id)
   
-  console.log(playlist, playlistLoading, addedByUsers, addedByUsersLoading)
+  console.log(playlist, playlist.loading, addedByUsers, addedByUsers.loading)
   
   // console.log({data, loading})
   
@@ -139,26 +141,23 @@ export const PlaylistEditor = ({
       <SearchPanel style={searchTabStyle}/>
       <div style={playlistEditorStyle}>
         <div style={playlistTableStyle}>
-          { playlistLoading
-          ? null
-          : <>
-              <div style={tHeadStyle}>
-                <PlaylistInfo playlist={playlist} />
-                <PlaylistTableHeader />
-              </div>
-              <div style={songsStyle}>
-                { addedByUsersLoading
-                ? null
-                : playlist.tracks.map((track, index) => 
-                    <SavedSongRow track={track} addedByUsers={addedByUsers} key={index}/>
-                  )
-                }
-                { modificationState.userAction === 'add' &&
-                  <DraftAdditionSongRow trackData={modificationState.trackData} />
-                }
-              </div>
-            </>
-          }
+          { playlist.data && <>
+            <div style={tHeadStyle}>
+              <PlaylistInfo playlist={playlist.data} />
+              <PlaylistTableHeader />
+            </div>
+            <div style={songsStyle}>
+              {/* don't render with old users data if new data is coming: */}
+              { addedByUsers.data && !addedByUsers.loading &&
+                playlist.data.tracks.map((track, index) =>
+                  <SavedSongRow track={track} addedByUsers={addedByUsers.data} key={index}/>
+                )
+              }
+              { modificationState.userAction === 'add' &&
+                <DraftAdditionSongRow trackData={modificationState.trackData} />
+              }
+            </div>
+          </> }
         </div>
         { false && <SeparateChat
           chat={[]}
