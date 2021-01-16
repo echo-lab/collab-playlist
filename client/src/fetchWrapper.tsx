@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 
 const useConst = <T extends any> (val: T) => {
   return useRef(val).current
@@ -100,39 +100,4 @@ export const postWrapper = async <T extends Json> (
 }
 
 
-// TODO move to useRefreshToken.tsx?
-export const useRefreshToken = () => {
-  useEffect(() => {
-    let timeout // setTimeout id
-    const refresh = async () => {
-      // TODO catch fetch exception?
-      const { data, error } = await fetchWrapper<{ expires_in: number }>(
-        '/api/refresh_token', { cache: 'no-store' }
-      )
-      if (error) {
-        if (400 <= error.status && error.status < 500) {
-          // client error, tell user to re-authenticate
-          // TODO use proper helper
-          alert('please log out and log in again')
-        } else if (500 <= error.status && error.status < 600) {
-          // server error, retry in 10s
-          timeout = setTimeout(refresh, 1000 * 10)
-        }
-      } else {
-        // success
-        // anticipate expiration by a little
-        timeout = setTimeout(refresh, data.expires_in * 1000 * 0.9)
-      }
-      
-    }
-    
-    // initial call in 10s
-    timeout = setTimeout(refresh, 1000 * 10)
-    return () => {
-      // clear timeout on unmount of calling component (when no longer logged
-      // in)
-      clearTimeout(timeout)
-    }
-  }, [])
-}
 

@@ -1,40 +1,45 @@
 
 import React, { CSSProperties } from 'react'
+import { useLogout } from './auth'
 import { classes, colors } from './styles'
 
+
+const headerStyle: CSSProperties = {
+  ...classes.row,
+  // flexBasis: '6.0rem',
+  padding: '2.0rem',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+}
+const leftBoxStyle = {
+  ...classes.row,
+  alignItems: 'baseline',
+  verticalAlign: 'middle',
+}
+const headingStyle = {
+  ...classes.text,
+  ...classes.bold,
+  fontSize: '3.5rem',
+}
+const forTextStyle = {
+  ...classes.text,
+  paddingLeft: '2.5rem',
+  paddingRight: '2.5rem',
+  fontSize: '1.6rem',
+  fontStyle: 'italic',
+}
+const imageStyle = {
+  height: '4.5rem',
+  alignSelf: 'center',
+}
+const buttonStyle = {
+  ...classes.text,
+  color: colors.grayscale.black,
+}
+
 export const Header = () => {
-  const headerStyle: CSSProperties = {
-    ...classes.row,
-    // flexBasis: '6.0rem',
-    padding: '2.0rem',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  }
-  const leftBoxStyle = {
-    ...classes.row,
-    alignItems: 'baseline',
-    verticalAlign: 'middle',
-  }
-  const headingStyle = {
-    ...classes.text,
-    ...classes.bold,
-    fontSize: '3.5rem',
-  }
-  const forTextStyle = {
-    ...classes.text,
-    paddingLeft: '2.5rem',
-    paddingRight: '2.5rem',
-    fontSize: '1.6rem',
-    fontStyle: 'italic',
-  }
-  const imageStyle = {
-    height: '4.5rem',
-    alignSelf: 'center',
-  }
-  const buttonStyle = {
-    ...classes.text,
-    color: colors.grayscale.black,
-  }
+  
+  const logout = useLogout()
   
   return <div style={headerStyle}>
     <div style={leftBoxStyle}>
@@ -46,7 +51,7 @@ export const Header = () => {
         style={imageStyle}
       />
     </div>
-    <button style={buttonStyle} onClick={() => void(0)}>Logout</button>
+    <button style={buttonStyle} onClick={logout}>Logout</button>
   </div>
 }
 
