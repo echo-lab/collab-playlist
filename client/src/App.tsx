@@ -7,6 +7,7 @@ import { useRefreshToken } from './auth'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './Playlist-Editor/PlaylistEditor'
 import { Header } from './Header'
+import './errorCatcher'
 
 
 const LoginPage = () => {

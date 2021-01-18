@@ -67,6 +67,16 @@ import { adminRouter } from './routes/admin'
 app.use('/admin', adminRouter)
 
 
+app.post('/log', (req, res) => {
+  const access_token = req.cookies.access_token
+  // NodeCache#get fails on undefined/null key
+  const userId = access_token && accessTokenCache.get(access_token)
+  
+  console.log(`CLIENT LOG: from id=${userId}; ${JSON.stringify(req.body)}`)
+  res.sendStatus(200)
+})
+
+
 
 /**
  * the single react app handles routing between pages, and the server serves
