@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser'
 
 import path from 'path'
 
+import { accessTokenCache } from './userCache'
+
 
 
 // Environment vars
@@ -41,30 +43,39 @@ app.use(express.json())
 app.use(express.static(buildPath(), { index: false }))
 
 
+/**
+ * logs all requests other than static resources
+ */
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl} request`)
+  next()
+})
+
+
 // set up spotify api connection to owner account
 import { refreshAccessToken } from './ownerAccount'
 refreshAccessToken()
 
 // set up authentication and api endpoints
-import { setupAuth } from './authentication'
-setupAuth(app)
+import { authRouter } from './routes/auth'
+app.use('/auth', authRouter)
 
-import { setupApi } from './api'
-setupApi(app)
+import { apiRouter } from './routes/api'
+app.use('/api', apiRouter)
 
-import { setupAdmin } from './admin'
-setupAdmin(app)
+import { adminRouter } from './routes/admin'
+app.use('/admin', adminRouter)
 
-/**
- * The react app tries to get these but webpack doesn't create them for some reason
- * 
- * sockjs-node is probably related to hot reloading, but I thought I turned that off
- * 
- * I think manifest.json is a file that CRA created and that I deleted; I could bring it back
- */
-app.get('/sockjs-node', (req, res) => {
-  res.sendStatus(404)
+
+app.post('/log', (req, res) => {
+  const access_token = req.cookies.access_token
+  // NodeCache#get fails on undefined/null key
+  const userId = access_token && accessTokenCache.get(access_token)
+  
+  console.log(`CLIENT LOG: from id=${userId}; ${JSON.stringify(req.body)}`)
+  res.sendStatus(200)
 })
+
 
 
 /**
@@ -72,8 +83,28 @@ app.get('/sockjs-node', (req, res) => {
  * this app for all valid page urls
  */
 
+/**
+ * frontend paths that aren't guarded behind login:
+ */
+app.get(['/login', '/error/*'], (req, res) => {
+  console.log(`respond to ${req.originalUrl} with index.html`)
+  res.sendFile(buildPath('index.html'))
+})
+
+/**
+ * all other frontend paths require user to be logged in:
+ */
 app.get('/*', (req, res) => {
-  console.log(`get ${req.url}`)
+  const access_token = req.cookies.access_token
+  
+  // NodeCache#get fails on undefined/null key
+  const userId = access_token && accessTokenCache.get(access_token)
+  if (!userId) {
+    res.redirect(303, '/login')
+    return
+  }
+  
+  console.log(`respond to ${req.originalUrl} with index.html`)
   res.sendFile(buildPath('index.html'))
 })
 
@@ -81,10 +112,11 @@ app.get('/*', (req, res) => {
 /**
  * Error handler
  */
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(`ERROR at ${req.method} ${req.originalUrl}: ${error}`)
-  res.status(500).json({ error })
-})
+app.use(((err, req, res, next) => {
+  console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
+  console.error(err)
+  res.sendStatus(err.status ?? 500)
+}) as express.ErrorRequestHandler)
 
 
 app.listen(PORT, () => {

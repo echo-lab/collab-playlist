@@ -4,6 +4,7 @@ import { useDebounceCallback } from '@react-hook/debounce'
 import { useResource, fetchWrapper, Resource } from '../fetchWrapper'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "../styles"
+import { handleApiError } from '../api'
 
 
 type SongResults = SpotifyApi.TrackSearchResponse
@@ -17,7 +18,8 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
         setter({
           loading: true,
         })
-        const response = await fetchWrapper(`/api/search?q=${query}`)
+        const response = await fetchWrapper<SongResults>(`/api/search?q=${query}`)
+        handleApiError(response)
         setter({
           loading: false,
           ...response,

@@ -3,6 +3,7 @@ import React, { CSSProperties, useEffect } from 'react'
 import { SituatedChatEvent } from '../../shared/dbTypes'
 import { classes, colors } from '../../styles'
 import { useResource, fetchWrapper } from '../../fetchWrapper'
+import { handleApiError } from '../../api'
 
 
 
@@ -41,13 +42,16 @@ export const SituatedChatMessage = ({
   
   console.log({chatEvent})
   
-  const [userNameResource, userNameSetter] = useResource<string>('', true)
+  const [
+    user, userSetter
+  ] = useResource<SpotifyApi.UserProfileResponse>(null, true)
   
   useEffect(() => {
     (async () => {
-      const response = await fetchWrapper(`/api/users/${chatEvent.userId}`)
-      userNameSetter({
-        data: response.data.display_name,
+      const response = await fetchWrapper<SpotifyApi.UserProfileResponse>(`/api/users/${chatEvent.userId}`)
+      handleApiError(response)
+      userSetter({
+        data: response.data,
         loading: false,
       })
     })()
@@ -56,9 +60,9 @@ export const SituatedChatMessage = ({
   return <div style={messageStyle}>
     <div style={classes.row}>
       <h4 style={userNameStyle}>
-        { userNameResource.loading
-        ? '\xa0' // nbsp to preserve line height when loading
-        : userNameResource.data
+        { user.data
+        ? user.data.display_name
+        : '\xa0' // nbsp to preserve line height when loading
         }
       </h4>
       <time style={timestampStyle}>

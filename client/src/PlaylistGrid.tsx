@@ -5,6 +5,7 @@ import { useHover } from './useHover'
 import { Link } from 'react-router-dom'
 import { useResource, fetchWrapper, Resource } from './fetchWrapper'
 import { GetPlaylistsResponse, PlaylistSimple } from './shared/apiTypes'
+import { handleApiError } from './api'
 
 
 
@@ -16,6 +17,7 @@ export const usePlaylists = (): Resource<GetPlaylistsResponse> => {
     (async () => {
       // setter({ loading: true })
       const response = await fetchWrapper<GetPlaylistsResponse>('/api/playlists/')
+      handleApiError(response)
       setter({
         loading: false,
         ...response,
@@ -33,7 +35,7 @@ export const PlaylistGrid = ({
 }: {
   style?: CSSProperties,
 }) => {
-  const { data: playlists, loading } = usePlaylists()
+  const playlists = usePlaylists()
   
   const playlistGridStyle: CSSProperties = {
     ...style,
@@ -44,9 +46,9 @@ export const PlaylistGrid = ({
   }
   
   return <div style={playlistGridStyle}>
-    {!loading && (
-      playlists.length
-      ? playlists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)
+    {playlists.data && (
+      playlists.data.length
+      ? playlists.data.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)
       : <h2 style={classes.text}>You are not a member of any playlists.</h2>
     )}
   </div>
