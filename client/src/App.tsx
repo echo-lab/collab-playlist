@@ -3,7 +3,7 @@ import React, { CSSProperties } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { colors, classes } from './styles'
 // import { useWarnResize } from './warnResize'
-import { useRefreshToken } from './auth'
+import { RequireLogin, useRefreshToken } from './auth'
 import { PlaylistGrid } from './PlaylistGrid'
 import { PlaylistEditor } from './Playlist-Editor/PlaylistEditor'
 import { Header } from './Header'
@@ -33,14 +33,16 @@ const LoggedInPage = ({
 }) => {
   useRefreshToken()
   
-  return <Switch>
-    <Route exact path="/">
-      <PlaylistGrid style={style} />
-    </Route>
-    <Route path="/playlists/:id/">
-      <PlaylistEditor style={style} />
-    </Route>
-  </Switch>
+  return <RequireLogin>
+    <Switch>
+      <Route exact path="/">
+        <PlaylistGrid style={style} />
+      </Route>
+      <Route path="/playlists/:id/">
+        <PlaylistEditor style={style} />
+      </Route>
+    </Switch>
+  </RequireLogin>
 }
 
 
