@@ -3,6 +3,10 @@ import { PlaylistDocument, TrackObject } from './dbTypes'
 
 
 
+export interface GetLoginResponse {
+  userId: string,
+}
+
 export interface GetRefreshTokenResponse {
   expires_in: number,
 }

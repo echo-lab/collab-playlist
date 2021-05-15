@@ -1,9 +1,54 @@
 
 
-import { useEffect } from 'react'
+import React, { useEffect, createContext, ReactNode } from 'react'
 import { useHistory } from 'react-router-dom'
 import { errorMessages } from './api'
-import { fetchWrapper } from './fetchWrapper'
+import { fetchWrapper, useResource } from './fetchWrapper'
+import { GetLoginResponse } from './shared/apiTypes'
+
+
+export const loginContext = createContext<GetLoginResponse>(null)
+
+/**
+ * Only renders children if user is logged in on initial render
+ * This is useful for redirecting to /login on page load; it will not catch
+ *  authentication errors while the application is running (those will give error alerts)
+ * populates loginContext
+ * redirects user to /login if user is not logged in (no error message to user)
+ * renders <></> while loading
+ * TODO may add a fallback while loading
+ */
+export const RequireLogin = ({ children }: { children: ReactNode }) => {
+  const history = useHistory()
+  
+  const [resource, setter] = useResource<GetLoginResponse>(null, true)
+  
+  useEffect(() => {
+    (async () => {
+      const response = await fetchWrapper<GetLoginResponse>('/api/login')
+      
+      // if not logged in, take user to login page
+      // (history.replace overrides the previous page; todo use history state?)
+      if (response.error) {
+        history.replace('/login')
+        return
+      }
+      
+      setter({
+        loading: false,
+        ...response,
+      })
+    })()
+  }, [history, setter])
+  
+  return (
+    resource.data
+    ? <loginContext.Provider value={{ userId: resource.data.userId }}>
+        {children}
+      </loginContext.Provider>
+    : <></> // todo fallback?
+  )
+}
 
 
 /**

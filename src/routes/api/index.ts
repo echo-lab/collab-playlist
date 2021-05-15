@@ -4,7 +4,7 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import express from 'express'
 import { LocalsUserId, Res, playlistsRouter } from './playlists'
 import {
-  GetRefreshTokenResponse, GetTrackSearchResponse
+  GetRefreshTokenResponse, GetTrackSearchResponse, GetLoginResponse
 } from '../../../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from '../../userCache'
 import { spotifyApi } from '../../ownerAccount'
@@ -70,6 +70,15 @@ apiRouter.use((req, res: Res<LocalsUserId>, next) => {
     return next({ status: 401, cookie: req.headers.cookie })
   }
   next()
+})
+
+
+/**
+ * Inform user they are logged in; responds 200 if logged in, 401 with empty
+ * json body if not logged in
+ */
+apiRouter.get('/login', (req, res: Res<LocalsUserId>, next) => {
+  res.json({ userId: res.locals.userId } as GetLoginResponse)
 })
 
 
