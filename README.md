@@ -9,7 +9,7 @@ _A full stack app developed for research on Collaborative Playlists._
 2. In the `client/` directory, run `npm ci`.
 3. Create a `.env` file in the root directory formatted like `.env.example` with the values after the equal signs filled in. Use the comments to guide you.
 4. Create a `.env` file in the `client/` directory formatted like `client/.env.example` with the values after the equal signs filled in. Use the comments to guide you.
-5. Run `npm i -g nodemon` and `npm i -g typescript` if not installed already. (Use sudo if necessary).
+5. Create an `ids.csv` file (or name it whatever you named DB_IDS in `.env`) in the `db/` directory to list playlists and users in each group. Use `ids.csv.example` to guide you. You must first create playlists in Spotify using the "owner account" to get the playlist ids to put in `ids.csv`.
 
 ## How to run / create development build
 1. Open three terminals. In the following order:
@@ -21,7 +21,7 @@ _A full stack app developed for research on Collaborative Playlists._
 1. In project root directory (`collab-playlist/`), run `npm ci`.
 2. In the `client/` directory, run `npm ci`.
 3. Create a `.env` file in the root directory formatted like `.env.example` with the values after the equal signs filled in. Use the comments to guide you.
-4. Run `npm i -g typescript` if not installed already. (Use sudo if necessary).
+4. Create an `ids.csv` file (or name it whatever you named DB_IDS in `.env`) in the `db/` directory to list playlists and users in each group. Use `ids.csv.example` to guide you. You must first create playlists in Spotify using the "owner account" to get the playlist ids to put in `ids.csv`.
 
 ## How to create production build
 1. In the root directory, run `npm run build`. The output will be in `build/`.
