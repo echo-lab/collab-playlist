@@ -55,7 +55,7 @@ export const SituatedChatMessage = ({
         loading: false,
       })
     })()
-  }, [chatEvent.userId])
+  }, [chatEvent.userId, userSetter])
   
   return <div style={messageStyle}>
     <div style={classes.row}>

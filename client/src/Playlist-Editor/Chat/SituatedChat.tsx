@@ -16,11 +16,15 @@ const chatStyle = {
 
 
 export const SituatedChat = ({
-  action,
   track,
+  action,
+  onSubmit,
+  onCancel,
 }: {
-  action: State['userAction'], //'add' | 'remove' | 'view'
   track: PlaylistTrackObject,
+  action: State['userAction'], //'add' | 'remove' | 'view'
+  onSubmit: (message: string) => Promise<void>,
+  onCancel: () => void,
 }) => {
   
 
@@ -35,7 +39,11 @@ export const SituatedChat = ({
           <SituatedChatMessage chatEvent={chatEvent} key={index} />
         ) }
       </div>
-      <SituatedMessageEditor action={action} trackId={track.id} />
+      <SituatedMessageEditor
+        action={action}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
     </div>
     <div style={styles.expandCollapseButtonStyle}>
       {/* Just a spacer */}

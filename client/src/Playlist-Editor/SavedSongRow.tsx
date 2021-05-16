@@ -7,7 +7,11 @@ import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SituatedChat } from './Chat/SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { PlaylistTrackObject } from '../shared/apiTypes'
+import { PlaylistTrackObject, PostSituatedChatRequest, PutTrackRemovedRequest } from '../shared/apiTypes'
+import { useParams } from 'react-router'
+import { postWrapper } from '../fetchWrapper'
+import { handleApiError } from '../api'
+
 
 
 
@@ -24,12 +28,28 @@ export const SavedSongRow = ({
 }) => {
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
-  
-  
-  const { modificationState, setModificationState } = useContext(playlistContext)
-  
   const addedByUser = addedByUsers[track.addedBy]
   
+  const {
+    modificationState, setModificationState, loadPlaylist
+  } = useContext(playlistContext)
+  
+  const { id: playlistId } = useParams()
+  
+  // true if user is attempting to remove *this* track; else the user is just
+  //  viewing or commenting on this track
+  const removingThis = modificationState.userAction === "remove"
+    && modificationState.trackId === track.id
+  
+  // situated chat expand/collapse button
+  const [chatExpanded, setChatExpanded] = useState(false)
+  
+  // button hover states
+  const [expandButtonIsHovered, expandButtonHoverProps] = useHover()
+  const [removeButtonIsHovered, removeButtonHoverProps, setRemoveButtonIsHovered] = useHover()
+  
+  
+  // on click the right-most "remove" button
   const removeButtonOnClick = () => {
     setModificationState({
       userAction: 'remove',
@@ -38,14 +58,38 @@ export const SavedSongRow = ({
     setRemoveButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
-  // true if user is attempting to remove *this* track:
-  const removingThis = modificationState.userAction === "remove"
-    && modificationState.trackId === track.id
+  // on submit the chat form
+  const onSubmitChat = async (message: string) => {
+    const response = removingThis
+      ? await postWrapper(
+          `/api/playlists/${playlistId}/tracks/${track.id}/removed/`,
+          { message } as PutTrackRemovedRequest,
+          { method: 'PUT' }
+        )
+      : await postWrapper(
+          `/api/playlists/${playlistId}/tracks/${track.id}/chat/`,
+          { message } as PostSituatedChatRequest,
+        )
+    handleApiError(response)
+    
+    if (!response.error) {
+      // just resets modification state to 'view'
+      setModificationState({ userAction: 'view' })
+      // reload playlist to get updated tracks/chats
+      loadPlaylist()
+      // // clear message in form
+      // setMessage('')
+    }
+  }
+  // on cancel the chat form
+  const onCancelChat = () => {
+    if (removingThis) {
+      setModificationState({ userAction: 'view' })
+    } else {
+      setChatExpanded(false)
+    }
+  }
   
-  const [chatExpanded, setChatExpanded] = useState(false)
-  
-  const [expandButtonIsHovered, expandButtonHoverProps] = useHover()
-  const [removeButtonIsHovered, removeButtonHoverProps, setRemoveButtonIsHovered] = useHover()
   
   
   const expandButtonStyle = {
@@ -98,8 +142,13 @@ export const SavedSongRow = ({
     </div>
     {/* only show chat if this track is selected for removal or chat is expanded */}
     { (removingThis || chatExpanded) &&
-      // remove action 'overrides' view; if both are true, removal is shown
-      <SituatedChat action={removingThis ? 'remove' : 'view'} track={track} />
+      <SituatedChat
+        track={track}
+        // remove action 'overrides' view; if both are true, removal is shown
+        action={removingThis ? 'remove' : 'view'}
+        onSubmit={onSubmitChat}
+        onCancel={onCancelChat}
+      />
     }
   </div>
 }
