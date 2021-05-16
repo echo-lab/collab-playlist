@@ -23,7 +23,7 @@ export const SituatedChat = ({
 }: {
   track: PlaylistTrackObject,
   action: State['userAction'], //'add' | 'remove' | 'view'
-  onSubmit: (message: string) => Promise<void>,
+  onSubmit: (message: string) => Promise<boolean>,
   onCancel: () => void,
 }) => {
   

@@ -67,7 +67,7 @@ export const SituatedMessageEditor = ({
   onCancel,
 }: {
   action: UserAction, //'add' | 'remove' | 'view'
-  onSubmit: (message: string) => Promise<void>,
+  onSubmit: (message: string) => Promise<boolean>,
   onCancel: () => void,
 }) => {
   const [message, setMessage] = useState('')
@@ -76,7 +76,9 @@ export const SituatedMessageEditor = ({
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
-    onSubmit(message)
+    onSubmit(message).then(success => {
+      if (success) setMessage('')
+    })
   }
   
   // const [submitHovered, submitHoverProps] = useHover()

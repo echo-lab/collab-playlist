@@ -77,9 +77,10 @@ export const SavedSongRow = ({
       setModificationState({ userAction: 'view' })
       // reload playlist to get updated tracks/chats
       loadPlaylist()
-      // // clear message in form
-      // setMessage('')
+      // inform caller of success; this clears the textarea
+      return true
     }
+    return false
   }
   // on cancel the chat form
   const onCancelChat = () => {
