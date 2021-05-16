@@ -31,11 +31,11 @@ export const DraftAdditionSongRow = ({
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
-  const { modificationState, dispatch } = useContext(playlistContext)
+  const { modificationState, setModificationState } = useContext(playlistContext)
     
   const cancelButtonOnClick = () => {
-    dispatch({
-      type: 'cancel',
+    setModificationState({
+      userAction: 'view'
     })
   }
   

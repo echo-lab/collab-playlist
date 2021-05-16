@@ -89,7 +89,7 @@ export const SituatedMessageEditor = ({
 }) => {
   const [message, setMessage] = useState('')
   
-  const { dispatch, loadPlaylist } = useContext(playlistContext)
+  const { setModificationState, loadPlaylist } = useContext(playlistContext)
   
   const { id: playlistId } = useParams()
   
@@ -101,13 +101,7 @@ export const SituatedMessageEditor = ({
   
   const onSuccess = () => {
     // just resets modification state to 'view'
-    dispatch({
-      type: action === "add" ? 'submit-add' : 'submit-remove',
-      payload: {
-        id: trackId,
-        message,
-      }
-    })
+    setModificationState({ userAction: 'view' })
     // reload playlist to get updated tracks/chats
     loadPlaylist()
     // clear message in form
@@ -175,11 +169,7 @@ export const SituatedMessageEditor = ({
             />
           </div>
         </>}
-        onCancel={() => {
-          dispatch({
-            type: 'cancel',
-          })
-        }}
+        onCancel={() => setModificationState({ userAction: 'view' })}
       />
     </form>
   </>

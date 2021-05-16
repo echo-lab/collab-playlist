@@ -26,21 +26,21 @@ export const SavedSongRow = ({
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   
-  const { modificationState, dispatch } = useContext(playlistContext)
+  const { modificationState, setModificationState } = useContext(playlistContext)
   
   const addedByUser = addedByUsers[track.addedBy]
   
   const removeButtonOnClick = () => {
-    dispatch({
-      type: 'select-remove',
-      payload: { songId: track.id },
+    setModificationState({
+      userAction: 'remove',
+      trackId: track.id,
     })
     setRemoveButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
   const viewState = modificationState.userAction === "view"
   const removeThisState = modificationState.userAction === "remove"
-    && modificationState.songId === track.id
+    && modificationState.trackId === track.id
   const [viewThisState, setViewThisState] = useState(false)
   
   const [expandButtonIsHovered, expandButtonHoverProps] = useHover()

@@ -1,12 +1,12 @@
 
 import { createContext, Dispatch } from 'react'
-import { State, Action } from './modificationReducer'
+import { State } from './modificationReducer'
 
 
 
 export const playlistContext = createContext<{
   modificationState: State,
-  dispatch: Dispatch<Action>,
+  setModificationState: Dispatch<State>,
   loadPlaylist: () => Promise<void>,
 }>(null)
 
