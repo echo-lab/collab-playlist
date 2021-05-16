@@ -69,7 +69,7 @@ export const DraftAdditionSongRow = ({
         </button>
       </div>
     </div>
-    <SituatedChat action={modificationState.userAction} track={track} />
+    <SituatedChat action={'add'} track={track} />
   </div>
 }
 

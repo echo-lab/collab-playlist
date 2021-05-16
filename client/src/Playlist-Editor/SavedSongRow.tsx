@@ -38,10 +38,11 @@ export const SavedSongRow = ({
     setRemoveButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
-  const viewState = modificationState.userAction === "view"
-  const removeThisState = modificationState.userAction === "remove"
+  // true if user is attempting to remove *this* track:
+  const removingThis = modificationState.userAction === "remove"
     && modificationState.trackId === track.id
-  const [viewThisState, setViewThisState] = useState(false)
+  
+  const [chatExpanded, setChatExpanded] = useState(false)
   
   const [expandButtonIsHovered, expandButtonHoverProps] = useHover()
   const [removeButtonIsHovered, removeButtonHoverProps, setRemoveButtonIsHovered] = useHover()
@@ -60,14 +61,15 @@ export const SavedSongRow = ({
   return <div style={classes.column}>
     <div style={styles.rowStyle}>
       <div style={styles.rightButtonWrapperStyle}>
-        { !removeThisState &&
+        {/* only show expand/collapse button if not currently removing this track */}
+        { !removingThis &&
           <button
             style={expandButtonStyle}
-            onClick={() => setViewThisState(currState => !currState)}
+            onClick={() => setChatExpanded(currState => !currState)}
             {...expandButtonHoverProps}
           >
             <FontAwesomeIcon
-              icon={ viewThisState
+              icon={ chatExpanded
                 ? faChevronCircleUp
                 : faChevronCircleDown
               }
@@ -81,21 +83,23 @@ export const SavedSongRow = ({
       <div style={styles.albumStyle}>{track.album.name}</div>
       <div style={styles.addedByStyle}>{addedByUser.display_name}</div>
       <div style={styles.rightButtonWrapperStyle}>
-        { viewState
-        ? <button
+        {/* only provide the remove button as an option if no other track is
+            currently selected for removal/addition */}
+        { modificationState.userAction === "view" &&
+          <button
             style={rightButtonStyle}
             onClick={removeButtonOnClick}
             {...removeButtonHoverProps}
           >
             <FontAwesomeIcon icon={faMinusCircle} style={classes.icon} />
           </button>
-        : <></>
         }
-        
       </div>
     </div>
-    { (removeThisState || viewThisState) &&
-      <SituatedChat action={modificationState.userAction} track={track} />
+    {/* only show chat if this track is selected for removal or chat is expanded */}
+    { (removingThis || chatExpanded) &&
+      // remove action 'overrides' view; if both are true, removal is shown
+      <SituatedChat action={removingThis ? 'remove' : 'view'} track={track} />
     }
   </div>
 }
