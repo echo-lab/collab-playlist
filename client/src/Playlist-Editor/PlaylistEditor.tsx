@@ -140,8 +140,8 @@ export const PlaylistEditor = ({
     <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>
       <div style={playlistEditorStyle}>
-        <div style={playlistTableStyle}>
-          { playlist.data && <>
+        { playlist.data && <>
+          <div style={playlistTableStyle}>
             <div style={tHeadStyle}>
               <PlaylistInfo playlist={playlist.data} />
               <PlaylistTableHeader />
@@ -157,13 +157,15 @@ export const PlaylistEditor = ({
                 <DraftAdditionSongRow trackData={modificationState.trackData} />
               }
             </div>
-          </> }
-        </div>
-        { false && <SeparateChat
-          chat={[]}
-          reloadPlaylist={() => void(0)}
-          style={separateChatStyle}
-        /> }
+          </div>
+          { (playlist.data.chatMode == 'separate' || playlist.data.chatMode == 'hybrid') &&
+            <SeparateChat
+              chat={playlist.data.chat}
+              reloadPlaylist={loadPlaylist}
+              style={separateChatStyle}
+            />
+          }
+        </> }
       </div>
     </div>
   </playlistContext.Provider>
