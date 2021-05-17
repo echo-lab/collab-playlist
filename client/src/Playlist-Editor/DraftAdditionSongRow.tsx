@@ -8,7 +8,10 @@ import { useHover } from '../useHover'
 import { colors, classes } from '../styles'
 import { SituatedChat } from './Chat/SituatedChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { PlaylistTrackObject } from '../shared/apiTypes'
+import { PlaylistTrackObject, PostTrackRequest } from '../shared/apiTypes'
+import { handleApiError } from '../api'
+import { postWrapper } from '../fetchWrapper'
+import { useParams } from 'react-router'
 
 
 /**
@@ -31,20 +34,41 @@ export const DraftAdditionSongRow = ({
   
   const artistNames = track.artists.map(artist => artist.name).join(', ')
   
-  const { modificationState, dispatch } = useContext(playlistContext)
+  const { setModificationState, loadPlaylist } = useContext(playlistContext)
+  const { id: playlistId } = useParams()
+  
+  
+  // on submit the chat form
+  const onSubmit = async (message: string) => {
+    const response = await postWrapper(
+      `/api/playlists/${playlistId}/tracks`,
+      {
+        message,
+        trackId: track.id
+      } as PostTrackRequest,
+    )
+    handleApiError(response)
     
-  const cancelButtonOnClick = () => {
-    dispatch({
-      type: 'cancel',
-    })
+    if (!response.error) {
+      // just resets modification state to 'view'
+      setModificationState({ userAction: 'view' })
+      // reload playlist to get updated tracks/chats
+      loadPlaylist()
+      // inform caller of success; this clears the textarea
+      return true
+    }
+    return false
   }
+  const onCancel = () => setModificationState({ userAction: 'view' })
   
+  
+  // scroll to view this track on mount
   const rowRef = useRef<HTMLDivElement>()
-  
   useEffect(() => {
     rowRef.current.scrollIntoView()
   }, [])
   
+  // button hover style
   const [buttonIsHovered, buttonHoverProps] = useHover()
   
   const rightButtonStyleDynamic = {
@@ -62,14 +86,19 @@ export const DraftAdditionSongRow = ({
       <div style={styles.rightButtonWrapperStyle}>
         <button
           style={rightButtonStyleDynamic}
-          onClick={cancelButtonOnClick}
+          onClick={onCancel}
           {...buttonHoverProps}
         >
           <FontAwesomeIcon icon={faTimesCircle} style={classes.icon} />
         </button>
       </div>
     </div>
-    <SituatedChat action={modificationState.userAction} track={track} />
+    <SituatedChat
+      track={track}
+      action={'add'}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+    />
   </div>
 }
 

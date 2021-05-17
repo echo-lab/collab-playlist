@@ -1,13 +1,11 @@
 
-import React, { useState, useContext, CSSProperties } from 'react'
+import React, { useState, CSSProperties, FormEvent } from 'react'
 import { classes, colors } from '../../styles'
 import { faPaperPlane, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { State } from '../modificationReducer'
-import { playlistContext } from '../playlistContext'
 import { useHover } from '../../useHover'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useParams } from 'react-router-dom'
-import { SituatedChatEvent } from '../../shared/dbTypes'
 import { SongActionConfirm, createSubmitHandler } from './SongActionConfirm'
 
 
@@ -60,66 +58,28 @@ const iconOfAction = (action: UserAction) =>
   ? faMinusCircle
   : faPaperPlane
 
-const modificationApiUrl = (
-  action: UserAction,
-  playlistId: string,
-  trackId: string
-) =>
-  action === 'add'
-  ? `/api/playlists/${playlistId}/tracks/`
-  : action === 'remove'
-  ? `/api/playlists/${playlistId}/tracks/${trackId}/removed/`
-  : `/api/playlists/${playlistId}/tracks/${trackId}/chat/`
-
-const modificationApiMethod = (action: UserAction) =>
-  action === 'remove'
-  ? 'PUT'
-  : 'POST'
-
-
 
 
 
 export const SituatedMessageEditor = ({
   action,
-  trackId,
+  onSubmit,
+  onCancel,
 }: {
   action: UserAction, //'add' | 'remove' | 'view'
-  trackId: string,
+  onSubmit: (message: string) => Promise<boolean>,
+  onCancel: () => void,
 }) => {
   const [message, setMessage] = useState('')
   
-  const { dispatch, loadPlaylist } = useContext(playlistContext)
   
-  const { id: playlistId } = useParams()
-  
-  type SubmitBody = SituatedChatEvent | any // TODO fix
-  const submitBody: SubmitBody = { message } // TODO use API type
-  if (action === 'add') {
-    submitBody.trackId = trackId
-  }
-  
-  const onSuccess = () => {
-    // just resets modification state to 'view'
-    dispatch({
-      type: action === "add" ? 'submit-add' : 'submit-remove',
-      payload: {
-        id: trackId,
-        message,
-      }
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    onSubmit(message).then(success => {
+      if (success) setMessage('')
     })
-    // reload playlist to get updated tracks/chats
-    loadPlaylist()
-    // clear message in form
-    setMessage('')
   }
-  
-  const submitHandler = createSubmitHandler(
-    modificationApiMethod(action),
-    modificationApiUrl(action, playlistId, trackId),
-    submitBody,
-    onSuccess
-  )
   
   // const [submitHovered, submitHoverProps] = useHover()
   
@@ -175,11 +135,7 @@ export const SituatedMessageEditor = ({
             />
           </div>
         </>}
-        onCancel={() => {
-          dispatch({
-            type: 'cancel',
-          })
-        }}
+        onCancel={onCancel}
       />
     </form>
   </>
