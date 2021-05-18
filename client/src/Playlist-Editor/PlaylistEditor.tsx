@@ -1,5 +1,5 @@
 
-import React, { useEffect, CSSProperties, useReducer, useCallback } from 'react'
+import React, { useEffect, CSSProperties, useCallback, useState } from 'react'
 // import { ScrollArea } from './ScrollArea'
 import { useParams } from 'react-router-dom'
 import { useResource, fetchWrapper } from '../fetchWrapper'
@@ -11,7 +11,7 @@ import { DraftAdditionSongRow } from './DraftAdditionSongRow'
 import { PlaylistTableHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
-import { initialState, modificationReducer } from './modificationReducer'
+import { initialState } from './modificationReducer'
 import { playlistContext } from './playlistContext'
 import { SeparateChat } from './Chat/SeparateChat'
 import { GetPlaylistIdResponse } from '../shared/apiTypes'
@@ -126,7 +126,7 @@ export const PlaylistEditor = ({
   
   // console.log({data, loading})
   
-  const [modificationState, dispatch] = useReducer(modificationReducer, initialState)
+  const [modificationState, setModificationState] = useState(initialState)
   
   
   const panelStyle = {
@@ -135,7 +135,7 @@ export const PlaylistEditor = ({
   }
   
   return <playlistContext.Provider value={{
-    modificationState, dispatch, loadPlaylist
+    modificationState, setModificationState, loadPlaylist
   }}>
     <div style={panelStyle}>
       <SearchPanel style={searchTabStyle}/>

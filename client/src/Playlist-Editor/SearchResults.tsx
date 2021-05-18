@@ -79,19 +79,19 @@ const SearchItem = ({
   const image = album.images[2]
   const artistNames = artists.map(artist => artist.name).join(', ')
   
-  const { modificationState, dispatch } = useContext(playlistContext)
+  const { modificationState, setModificationState } = useContext(playlistContext)
   
   const [addButtonIsHovered, addButtonHoverProps, setAddButtonIsHovered] = useHover()
   
   const addButtonOnClick = () => {
-    dispatch({
-      type: 'select-add',
-      payload: { trackData: {
+    setModificationState({
+      userAction: 'add',
+      trackData: {
         id: item.id,
         album: item.album,
         artists: item.artists,
         name: item.name,
-      }},
+      }
     })
     setAddButtonIsHovered(false) // otherwise, stays hovered if addition is cancelled
   }
