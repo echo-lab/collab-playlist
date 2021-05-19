@@ -69,7 +69,7 @@ export const SituatedChatMessage = ({
         {new Date(chatEvent.timestamp).toLocaleString()}
       </time>
     </div>
-    { chatEvent.action &&
+    { chatEvent.action !== 'comment' &&
       <p style={actionStyle}>
         { chatEvent.action === 'add'
         ? 'Added this track'

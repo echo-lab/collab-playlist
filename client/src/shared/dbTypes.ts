@@ -17,14 +17,14 @@ interface Event {
 
 
 /**
- * A user leaves a message, possibly while adding/removing a track
- * If action included, message can be empty string, otherwise message
- * shouldn't be an empty string
+ * A user leaves a message, possibly while adding/removing the track
+ * If action is not 'comment', message can be empty string, otherwise message
+ * shouldn't be an empty string, though this is not currently enforced
  * This occurs in situated or hybrid mode
  */
 export interface SituatedChatEvent extends Event {
   message: string,
-  action?: 'add' | 'remove',
+  action: 'comment' | 'add' | 'remove',
 }
 
 
@@ -35,7 +35,6 @@ export interface SituatedChatEvent extends Event {
  * situated mode
  */
 export interface SeparateChatAction extends Event {
-  type: 'action',
   action: 'add' | 'remove',
   trackId: string,
 }
@@ -44,7 +43,7 @@ export interface SeparateChatAction extends Event {
  * Occurs in separate or hybrid mode
  */
 export interface SeparateChatMessage extends Event {
-  type: 'message',
+  action: 'comment',
   message: string,
 }
 /**

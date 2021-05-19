@@ -157,6 +157,7 @@ playlistIdRouter.post('/tracks/:trackId/chat/',
         { _id: playlistId },
         { $push: { [`tracks.${dbTrackIndex}.chat`]:
           {
+            action: 'comment',
             message,
             timestamp: new Date(),
             userId: res.locals.userId,
@@ -202,7 +203,6 @@ playlistIdRouter.put('/tracks/:trackId/removed',
               action: 'remove',
             } as SituatedChatEvent,
             chat: {
-              type: 'action',
               action: 'remove',
               trackId,
               timestamp: new Date(),
@@ -255,7 +255,6 @@ playlistIdRouter.post('/tracks/',
               }]
             } as TrackObject,
             chat: {
-              type: 'action',
               action: 'add',
               trackId,
               timestamp: new Date(),
@@ -289,7 +288,7 @@ playlistIdRouter.post('/chat/',
         { _id: playlistId },
         { $push: { chat:
           {
-            type: 'message',
+            action: 'comment',
             message,
             timestamp: new Date(),
             userId: res.locals.userId,
