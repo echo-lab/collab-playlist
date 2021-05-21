@@ -15,6 +15,7 @@ import {
 } from '../../../client/src/shared/apiTypes'
 import { spotifyApi } from '../../ownerAccount'
 import { playlistsDB, usersDB } from '../../db'
+import { asType } from '../../util'
 
 
 
@@ -156,12 +157,12 @@ playlistIdRouter.post('/tracks/:trackId/chat/',
       await playlistsDB.update(
         { _id: playlistId },
         { $push: { [`tracks.${dbTrackIndex}.chat`]:
-          {
+          asType<SituatedChatEvent>({
             action: 'comment',
             message,
             timestamp: new Date(),
             userId: res.locals.userId,
-          } as SituatedChatEvent
+          })
         } }
       )
       
@@ -196,18 +197,18 @@ playlistIdRouter.put('/tracks/:trackId/removed',
         { _id: playlistId },
         {
           $push: {
-            [`tracks.${dbTrackIndex}.chat`]: {
+            [`tracks.${dbTrackIndex}.chat`]: asType<SituatedChatEvent>({
               message,
               timestamp: new Date(),
               userId: res.locals.userId,
               action: 'remove',
-            } as SituatedChatEvent,
-            chat: {
+            }),
+            chat: asType<SeparateChatAction>({
               action: 'remove',
               trackId,
               timestamp: new Date(),
               userId: res.locals.userId,
-            } as SeparateChatAction,
+            }),
           },
           $set: {
             [`tracks.${dbTrackIndex}.removed`]: true
@@ -243,7 +244,7 @@ playlistIdRouter.post('/tracks/',
         { _id: playlistId },
         {
           $push: {
-            tracks: {
+            tracks: asType<TrackObject>({
               id: trackId,
               removed: false,
               addedBy: res.locals.userId,
@@ -253,13 +254,13 @@ playlistIdRouter.post('/tracks/',
                 userId: res.locals.userId,
                 action: 'add',
               }]
-            } as TrackObject,
-            chat: {
+            }),
+            chat: asType<SeparateChatAction>({
               action: 'add',
               trackId,
               timestamp: new Date(),
               userId: res.locals.userId,
-            } as SeparateChatAction
+            })
           }
         }
       )
@@ -287,12 +288,12 @@ playlistIdRouter.post('/chat/',
       await playlistsDB.update(
         { _id: playlistId },
         { $push: { chat:
-          {
+          asType<SeparateChatMessage>({
             action: 'comment',
             message,
             timestamp: new Date(),
             userId: res.locals.userId,
-          } as SeparateChatMessage
+          })
         } }
       )
       

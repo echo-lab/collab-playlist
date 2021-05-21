@@ -11,6 +11,7 @@ import { PlaylistTrackObject, PostSituatedChatRequest, PutTrackRemovedRequest } 
 import { useParams } from 'react-router'
 import { postWrapper } from '../fetchWrapper'
 import { handleApiError } from '../api'
+import { asType } from '../util'
 
 
 
@@ -63,12 +64,12 @@ export const SavedSongRow = ({
     const response = removingThis
       ? await postWrapper(
           `/api/playlists/${playlistId}/tracks/${track.id}/removed/`,
-          { message } as PutTrackRemovedRequest,
+          asType<PutTrackRemovedRequest>({ message }),
           { method: 'PUT' }
         )
       : await postWrapper(
           `/api/playlists/${playlistId}/tracks/${track.id}/chat/`,
-          { message } as PostSituatedChatRequest,
+          asType<PostSituatedChatRequest>({ message }),
         )
     handleApiError(response)
     

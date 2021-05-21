@@ -8,6 +8,7 @@ import {
 } from '../../../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from '../../userCache'
 import { spotifyApi } from '../../ownerAccount'
+import { asType } from '../../util'
 
 
 
@@ -52,7 +53,7 @@ apiRouter.get('/refresh_token', async (req, res, next) => {
   accessTokenCache.set(data.body.access_token, userId)
   
   res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
-  res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
+  res.json(asType<GetRefreshTokenResponse>({ expires_in: data.body.expires_in }))
 })
 
 
@@ -78,7 +79,7 @@ apiRouter.use((req, res: Res<LocalsUserId>, next) => {
  * json body if not logged in
  */
 apiRouter.get('/login', (req, res: Res<LocalsUserId>, next) => {
-  res.json({ userId: res.locals.userId } as GetLoginResponse)
+  res.json(asType<GetLoginResponse>({ userId: res.locals.userId }))
 })
 
 
@@ -97,7 +98,7 @@ apiRouter.get('/search', async (req, res) => {
   
   const data = await spotifyApi.searchTracks(q)
   
-  res.json(data.body as GetTrackSearchResponse)
+  res.json(asType<GetTrackSearchResponse>(data.body))
 })
 
 
@@ -140,13 +141,13 @@ apiRouter.get('/users/:id', async (req, res) => {
 /**
  * catch server errors
  */
-apiRouter.use(((err, req, res, next) => {
+apiRouter.use(asType<express.ErrorRequestHandler>((err, req, res, next) => {
   console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
   console.error(err)
   // always respond with json; never send err (might leak server info)
   res.status(err.status ?? 500)
      .json({}) // could use `err.client ?? {}`
-}) as express.ErrorRequestHandler)
+}))
 
 
 /**

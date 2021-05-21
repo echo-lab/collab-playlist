@@ -12,6 +12,7 @@ import { PlaylistTrackObject, PostTrackRequest } from '../shared/apiTypes'
 import { handleApiError } from '../api'
 import { postWrapper } from '../fetchWrapper'
 import { useParams } from 'react-router'
+import { asType } from '../util'
 
 
 /**
@@ -42,10 +43,10 @@ export const DraftAdditionSongRow = ({
   const onSubmit = async (message: string) => {
     const response = await postWrapper(
       `/api/playlists/${playlistId}/tracks`,
-      {
+      asType<PostTrackRequest>({
         message,
         trackId: track.id
-      } as PostTrackRequest,
+      }),
     )
     handleApiError(response)
     

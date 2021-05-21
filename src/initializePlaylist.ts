@@ -19,7 +19,7 @@ export const initializePlaylist = async (
     users: config.userIds,
     chat: [],
     tracks: spotifyPlaylist.tracks.items.map(initializeTrackObject),
-  }) as PlaylistDocument
+  })
 }
 
 
