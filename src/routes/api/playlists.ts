@@ -178,6 +178,8 @@ playlistIdRouter.post('/tracks/:trackId/chat/',
  * Removal is not a DELETE; it's gone from spotify, but our
  * backend remembers the chat history
  * Body should include a message, but it can be an empty string
+ * Body should include a boolean 'remove' that is true if the track is already
+ *  present, or false if the track is already removed
  */
 playlistIdRouter.put('/tracks/:trackId/removed',
   async (req, res: Res<LocalsDBPlaylist & LocalsUserId>, next) => {
@@ -272,13 +274,23 @@ playlistIdRouter.put('/tracks/:trackId/removed',
  * Add song to playlist
  * Body should include trackId
  * Body should include a message, but it can be an empty string
+ * responds with error 422 if track already exists in `tracks` or
+ *  `removedTracks`
  */
 playlistIdRouter.post('/tracks/',
-  async (req, res: Res<LocalsUserId>, next) => {
+  async (req, res: Res<LocalsUserId & LocalsDBPlaylist>, next) => {
     try {
       const { message, trackId } = req.body as PostTrackRequest
       const { playlistId } = req.params
       console.log({message, playlistId, trackId})
+      
+      // check if track already exists
+      if (
+        (res.locals.dbPlaylist.tracks.find(track => track.id === trackId) !== undefined) ||
+        (res.locals.dbPlaylist.removedTracks.find(track => track.id === trackId) !== undefined)
+      ) {
+        return next({ status: 422 })
+      }
       
       await spotifyApi.addTracksToPlaylist(
         playlistId, [`spotify:track:${trackId}`]
