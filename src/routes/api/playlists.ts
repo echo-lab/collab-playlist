@@ -7,6 +7,7 @@ import {
   SeparateChatMessage,
   SeparateChatAction,
   PlaylistDocument,
+  RemovedTrackObject,
 } from '../../../client/src/shared/dbTypes'
 import {
   GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest,
@@ -117,7 +118,6 @@ playlistIdRouter.get('/',
         owner: spotifyPlaylist.owner,
         followers: spotifyPlaylist.followers,
         tracks: res.locals.dbPlaylist.tracks
-          .filter(dbTrack => !dbTrack.removed)
           .map(dbTrack => {
             const spotifyTrack = spotifyPlaylist.tracks.items
               .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
@@ -174,7 +174,7 @@ playlistIdRouter.post('/tracks/:trackId/chat/',
 )
 
 /**
- * Remove existing song in playlist
+ * Remove existing track in playlist or re-add after previously removing
  * Removal is not a DELETE; it's gone from spotify, but our
  * backend remembers the chat history
  * Body should include a message, but it can be an empty string
@@ -182,38 +182,82 @@ playlistIdRouter.post('/tracks/:trackId/chat/',
 playlistIdRouter.put('/tracks/:trackId/removed',
   async (req, res: Res<LocalsDBPlaylist & LocalsUserId>, next) => {
     try {
-      const { message } = req.body as PutTrackRemovedRequest
+      const { message, remove } = req.body as PutTrackRemovedRequest
       const { playlistId, trackId } = req.params
-      console.log({message, playlistId, trackId})
+      console.log({message, remove, playlistId, trackId})
       
-      await spotifyApi.removeTracksFromPlaylist(
-        playlistId, [{ uri: `spotify:track:${trackId}` }]
-      )
+      // TODO illegal state checks? e.g. is track present in the correct list
+      //  (removed vs not removed). also json body checks?
       
-      const dbTrackIndex = res.locals.dbPlaylist.tracks.findIndex(
-        track => track.id === trackId
+      if (remove) {
+        await spotifyApi.removeTracksFromPlaylist(
+          playlistId, [{ uri: `spotify:track:${trackId}` }]
+        )
+      } else {
+        await spotifyApi.addTracksToPlaylist(
+          playlistId, [`spotify:track:${trackId}`]
+        )
+      }
+      
+      
+      // we are now going to mutate dbPlaylist and update the whole db document
+      //  because nedb doesn't have support for the specific array operations we
+      //  need (also js doesn't have great immutable array methods so we use
+      //  mutation)
+      
+      const dbPlaylist = res.locals.dbPlaylist
+      
+      // list we're moving the track from
+      const listFrom = remove ? dbPlaylist.tracks : dbPlaylist.removedTracks
+      
+      const dbTrackIndex = listFrom.findIndex(
+        (track: TrackObject | RemovedTrackObject) => track.id === trackId
       )
+      // TODO check track is present in listFrom
+      
+      // remove and get track object
+      const [trackObject] = listFrom.splice(dbTrackIndex)
+      
+      // add chat messages
+      trackObject.chat.push(asType<SituatedChatEvent>({
+        message,
+        timestamp: new Date(),
+        userId: res.locals.userId,
+        action: remove ? 'remove' : 're-add',
+      }))
+      dbPlaylist.chat.push(asType<SeparateChatAction>({
+        action: remove ? 'remove' : 're-add',
+        timestamp: new Date(),
+        userId: res.locals.userId,
+        trackId: trackId,
+      }))
+      
+      if (remove) {
+        // convert track to removed track type
+        const removedTrackObject: RemovedTrackObject = {
+          id: trackObject.id,
+          chat: trackObject.chat,
+          removedBy: res.locals.userId,
+          // TODO add spotify data like name, album, etc
+        }
+        // add removed track to start of "removed" list, will show up at the top
+        //  of the removed section of the table on the frontend
+        dbPlaylist.removedTracks.unshift(removedTrackObject)
+      } else {
+        // convert
+        const newTrackObject: TrackObject = {
+          id: trackObject.id,
+          chat: trackObject.chat,
+          addedBy: res.locals.userId,
+        }
+        // add track to end of list to reflect position in spotify playlist
+        dbPlaylist.tracks.push(newTrackObject)
+      }
+      
+      // replace the whole document with the new object; _id is unchanged
       await playlistsDB.update(
         { _id: playlistId },
-        {
-          $push: {
-            [`tracks.${dbTrackIndex}.chat`]: asType<SituatedChatEvent>({
-              message,
-              timestamp: new Date(),
-              userId: res.locals.userId,
-              action: 'remove',
-            }),
-            chat: asType<SeparateChatAction>({
-              action: 'remove',
-              trackId,
-              timestamp: new Date(),
-              userId: res.locals.userId,
-            }),
-          },
-          $set: {
-            [`tracks.${dbTrackIndex}.removed`]: true
-          }
-        }
+        dbPlaylist
       )
       
       res.status(200).json({})
@@ -246,7 +290,6 @@ playlistIdRouter.post('/tracks/',
           $push: {
             tracks: asType<TrackObject>({
               id: trackId,
-              removed: false,
               addedBy: res.locals.userId,
               chat: [{
                 message,

@@ -33,7 +33,8 @@ export interface PostSituatedChatRequest {
 }
 
 export interface PutTrackRemovedRequest {
-  message: string
+  remove: boolean,
+  message: string,
 }
 
 export interface PostTrackRequest {

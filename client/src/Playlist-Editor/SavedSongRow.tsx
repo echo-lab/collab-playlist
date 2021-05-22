@@ -64,7 +64,10 @@ export const SavedSongRow = ({
     const response = removingThis
       ? await postWrapper(
           `/api/playlists/${playlistId}/tracks/${track.id}/removed/`,
-          asType<PutTrackRemovedRequest>({ message }),
+          asType<PutTrackRemovedRequest>({
+            remove: true,
+            message
+          }),
           { method: 'PUT' }
         )
       : await postWrapper(

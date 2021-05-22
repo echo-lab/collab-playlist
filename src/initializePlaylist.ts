@@ -19,6 +19,7 @@ export const initializePlaylist = async (
     users: config.userIds,
     chat: [],
     tracks: spotifyPlaylist.tracks.items.map(initializeTrackObject),
+    removedTracks: [],
   })
 }
 
@@ -32,7 +33,6 @@ const initializeTrackObject = (spotifyTrack: SpotifyApi.PlaylistTrackObject): Tr
   return {
     id: spotifyTrack.track.id,
     chat: [],
-    removed: false,
     addedBy: spotifyTrack.added_by.id, // TODO will always be wrong, wont-fix?
   }
 }

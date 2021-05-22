@@ -24,7 +24,7 @@ interface Event {
  */
 export interface SituatedChatEvent extends Event {
   message: string,
-  action: 'comment' | 'add' | 'remove',
+  action: 'comment' | 'add' | 'remove' | 're-add',
 }
 
 
@@ -35,7 +35,7 @@ export interface SituatedChatEvent extends Event {
  * situated mode
  */
 export interface SeparateChatAction extends Event {
-  action: 'add' | 'remove',
+  action: 'add' | 'remove' | 're-add',
   trackId: string,
 }
 /**
@@ -53,8 +53,7 @@ export type SeparateChatEvent = SeparateChatAction | SeparateChatMessage
 
 
 /**
- * track in playlist; keeps track of whether it has been removed or not (or
- * readded)
+ * track in playlist that has either not been removed, or has been readded
  * Chat can be empty array if no messages/actions yet or if in separate mode
  */
 export interface TrackObject {
@@ -66,7 +65,18 @@ export interface TrackObject {
   // always be the adder in spotify's data:
   addedBy: string,
   chat: SituatedChatEvent[], // situated
-  removed: boolean,
+}
+
+/**
+ * Similar to TrackObject, but keeps track of who removed it
+ * TODO extend Pick<SpotifyApi.TrackObjectFull, 'name' | 'album' | 'artists'>
+ *  like api's PlaylistTrackObject (and refactor api to have just needed data)
+ */
+export interface RemovedTrackObject {
+  id: string,
+  // user id of remover
+  removedBy: string,
+  chat: SituatedChatEvent[], // situated
 }
 
 /**
@@ -76,6 +86,7 @@ export interface TrackObject {
 export interface PlaylistDocument extends Document {
   users: string[], // many-to-many
   tracks: TrackObject[],
+  removedTracks: RemovedTrackObject[],
   chat: SeparateChatEvent[], // separate
   chatMode: 'situated' | 'separate' | 'hybrid',
 }

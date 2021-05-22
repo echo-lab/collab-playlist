@@ -29,7 +29,6 @@ export const DraftAdditionSongRow = ({
   const track: PlaylistTrackObject = {
     ...trackData,
     chat: [],
-    removed: false,
     addedBy: 'You', // supposed to be an id, idk whether to use user's id
   }
   
