@@ -32,8 +32,6 @@ export const DraftAdditionSongRow = ({
     addedBy: 'You', // supposed to be an id, idk whether to use user's id
   }
   
-  const artistNames = track.artists.map(artist => artist.name).join(', ')
-  
   const { setModificationState, loadPlaylist } = useContext(playlistContext)
   const { id: playlistId } = useParams()
   
@@ -80,8 +78,8 @@ export const DraftAdditionSongRow = ({
     <div style={styles.rowStyle}>
       <div style={styles.expandCollapseButtonStyle}></div>
       <div style={styles.titleStyle}>{track.name}</div>
-      <div style={styles.artistStyle}>{artistNames}</div>
-      <div style={styles.albumStyle}>{track.album.name}</div>
+      <div style={styles.artistStyle}>{track.artists}</div>
+      <div style={styles.albumStyle}>{track.album}</div>
       <div style={styles.addedByStyle}>{track.addedBy}</div>
       <div style={styles.rightButtonWrapperStyle}>
         <button

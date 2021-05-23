@@ -4,7 +4,7 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import express from 'express'
 import { LocalsUserId, Res, playlistsRouter } from './playlists'
 import {
-  GetRefreshTokenResponse, GetTrackSearchResponse, GetLoginResponse
+  GetRefreshTokenResponse, GetTrackSearchResponse, GetLoginResponse, GetTrackSearchItem
 } from '../../../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from '../../userCache'
 import { spotifyApi } from '../../ownerAccount'
@@ -96,9 +96,18 @@ apiRouter.use('/playlists', playlistsRouter)
 apiRouter.get('/search', async (req, res) => {
   const { q } = req.query
   
-  const data = await spotifyApi.searchTracks(q)
+  const { body: results } = await spotifyApi.searchTracks(q)
   
-  res.json(asType<GetTrackSearchResponse>(data.body))
+  res.json(asType<GetTrackSearchResponse>(
+    results.tracks.items.map(track => asType<GetTrackSearchItem>({
+      id: track.id,
+      name: track.name,
+      album: track.album.name,
+      // images[2]?
+      image: (track.album.images[2] ?? track.album.images[0]).url,
+      artists: track.artists.map(artist => artist.name).join(', '),
+    }))
+  ))
 })
 
 

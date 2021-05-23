@@ -30,13 +30,6 @@ const titleStyle: CSSProperties = {
   ...classes.bold,
   fontSize: '3.8rem',
 }
-const subtitleStyle = {
-  ...classes.text,
-  color: colors.grayscale.lightText,
-}
-const ownerStyle = {
-  color: colors.grayscale.white,
-}
 const followersStyle = {
   ...classes.text,
   color: colors.grayscale.lightText,
@@ -57,25 +50,19 @@ export const PlaylistInfo = ({
   
   return <div style={containerStyle}>
     <img
-      src={playlist.images[0].url}
+      src={playlist.image}
       alt={playlist.name}
       style={imageStyle}
     />
     <div style={middleContainerStyle}>
       <h2 style={titleStyle}>{playlist.name}</h2>
-      <p style={subtitleStyle}>
-        Created by{' '}
-        <span style={ownerStyle}>
-          {playlist.owner.display_name}
-        </span>
+      <p style={followersStyle}>
+        <span style={followersCountStyle}>
+          {playlist.followers}
+        </span>{' '}
+        Follower{playlist.followers !== 1 && 's'}
       </p>
     </div>
-    <span style={followersStyle}>
-      <span style={followersCountStyle}>
-        {playlist.followers.total}
-      </span>{' '}
-      Follower{playlist.followers.total !== 1 && 's'}
-    </span>
   </div>
 }
 

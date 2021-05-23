@@ -12,7 +12,8 @@ import {
 import {
   GetPlaylistIdResponse, PostSituatedChatRequest, PutTrackRemovedRequest,
   PostTrackRequest, PostSeparateChatRequest, GetPlaylistsResponse,
-  PlaylistSimple
+  PlaylistSimple,
+  PlaylistTrackObject
 } from '../../../client/src/shared/apiTypes'
 import { spotifyApi } from '../../ownerAccount'
 import { playlistsDB, usersDB } from '../../db'
@@ -113,22 +114,23 @@ playlistIdRouter.get('/',
       // urls or names that can change
       const response: GetPlaylistIdResponse = {
         ...res.locals.dbPlaylist,
-        images: spotifyPlaylist.images,
+        // if multiple images present, i think image [1] has the closest resolution;
+        // else use the only image
+        image: (spotifyPlaylist.images[1] ?? spotifyPlaylist.images[0]).url,
         name: spotifyPlaylist.name,
-        owner: spotifyPlaylist.owner,
-        followers: spotifyPlaylist.followers,
+        followers: spotifyPlaylist.followers.total,
         tracks: res.locals.dbPlaylist.tracks
           .map(dbTrack => {
             const spotifyTrack = spotifyPlaylist.tracks.items
               .find(spotifyTrack => spotifyTrack.track.id === dbTrack.id)
               .track
             
-            return {
+            return asType<PlaylistTrackObject>({
               ...dbTrack,
-              album: spotifyTrack.album,
-              artists: spotifyTrack.artists,
+              album: spotifyTrack.album.name,
+              artists: spotifyTrack.artists.map(artist => artist.name).join(', '),
               name: spotifyTrack.name,
-            }
+            })
           })
       }
       

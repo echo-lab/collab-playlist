@@ -28,7 +28,6 @@ export const SavedSongRow = ({
   addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
 }) => {
   
-  const artistNames = track.artists.map(artist => artist.name).join(', ')
   const addedByUser = addedByUsers[track.addedBy]
   
   const {
@@ -128,8 +127,8 @@ export const SavedSongRow = ({
         }
       </div>
       <div style={styles.titleStyle}>{track.name}</div>
-      <div style={styles.artistStyle}>{artistNames}</div>
-      <div style={styles.albumStyle}>{track.album.name}</div>
+      <div style={styles.artistStyle}>{track.artists}</div>
+      <div style={styles.albumStyle}>{track.album}</div>
       <div style={styles.addedByStyle}>{addedByUser.display_name}</div>
       <div style={styles.rightButtonWrapperStyle}>
         {/* only provide the remove button as an option if no other track is
