@@ -69,14 +69,18 @@ export interface TrackObject {
 
 /**
  * Similar to TrackObject, but keeps track of who removed it
- * TODO extend Pick<SpotifyApi.TrackObjectFull, 'name' | 'album' | 'artists'>
- *  like api's PlaylistTrackObject (and refactor api to have just needed data)
+ * And saves data that is normally fetched from spotify's copy of the playlist
  */
 export interface RemovedTrackObject {
   id: string,
   // user id of remover
   removedBy: string,
   chat: SituatedChatEvent[], // situated
+  
+  // cached from spotify:
+  name: string,
+  album: string,
+  artists: string,
 }
 
 /**

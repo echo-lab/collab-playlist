@@ -193,7 +193,12 @@ playlistIdRouter.put('/tracks/:trackId/removed',
       // TODO illegal state checks? e.g. is track present in the correct list
       //  (removed vs not removed). also json body checks?
       
+      // start fetching track now if removing
+      let spotifyTrackPromise: Promise<SpotifyApi.SingleTrackResponse> | undefined
       if (remove) {
+        // get spotify data needed to save a local copy of this track
+        spotifyTrackPromise = spotifyApi.getTrack(trackId).then(res => res.body)
+        
         await spotifyApi.removeTracksFromPlaylist(
           playlistId, [{ uri: `spotify:track:${trackId}` }]
         )
@@ -237,12 +242,16 @@ playlistIdRouter.put('/tracks/:trackId/removed',
       }))
       
       if (remove) {
+        const spotifyTrack = await spotifyTrackPromise
         // convert track to removed track type
         const removedTrackObject: RemovedTrackObject = {
           id: trackObject.id,
           chat: trackObject.chat,
           removedBy: res.locals.userId,
-          // TODO add spotify data like name, album, etc
+          // cached spotify data
+          album: spotifyTrack.album.name,
+          artists: spotifyTrack.artists.map(artist => artist.name).join(', '),
+          name: spotifyTrack.name,
         }
         // add removed track to start of "removed" list, will show up at the top
         //  of the removed section of the table on the frontend
