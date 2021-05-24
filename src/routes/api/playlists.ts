@@ -225,7 +225,7 @@ playlistIdRouter.put('/tracks/:trackId/removed',
       // TODO check track is present in listFrom
       
       // remove and get track object
-      const [trackObject] = listFrom.splice(dbTrackIndex)
+      const [trackObject] = listFrom.splice(dbTrackIndex, 1)
       
       // add chat messages
       trackObject.chat.push(asType<SituatedChatEvent>({
