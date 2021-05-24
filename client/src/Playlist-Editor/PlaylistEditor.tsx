@@ -8,7 +8,7 @@ import { classes, colors } from '../styles'
 import { SavedSongRow } from './SavedSongRow'
 import { DraftAdditionSongRow } from './DraftAdditionSongRow'
 // import { TableHeader } from './TableHeader'
-import { PlaylistTableHeader } from './PlaylistTableHeader'
+import { PlaylistTableHeader, RemovedTracksHeader } from './PlaylistTableHeader'
 import { PlaylistInfo } from './PlaylistInfo'
 import { SearchPanel } from './SearchPanel'
 import { initialState } from './modificationReducer'
@@ -16,6 +16,7 @@ import { playlistContext } from './playlistContext'
 import { SeparateChat } from './Chat/SeparateChat'
 import { GetPlaylistIdResponse } from '../shared/apiTypes'
 import { handleApiError } from '../api'
+import { RemovedTrackRow } from './RemovedTrackRow'
 
 
 const usePlaylistData = (playlistId: string) => {
@@ -78,6 +79,7 @@ const usePlaylistData = (playlistId: string) => {
 
 
 
+const padding = '2.0rem'
 
 const searchTabStyle = {
   flex: 0.2,
@@ -95,12 +97,23 @@ const playlistTableStyle = {
 }
 const tHeadStyle = {
   background: colors.grayscale.gray,
-  padding: '2.0rem 2.0rem 0',
+  padding: `${padding} ${padding} 0`,
   position: 'sticky',
   top: 0,
 } as const
 const songsStyle = {
-  padding: '0 2.0rem 2.0rem',
+  padding: `0 ${padding}`,
+}
+const removedHeaderStyle = {
+  padding: `4.0rem ${padding} 0`,
+}
+const removedHeadingStyle = {
+  ...classes.text,
+  ...classes.bold,
+  fontSize: '2.4rem',
+}
+const bottomSpaceStyle: CSSProperties = {
+  minHeight: '5.0rem',
 }
 const separateChatStyle = {
   flex: 1,
@@ -157,6 +170,18 @@ export const PlaylistEditor = ({
                 <DraftAdditionSongRow trackData={modificationState.trackData} />
               }
             </div>
+            { playlist.data.removedTracks.length && <>
+              <div style={removedHeaderStyle}>
+                <h3 style={removedHeadingStyle}>Removed Tracks</h3>
+                <RemovedTracksHeader />
+              </div>
+              <div style={songsStyle}>
+                { playlist.data.removedTracks.map(track =>
+                  <RemovedTrackRow track={track} key={track.id} />
+                )}
+              </div>
+            </>}
+            <div style={bottomSpaceStyle} />
           </> }
         </div>
         { false && <SeparateChat

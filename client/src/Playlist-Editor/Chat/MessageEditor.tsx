@@ -52,11 +52,13 @@ type UserAction = State['userAction']
 
 
 const iconOfAction = (action: UserAction) =>
-  action === 'add'
+  action === 'add' || action === 're-add'
   ? faPlusCircle
   : action === 'remove'
   ? faMinusCircle
-  : faPaperPlane
+  : action === 'view'
+  ? faPaperPlane
+  : null
 
 
 
@@ -66,7 +68,7 @@ export const SituatedMessageEditor = ({
   onSubmit,
   onCancel,
 }: {
-  action: UserAction, //'add' | 'remove' | 'view'
+  action: UserAction,
   onSubmit: (message: string) => Promise<boolean>,
   onCancel: () => void,
 }) => {
@@ -94,12 +96,16 @@ export const SituatedMessageEditor = ({
     ? 'Add'
     : action === 'remove'
     ? 'Remove'
+    : action === 're-add'
+    ? 'Re-add'
     : 'Post' // send? submit? comment?
   
   const placeholderText = action === 'add'
     ? 'Explain why you want to add this track... (optional)'
     : action === 'remove'
     ? 'Explain why you want to remove this track... (optional)'
+    : action === 're-add'
+    ? 'Explain why you want to add this track back... (optional)'
     : 'Comment on this track...'
   
   return <>

@@ -1,34 +1,21 @@
 
 import React, { useContext, useState } from 'react'
-import { playlistContext } from './playlistContext'
-import { faMinusCircle, faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
-import * as styles from './playlistTableRowStyles'
-import { useHover } from '../useHover'
-import { colors, classes } from '../styles'
-import { SituatedChat } from './Chat/SituatedChat'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { PlaylistTrackObject, PostSituatedChatRequest, PutTrackRemovedRequest } from '../shared/apiTypes'
 import { useParams } from 'react-router'
-import { postWrapper } from '../fetchWrapper'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronCircleDown, faChevronCircleUp, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { handleApiError } from '../api'
+import { postWrapper } from '../fetchWrapper'
+import { PostSituatedChatRequest, PutTrackRemovedRequest } from '../shared/apiTypes'
+import { RemovedTrackObject } from '../shared/dbTypes'
+import { classes, colors } from '../styles'
+import { useHover } from '../useHover'
 import { asType } from '../util'
+import { playlistContext } from './playlistContext'
+import * as styles from './playlistTableRowStyles'
+import { SituatedChat } from './Chat/SituatedChat'
 
 
-
-
-/**
- * A row of the playlist table showing a song that currently exists in the
- * playlist. Can be selected to be removed, and removal can then be cancelled
- */
-export const SavedSongRow = ({
-  track,
-  addedByUsers,
-}: {
-  track: PlaylistTrackObject,
-  addedByUsers: Record<string, SpotifyApi.UserObjectPublic>,
-}) => {
-  
-  const addedByUser = addedByUsers[track.addedBy]
+export const RemovedTrackRow = ({ track }: { track: RemovedTrackObject }) => {
   
   const {
     modificationState, setModificationState, loadPlaylist
@@ -36,9 +23,9 @@ export const SavedSongRow = ({
   
   const { id: playlistId } = useParams()
   
-  // true if user is attempting to remove *this* track; else the user is just
+  // true if user is attempting to re-add *this* track; else the user is just
   //  viewing or commenting on this track
-  const removingThis = modificationState.userAction === "remove"
+  const reAddingThis = modificationState.userAction === "re-add"
     && modificationState.trackId === track.id
   
   // situated chat expand/collapse button
@@ -46,25 +33,25 @@ export const SavedSongRow = ({
   
   // button hover states
   const [expandButtonIsHovered, expandButtonHoverProps] = useHover()
-  const [removeButtonIsHovered, removeButtonHoverProps, setRemoveButtonIsHovered] = useHover()
+  const [reAddButtonIsHovered, reAddButtonHoverProps, setReAddButtonIsHovered] = useHover()
   
   
-  // on click the right-most "remove" button
-  const removeButtonOnClick = () => {
+  // on click the right-most "re-add" button
+  const reAddButtonOnClick = () => {
     setModificationState({
-      userAction: 'remove',
+      userAction: 're-add',
       trackId: track.id,
     })
-    setRemoveButtonIsHovered(false) // otherwise, stays hovered if cancelled
+    setReAddButtonIsHovered(false) // otherwise, stays hovered if cancelled
   }
   
   // on submit the chat form
   const onSubmitChat = async (message: string) => {
-    const response = removingThis
+    const response = reAddingThis
       ? await postWrapper(
           `/api/playlists/${playlistId}/tracks/${track.id}/removed/`,
           asType<PutTrackRemovedRequest>({
-            remove: true,
+            remove: false,
             message
           }),
           { method: 'PUT' }
@@ -87,7 +74,7 @@ export const SavedSongRow = ({
   }
   // on cancel the chat form
   const onCancelChat = () => {
-    if (removingThis) {
+    if (reAddingThis) {
       setModificationState({ userAction: 'view' })
     } else {
       setChatExpanded(false)
@@ -102,15 +89,14 @@ export const SavedSongRow = ({
   }
   const rightButtonStyle = {
     ...styles.rightButtonStyle,
-    background: colors.translucentWhite(removeButtonIsHovered ? 0.3 : 0.15),
+    background: colors.translucentWhite(reAddButtonIsHovered ? 0.3 : 0.15),
   }
-  
   
   return <div style={classes.column}>
     <div style={styles.rowStyle}>
       <div style={styles.rightButtonWrapperStyle}>
-        {/* only show expand/collapse button if not currently removing this track */}
-        { !removingThis &&
+        {/* only show expand/collapse button if not currently re-adding this track */}
+        { !reAddingThis &&
           <button
             style={expandButtonStyle}
             onClick={() => setChatExpanded(currState => !currState)}
@@ -129,27 +115,27 @@ export const SavedSongRow = ({
       <div style={styles.titleStyle}>{track.name}</div>
       <div style={styles.artistStyle}>{track.artists}</div>
       <div style={styles.albumStyle}>{track.album}</div>
-      <div style={styles.addedByStyle}>{addedByUser.display_name}</div>
+      <div style={styles.addedByStyle}>{track.removedBy}</div>
       <div style={styles.rightButtonWrapperStyle}>
-        {/* only provide the remove button as an option if no other track is
-            currently selected for removal/addition */}
+        {/* only provide the re-add button as an option if no other track is
+            currently selected for modification */}
         { modificationState.userAction === "view" &&
           <button
             style={rightButtonStyle}
-            onClick={removeButtonOnClick}
-            {...removeButtonHoverProps}
+            onClick={reAddButtonOnClick}
+            {...reAddButtonHoverProps}
           >
-            <FontAwesomeIcon icon={faMinusCircle} style={classes.icon} />
+            <FontAwesomeIcon icon={faPlusCircle} style={classes.icon} />
           </button>
         }
       </div>
     </div>
-    {/* only show chat if this track is selected for removal or chat is expanded */}
-    { (removingThis || chatExpanded) &&
+    {/* only show chat if this track is selected for re-adding or chat is expanded */}
+    { (reAddingThis || chatExpanded) &&
       <SituatedChat
         chat={track.chat}
-        // remove action 'overrides' view; if both are true, removal is shown
-        action={removingThis ? 'remove' : 'view'}
+        // re-add action 'overrides' view; if both are true, re-add is shown
+        action={reAddingThis ? 're-add' : 'view'}
         onSubmit={onSubmitChat}
         onCancel={onCancelChat}
       />

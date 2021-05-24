@@ -17,14 +17,14 @@ interface Event {
 
 
 /**
- * A user leaves a message, possibly while adding/removing a track
- * If action included, message can be empty string, otherwise message
- * shouldn't be an empty string
+ * A user leaves a message, possibly while adding/removing the track
+ * If action is not 'comment', message can be empty string, otherwise message
+ * shouldn't be an empty string, though this is not currently enforced
  * This occurs in situated or hybrid mode
  */
 export interface SituatedChatEvent extends Event {
   message: string,
-  action?: 'add' | 'remove',
+  action: 'comment' | 'add' | 'remove' | 're-add',
 }
 
 
@@ -35,8 +35,7 @@ export interface SituatedChatEvent extends Event {
  * situated mode
  */
 export interface SeparateChatAction extends Event {
-  type: 'action',
-  action: 'add' | 'remove',
+  action: 'add' | 'remove' | 're-add',
   trackId: string,
 }
 /**
@@ -44,7 +43,7 @@ export interface SeparateChatAction extends Event {
  * Occurs in separate or hybrid mode
  */
 export interface SeparateChatMessage extends Event {
-  type: 'message',
+  action: 'comment',
   message: string,
 }
 /**
@@ -54,8 +53,7 @@ export type SeparateChatEvent = SeparateChatAction | SeparateChatMessage
 
 
 /**
- * track in playlist; keeps track of whether it has been removed or not (or
- * readded)
+ * track in playlist that has either not been removed, or has been readded
  * Chat can be empty array if no messages/actions yet or if in separate mode
  */
 export interface TrackObject {
@@ -67,7 +65,22 @@ export interface TrackObject {
   // always be the adder in spotify's data:
   addedBy: string,
   chat: SituatedChatEvent[], // situated
-  removed: boolean,
+}
+
+/**
+ * Similar to TrackObject, but keeps track of who removed it
+ * And saves data that is normally fetched from spotify's copy of the playlist
+ */
+export interface RemovedTrackObject {
+  id: string,
+  // user id of remover
+  removedBy: string,
+  chat: SituatedChatEvent[], // situated
+  
+  // cached from spotify:
+  name: string,
+  album: string,
+  artists: string,
 }
 
 /**
@@ -77,6 +90,7 @@ export interface TrackObject {
 export interface PlaylistDocument extends Document {
   users: string[], // many-to-many
   tracks: TrackObject[],
+  removedTracks: RemovedTrackObject[],
   chat: SeparateChatEvent[], // separate
   chatMode: 'situated' | 'separate' | 'hybrid',
 }

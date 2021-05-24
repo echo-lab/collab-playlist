@@ -6,26 +6,25 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { useHover } from '../useHover'
 import { playlistContext } from './playlistContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { GetTrackSearchItem, GetTrackSearchResponse } from '../shared/apiTypes'
 
+const itemNotFirstStyle = {
+  marginTop: '1.0rem',
+}
 
 export const SearchResults = ({
-  data,
+  searchResults,
   style,
 }: {
-  data: SpotifyApi.TrackSearchResponse,
+  searchResults: GetTrackSearchResponse,
   style?: CSSProperties,
 }) => {
   
-  const items = data.tracks.items
-  
-  const itemNotFirstStyle = {
-    marginTop: '1.0rem',
-  }
   
   return <ScrollArea style={style}>
-    {items.map((item, index) => 
+    {searchResults.map((track, index) => 
       <SearchItem
-        item={item}
+        track={track}
         key={index}
         style={index !== 0 && itemNotFirstStyle}
       />
@@ -69,29 +68,22 @@ const addButtonStyle = {
 } as const
 
 const SearchItem = ({
-  item,
+  track,
   style,
 }: {
-  item: SpotifyApi.TrackObjectFull,
+  track: GetTrackSearchItem,
   style: CSSProperties,
 }) => {
-  const { name, artists, album } = item
-  const image = album.images[2]
-  const artistNames = artists.map(artist => artist.name).join(', ')
   
   const { modificationState, setModificationState } = useContext(playlistContext)
   
   const [addButtonIsHovered, addButtonHoverProps, setAddButtonIsHovered] = useHover()
   
   const addButtonOnClick = () => {
+    const { id, album, artists, name } = track
     setModificationState({
       userAction: 'add',
-      trackData: {
-        id: item.id,
-        album: item.album,
-        artists: item.artists,
-        name: item.name,
-      }
+      trackData: { id, album, artists, name },
     })
     setAddButtonIsHovered(false) // otherwise, stays hovered if addition is cancelled
   }
@@ -106,10 +98,10 @@ const SearchItem = ({
   }
   
   return <div style={searchItemStyle}>
-    <img src={image.url} alt={`Album: ${album.name}`} style={imageStyle} />
+    <img src={track.image} alt={`Album: ${track.album}`} style={imageStyle} />
     <div style={textDivStyle}>
-      <div style={songNameStyle}>{name}</div>
-      <div style={artistNamesStyle}>{artistNames}</div>
+      <div style={songNameStyle}>{track.name}</div>
+      <div style={artistNamesStyle}>{track.artists}</div>
     </div>
     { modificationState.userAction === 'view' &&
       <button

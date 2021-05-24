@@ -12,19 +12,17 @@ export interface GetRefreshTokenResponse {
 }
 
 
-export interface PlaylistTrackObject extends
-  TrackObject,
-  Pick<SpotifyApi.TrackObjectFull,
-    'name' | 'album' | 'artists'
-  > { }
+export interface PlaylistTrackObject extends TrackObject {
+  name: string,
+  album: string,
+  artists: string,
+}
 
-export interface GetPlaylistIdResponse extends
-  PlaylistDocument,
-  Pick<SpotifyApi.SinglePlaylistResponse,
-    'images' | 'name' | 'owner' | 'followers'
-  >
-{
+export interface GetPlaylistIdResponse extends PlaylistDocument {
   tracks: PlaylistTrackObject[],
+  name: string,
+  followers: number,
+  image: string,
 }
 
 
@@ -33,7 +31,8 @@ export interface PostSituatedChatRequest {
 }
 
 export interface PutTrackRemovedRequest {
-  message: string
+  remove: boolean,
+  message: string,
 }
 
 export interface PostTrackRequest {
@@ -46,9 +45,14 @@ export interface PostSeparateChatRequest {
 }
 
 
-export interface GetTrackSearchResponse extends SpotifyApi.SearchResponse {
-  
+export interface GetTrackSearchItem {
+  id: string,
+  name: string,
+  album: string,
+  artists: string,
+  image: string,
 }
+export type GetTrackSearchResponse = GetTrackSearchItem[]
 
 export interface PlaylistSimple {
   id: string,

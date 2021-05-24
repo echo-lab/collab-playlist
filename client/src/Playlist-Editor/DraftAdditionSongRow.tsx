@@ -12,6 +12,7 @@ import { PlaylistTrackObject, PostTrackRequest } from '../shared/apiTypes'
 import { handleApiError } from '../api'
 import { postWrapper } from '../fetchWrapper'
 import { useParams } from 'react-router'
+import { asType } from '../util'
 
 
 /**
@@ -28,11 +29,8 @@ export const DraftAdditionSongRow = ({
   const track: PlaylistTrackObject = {
     ...trackData,
     chat: [],
-    removed: false,
     addedBy: 'You', // supposed to be an id, idk whether to use user's id
   }
-  
-  const artistNames = track.artists.map(artist => artist.name).join(', ')
   
   const { setModificationState, loadPlaylist } = useContext(playlistContext)
   const { id: playlistId } = useParams()
@@ -42,10 +40,10 @@ export const DraftAdditionSongRow = ({
   const onSubmit = async (message: string) => {
     const response = await postWrapper(
       `/api/playlists/${playlistId}/tracks`,
-      {
+      asType<PostTrackRequest>({
         message,
         trackId: track.id
-      } as PostTrackRequest,
+      }),
     )
     handleApiError(response)
     
@@ -80,8 +78,8 @@ export const DraftAdditionSongRow = ({
     <div style={styles.rowStyle}>
       <div style={styles.expandCollapseButtonStyle}></div>
       <div style={styles.titleStyle}>{track.name}</div>
-      <div style={styles.artistStyle}>{artistNames}</div>
-      <div style={styles.albumStyle}>{track.album.name}</div>
+      <div style={styles.artistStyle}>{track.artists}</div>
+      <div style={styles.albumStyle}>{track.album}</div>
       <div style={styles.addedByStyle}>{track.addedBy}</div>
       <div style={styles.rightButtonWrapperStyle}>
         <button
@@ -94,7 +92,7 @@ export const DraftAdditionSongRow = ({
       </div>
     </div>
     <SituatedChat
-      track={track}
+      chat={track.chat}
       action={'add'}
       onSubmit={onSubmit}
       onCancel={onCancel}

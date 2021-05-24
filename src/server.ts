@@ -64,6 +64,7 @@ import { apiRouter } from './routes/api'
 app.use('/api', apiRouter)
 
 import { adminRouter } from './routes/admin'
+import { asType } from './util'
 app.use('/admin', adminRouter)
 
 
@@ -112,11 +113,11 @@ app.get('/*', (req, res) => {
 /**
  * Error handler
  */
-app.use(((err, req, res, next) => {
+app.use(asType<express.ErrorRequestHandler>((err, req, res, next) => {
   console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
   console.error(err)
   res.sendStatus(err.status ?? 500)
-}) as express.ErrorRequestHandler)
+}))
 
 
 app.listen(PORT, () => {

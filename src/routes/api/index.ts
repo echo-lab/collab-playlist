@@ -4,10 +4,11 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import express from 'express'
 import { LocalsUserId, Res, playlistsRouter } from './playlists'
 import {
-  GetRefreshTokenResponse, GetTrackSearchResponse, GetLoginResponse
+  GetRefreshTokenResponse, GetTrackSearchResponse, GetLoginResponse, GetTrackSearchItem
 } from '../../../client/src/shared/apiTypes'
 import { accessTokenCache, refreshTokenCache } from '../../userCache'
 import { spotifyApi } from '../../ownerAccount'
+import { asType } from '../../util'
 
 
 
@@ -52,7 +53,7 @@ apiRouter.get('/refresh_token', async (req, res, next) => {
   accessTokenCache.set(data.body.access_token, userId)
   
   res.cookie('access_token', data.body.access_token, { maxAge: data.body.expires_in * 1000 })
-  res.json({ expires_in: data.body.expires_in } as GetRefreshTokenResponse)
+  res.json(asType<GetRefreshTokenResponse>({ expires_in: data.body.expires_in }))
 })
 
 
@@ -78,7 +79,7 @@ apiRouter.use((req, res: Res<LocalsUserId>, next) => {
  * json body if not logged in
  */
 apiRouter.get('/login', (req, res: Res<LocalsUserId>, next) => {
-  res.json({ userId: res.locals.userId } as GetLoginResponse)
+  res.json(asType<GetLoginResponse>({ userId: res.locals.userId }))
 })
 
 
@@ -95,9 +96,18 @@ apiRouter.use('/playlists', playlistsRouter)
 apiRouter.get('/search', async (req, res) => {
   const { q } = req.query
   
-  const data = await spotifyApi.searchTracks(q)
+  const { body: results } = await spotifyApi.searchTracks(q)
   
-  res.json(data.body as GetTrackSearchResponse)
+  res.json(asType<GetTrackSearchResponse>(
+    results.tracks.items.map(track => asType<GetTrackSearchItem>({
+      id: track.id,
+      name: track.name,
+      album: track.album.name,
+      // images[2]?
+      image: (track.album.images[2] ?? track.album.images[0]).url,
+      artists: track.artists.map(artist => artist.name).join(', '),
+    }))
+  ))
 })
 
 
@@ -140,13 +150,13 @@ apiRouter.get('/users/:id', async (req, res) => {
 /**
  * catch server errors
  */
-apiRouter.use(((err, req, res, next) => {
+apiRouter.use(asType<express.ErrorRequestHandler>((err, req, res, next) => {
   console.error(`ERROR at ${req.method} ${req.originalUrl}:`)
   console.error(err)
   // always respond with json; never send err (might leak server info)
   res.status(err.status ?? 500)
      .json({}) // could use `err.client ?? {}`
-}) as express.ErrorRequestHandler)
+}))
 
 
 /**

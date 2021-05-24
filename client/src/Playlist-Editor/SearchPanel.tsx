@@ -1,16 +1,15 @@
 
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { useDebounceCallback } from '@react-hook/debounce'
-import { useResource, fetchWrapper, Resource } from '../fetchWrapper'
+import { useResource, fetchWrapper } from '../fetchWrapper'
 import { SearchResults } from "./SearchResults"
 import { classes, colors } from "../styles"
 import { handleApiError } from '../api'
+import { GetTrackSearchResponse } from '../shared/apiTypes'
 
 
-type SongResults = SpotifyApi.TrackSearchResponse
-
-export const useSongSearch = (query: string): Resource<SongResults> => {
-  const [resource, setter] = useResource<SongResults>(null)
+export const useSongSearch = (query: string) => {
+  const [resource, setter] = useResource<GetTrackSearchResponse>(null)
   
   useEffect(() => {
     if (query !== '') {
@@ -18,7 +17,7 @@ export const useSongSearch = (query: string): Resource<SongResults> => {
         setter({
           loading: true,
         })
-        const response = await fetchWrapper<SongResults>(`/api/search?q=${query}`)
+        const response = await fetchWrapper<GetTrackSearchResponse>(`/api/search?q=${query}`)
         handleApiError(response)
         setter({
           loading: false,
@@ -82,7 +81,7 @@ export const SearchPanel = ({
   
   const [query, setQuery] = useState('')
   
-  const { data: result } = useSongSearch(query)
+  const searchResults = useSongSearch(query)
   
   const searchTabStyle = {
     ...style,
@@ -112,10 +111,10 @@ export const SearchPanel = ({
       placeholder="Search to add track..."
     />
     
-    { result &&
+    { searchResults.data &&
       <SearchResults
         style={resultsStyle}
-        data={result}
+        searchResults={searchResults.data}
       />
     }
     
