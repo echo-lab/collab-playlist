@@ -16,12 +16,17 @@ interface RemoveState {
   userAction: 'remove',
   trackId: string,
 }
+interface ReAddState {
+  userAction: 're-add',
+  trackId: string,
+}
 interface ViewState {
   userAction: 'view'
 }
 export type State =
   | AddState
   | RemoveState
+  | ReAddState
   | ViewState
 
 export const initialState: State = {

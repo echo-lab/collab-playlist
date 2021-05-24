@@ -4,8 +4,8 @@ import { classes } from '../../styles'
 import * as styles from '../playlistTableRowStyles'
 import { State } from '../modificationReducer'
 import { SituatedMessageEditor } from './MessageEditor'
-import { PlaylistTrackObject } from '../../shared/apiTypes'
 import { SituatedChatMessage } from './ChatMessage'
+import { SituatedChatEvent } from '../../shared/dbTypes'
 
 
 const chatStyle = {
@@ -16,13 +16,13 @@ const chatStyle = {
 
 
 export const SituatedChat = ({
-  track,
+  chat,
   action,
   onSubmit,
   onCancel,
 }: {
-  track: PlaylistTrackObject,
-  action: State['userAction'], //'add' | 'remove' | 'view'
+  chat: SituatedChatEvent[],
+  action: State['userAction'],
   onSubmit: (message: string) => Promise<boolean>,
   onCancel: () => void,
 }) => {
@@ -35,7 +35,7 @@ export const SituatedChat = ({
     </div>
     <div style={chatStyle}>
       <div style={classes.column}>
-        { track.chat.map((chatEvent, index) =>
+        { chat.map((chatEvent, index) =>
           <SituatedChatMessage chatEvent={chatEvent} key={index} />
         ) }
       </div>

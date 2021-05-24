@@ -92,7 +92,7 @@ export const DraftAdditionSongRow = ({
       </div>
     </div>
     <SituatedChat
-      track={track}
+      chat={track.chat}
       action={'add'}
       onSubmit={onSubmit}
       onCancel={onCancel}

@@ -28,3 +28,22 @@ export const PlaylistTableHeader = () => {
   </div>
 }
 
+export const RemovedTracksHeader = () => {
+  return <div style={styles.rowStyle}>
+    <div style={styles.expandCollapseButtonStyle}></div>
+    <div style={styles.titleStyle}>
+      Title
+    </div>
+    <div style={styles.artistStyle}>
+      Artist
+    </div>
+    <div style={styles.albumStyle}>
+      Album
+    </div>
+    <div style={styles.addedByStyle}>
+      Removed by
+    </div>
+    <div style={styles.rightButtonWrapperStyle}></div>
+  </div>
+}
+
