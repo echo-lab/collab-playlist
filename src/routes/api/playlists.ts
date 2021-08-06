@@ -53,14 +53,17 @@ playlistsRouter.get('/', async (req, res: Res<LocalsUserId>, next) => {
     ))
     
     const response: GetPlaylistsResponse = playlists.map(
-      ([dbPlaylist, spotifyPlaylist]): PlaylistSimple => ({
-        id: dbPlaylist._id,
-        users: dbPlaylist.users,
-        name: spotifyPlaylist.name,
-        // if multiple images present, image [1] has the closest resolution;
-        // else use the only image
-        image: (spotifyPlaylist.images[1] ?? spotifyPlaylist.images[0]).url,
-      })
+      ([dbPlaylist, spotifyPlaylist]): PlaylistSimple => {
+        const image = spotifyPlaylist.images[1] ?? spotifyPlaylist.images[0]
+        return {
+          id: dbPlaylist._id,
+          users: dbPlaylist.users,
+          name: spotifyPlaylist.name,
+          // if multiple images present, image [1] has the closest resolution;
+          // else use the only image
+          image: image?.url ?? null
+        }
+      }
     )
     
     res.json(response)

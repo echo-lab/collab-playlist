@@ -54,7 +54,7 @@ export interface PlaylistSimple {
   id: string,
   users: string[], // ids or display names?
   name: string,
-  image: string, // temporary source url from spotify
+  image: string | null, // temporary source url from spotify
 }
 export type GetPlaylistsResponse = PlaylistSimple[]
 
